@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="font_light" type="string">fonts/Roboto-Light.ttf</item>
+    <item name="font_regular" type="string">fonts/Roboto-Regular.ttf</item>
+    <item name="font_medium" type="string">fonts/Roboto-Medium.ttf</item>
+    <item name="font_thin" type="string">fonts/Roboto-Thin.ttf</item>
+    <item name="font_bold" type="string">fonts/Roboto-Bold.ttf</item>
+</resources>

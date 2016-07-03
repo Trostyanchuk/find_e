@@ -1,0 +1,43 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@android:color/black</item>
+        <item name="colorPrimaryDark">@android:color/black</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="SwitchTheme">
+        <item name="android:colorForeground">@color/switch_dark</item>
+        <item name="colorSwitchThumbNormal">@android:color/darker_gray</item>
+        <item name="colorControlActivated">@android:color/white</item>
+    </style>
+
+    <style name="ThemeDialog" parent="Theme.AppCompat.Light.Dialog"/>
+
+    <style name="TextRegular">
+        <item name="fontPath">@string/font_regular</item>
+    </style>
+
+    <style name="TextRegularWhite" parent="TextRegular">
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="TextLightWhite">
+        <item name="fontPath">@string/font_light</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="TextBoldWhite">
+        <item name="fontPath">@string/font_bold</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="TextMediumWhite">
+        <item name="fontPath">@string/font_medium</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+
+</resources>

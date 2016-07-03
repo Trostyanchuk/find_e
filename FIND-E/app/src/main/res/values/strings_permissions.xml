@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="title">Grant access to enable all features</string>
+    <string name="subtitle">Allow FIND-E to use your smartphone’s basic functions to proceed.</string>
+    
+    <string name="ble_dialog_explain">FIND-E needs bluetooth to connect to your phonehead... </string>
+    <string name="location_dialog_explain">FIND-E needs bluetooth to connect to your phonehead... </string>
+
+    <string name="label_bottom_explain">FIND-E needs basic access to work properly. Tap “Info” icon to see access details.</string>
+</resources>
