@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="fragment_label">LAST SEEN LOCATION</string>
+    <string name="done_label">Done</string>
+    <string name="approximate_distance_label">Approximate distance</string>
+    <string name="connection_lost_label">Connection lost</string>
+    <string name="me_label">Me</string>
+    <string name="last_location_label">Last Location</string>
+</resources>

@@ -1,4 +1,10 @@
 <resources>
+
+    <string name="mapbox_token">pk.eyJ1IjoiYW5kcmV3c2tyeXBuaWsiLCJhIjoiY2lxN3g0ZmwwMDAycWk2bTJ1YmE1dW1lcCJ9.e8qgVJQvT2SgmxTimMLzSw</string>
+
+    <string name="mapbox_style_extremely_dark_url">mapbox://styles/andrewskrypnik/ciq7y3ex7007ndtnpxb192s39</string>
+    <!--<string name="mapbox_style_extremely_dark_token">pk.eyJ1IjoidHJvc3RpYWNodWsiLCJhIjoiY2lxN2w2cmZjMDAyOWh2bTIzYnV5aThuNSJ9.ewVmP4mML32Zf79Od2Ggqw</string>-->
+
     <string name="app_name">FIND-E</string>
 
     <string name="ok">OK</string>

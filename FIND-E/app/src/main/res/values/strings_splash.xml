@@ -7,5 +7,7 @@
     <string name="label_location">Location Services</string>
 
     <string name="title_info">Never lose your stuff again</string>
-    <string name="subtitle_info">FIND-E is a smart device that helps you keep track of your most important belongings</string>
+    <string name="subtitle_info">FIND-E is a smart device that helps you \nkeep track of your most important belongings</string>
+    <string name="subtitle_info_3l">FIND-E is a smart device that helps you \nkeep track of your most important\n belongings</string>
+
 </resources>

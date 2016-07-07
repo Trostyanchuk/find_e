@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#000000"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <io.sympli.find_e.ui.widget.TypefaceTextView
+                    android:id="@+id/battery_life"
+                    style="@style/TextRegularWhite"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="20%"
+                    android:textSize="20sp" />
+
+                <io.sympli.find_e.ui.widget.TypefaceTextView
+                    style="@style/TextLightWhite"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/battery_life"
+                    android:textSize="13sp" />
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:src="@drawable/robot_smile" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <io.sympli.find_e.ui.widget.TypefaceTextView
+                    android:id="@+id/signal_quality"
+                    style="@style/TextRegularWhite"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="0%"
+                    android:textSize="20sp"
+                    android:gravity="end" />
+
+                <io.sympli.find_e.ui.widget.TypefaceTextView
+                    style="@style/TextLightWhite"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center|end"
+                    android:text="@string/signal_quality"
+                    android:textSize="13sp" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </RelativeLayout>
+</layout>

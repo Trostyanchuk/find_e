@@ -5,4 +5,8 @@
     <declare-styleable name="TypefaceTextView">
         <attr name="fontPath" format="string" />
     </declare-styleable>
+
+    <declare-styleable name="CircleTextView">
+        <attr name="text" format="string" />
+    </declare-styleable>
 </resources>

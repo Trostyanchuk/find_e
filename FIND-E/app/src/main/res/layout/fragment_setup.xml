@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <android.support.percent.PercentRelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/background_dark"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <VideoView
+            android:id="@+id/video_player"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="invisible"
+            app:layout_heightPercent="65%" />
+
+        <ImageView
+            android:id="@+id/video_view_stub_iv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignBottom="@+id/video_player"
+            android:src="@drawable/pair_screen_stub" />
+
+        <LinearLayout
+            android:id="@+id/pair_lt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/video_player"
+            android:orientation="vertical"
+            android:visibility="invisible">
+
+            <io.sympli.find_e.ui.widget.TypefaceTextView
+                style="@style/TextRegularWhite"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/pair_label"
+                android:textSize="17sp" />
+
+            <io.sympli.find_e.ui.widget.TypefaceTextView
+                style="@style/TextLightWhite"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:alpha="0.7"
+                android:gravity="center"
+                android:text="@string/pair_text"
+                android:textSize="15sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/setup_lt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/video_player"
+            android:orientation="vertical"
+            android:visibility="invisible">
+
+            <io.sympli.find_e.ui.widget.TypefaceTextView
+                style="@style/TextRegularWhite"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/setup_label"
+                android:textSize="17sp" />
+
+            <io.sympli.find_e.ui.widget.TypefaceTextView
+                style="@style/TextLightWhite"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:alpha="0.7"
+                android:gravity="center"
+                android:text="@string/setup_text"
+                android:textSize="15sp" />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/sucessfully_connected_lt"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:paddingTop="@dimen/activity_horizontal_margin"
+            android:visibility="invisible">
+
+            <io.sympli.find_e.ui.widget.TypefaceTextView
+                android:id="@+id/title"
+                style="@style/TextLightWhite"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="5dp"
+                android:gravity="center"
+                android:text="@string/connected_label"
+                android:textSize="30sp" />
+
+            <io.sympli.find_e.ui.widget.TypefaceTextView
+                android:id="@+id/subtitle"
+                style="@style/TextMediumWhite"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/title"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="5dp"
+                android:alpha="0.7"
+                android:gravity="center"
+                android:text="@string/connected_text"
+                android:textSize="18sp" />
+
+            <ImageView
+                android:id="@+id/staff_iv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:scaleType="center"
+                android:src="@drawable/staff" />
+
+            <io.sympli.find_e.ui.widget.TypefaceTextView
+                style="@style/TextLightWhite"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/staff_iv"
+                android:layout_marginTop="40dp"
+                android:alpha="0.7"
+                android:gravity="center"
+                android:text="@string/connected_info" />
+
+            <io.sympli.find_e.ui.widget.TypefaceTextView
+                android:id="@+id/continue_btn"
+                style="@style/TextRegularWhite"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="25dp"
+                android:background="@drawable/btn_blue_selector"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:paddingBottom="16dp"
+                android:paddingLeft="50dp"
+                android:paddingRight="50dp"
+                android:paddingTop="16dp"
+                android:text="@string/lets_start"
+                android:textAllCaps="true"
+                android:textColor="@color/light_blue"
+                android:visibility="invisible" />
+
+        </RelativeLayout>
+
+    </android.support.percent.PercentRelativeLayout>
+</layout>

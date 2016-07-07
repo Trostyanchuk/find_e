@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="dont_disturb_title">How to use "Do not disturb" mode?</string>
+    <string name="dont_disturb_subtitle">If you want to stop FIND-E from tracking and notifying you for a while, use \"Do not disturb\" mode.</string>
+    <string name="dont_disturb_first">Tap FIND-E\'s avatar \nto turn off tracking</string>
+    <string name="dont_disturb_second">Tap again to turn it back on</string>
+    <string name="dont_disturb_text">Once you turn "Do not disturb" mode off, \n
+        FIND-E will automatically reconnect \nand start tracking again.</string>
+
+    <string name="silent_title">How to set-up a silent area?</string>
+    <string name="silent_subtitle">You can automatically mute areas, like home or office.</string>
+    <string name="silent_first">Connect your smartphone to WI-FI</string>
+    <string name="silent_second">Turn on silent Wi-Fi area in settings</string>
+    <string name="silent_text">Now you won\'t receive notifications from FIND-E
+         while your phone is connected to particular Wi-Fi\n
+        Once you leave this area, FIND-E will automatically  turn itself on.</string>
+
+    <string name="go_to_settings_btn">GO TO SETTINGS</string>
+</resources>

@@ -12,6 +12,8 @@ import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 
+import com.google.repacked.antlr.v4.misc.Utils;
+
 import javax.inject.Inject;
 
 import io.sympli.find_e.ApplicationController;
@@ -19,8 +21,13 @@ import io.sympli.find_e.R;
 import io.sympli.find_e.databinding.FragmentSplashBinding;
 import io.sympli.find_e.event.ChangeScreenEvent;
 import io.sympli.find_e.services.IBroadcast;
+import io.sympli.find_e.ui.widget.AbstractAnimationListener;
+import io.sympli.find_e.utils.LocalStorageUtil;
+import io.sympli.find_e.utils.UIUtil;
 
 public class SplashFragment extends Fragment {
+
+    private static final int ANIM_DURATION = 700;
 
     @Inject
     IBroadcast broadcast;
@@ -33,7 +40,7 @@ public class SplashFragment extends Fragment {
         @Override
         public void onCompletion(MediaPlayer mediaPlayer) {
             videoFinished = true;
-            showLabels();
+            showLabel();
         }
     };
     private MediaPlayer.OnErrorListener onErrorListener = new MediaPlayer.OnErrorListener() {
@@ -51,28 +58,40 @@ public class SplashFragment extends Fragment {
         splashBinding.continueBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                broadcast.postEvent(new ChangeScreenEvent(Screen.PERMISSIONS));
+                broadcast.postEvent(new ChangeScreenEvent(Screen.PERMISSIONS, ChangeScreenEvent.ScreenGroup.MAIN));
             }
         });
 
+        LocalStorageUtil.saveFirstLaunch();
+
+        //TODO remove when will have video
+        UIUtil.runTaskWithDelay(1000, new UIUtil.DelayTaskListener() {
+            @Override
+            public void onFinished() {
+                showLabel();
+            }
+        });
         return splashBinding.getRoot();
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        loadVideo();
+        //TODO uncomment when will have video
+//        loadVideo();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        resumeVideo();
+        //TODO uncomment when will have video
+//        resumeVideo();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        pauseVideo();
+        //TODO uncomment when will have video
+//        pauseVideo();
     }
 
     private void loadVideo() {
@@ -99,32 +118,61 @@ public class SplashFragment extends Fragment {
         }
     }
 
-    private void showLabels() {
+    private void showLabel() {
         Animation animation = new AlphaAnimation(0.0f, 1.0f);
-        animation.setDuration(1000);
-        animation.setAnimationListener(new Animation.AnimationListener() {
+        animation.setDuration(ANIM_DURATION);
+        animation.setAnimationListener(new AbstractAnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
-                splashBinding.infoParent.setVisibility(View.VISIBLE);
+                splashBinding.label.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                showInfoTitle();
+            }
+        });
+        splashBinding.label.startAnimation(animation);
+    }
+
+    private void showInfoTitle() {
+        Animation animation = new AlphaAnimation(0.0f, 1.0f);
+        animation.setDuration(ANIM_DURATION);
+        animation.setAnimationListener(new AbstractAnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                splashBinding.info.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                showInfoDetail();
+            }
+        });
+        splashBinding.info.startAnimation(animation);
+    }
+
+    private void showInfoDetail() {
+        Animation animation = new AlphaAnimation(0.0f, 1.0f);
+        animation.setDuration(ANIM_DURATION);
+        animation.setAnimationListener(new AbstractAnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                splashBinding.infoDetail.setVisibility(View.VISIBLE);
             }
 
             @Override
             public void onAnimationEnd(Animation animation) {
                 showBtn();
             }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-
-            }
         });
-        splashBinding.infoParent.startAnimation(animation);
+        splashBinding.infoDetail.startAnimation(animation);
     }
 
     private void showBtn() {
         Animation animation = new AlphaAnimation(0.0f, 1.0f);
-        animation.setDuration(1000);
-        animation.setAnimationListener(new Animation.AnimationListener() {
+        animation.setDuration(ANIM_DURATION);
+        animation.setAnimationListener(new AbstractAnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
                 splashBinding.continueBtn.setVisibility(View.VISIBLE);
@@ -132,11 +180,6 @@ public class SplashFragment extends Fragment {
 
             @Override
             public void onAnimationEnd(Animation animation) {
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-
             }
         });
         splashBinding.continueBtn.startAnimation(animation);

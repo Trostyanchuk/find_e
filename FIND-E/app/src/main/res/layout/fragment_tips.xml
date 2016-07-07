@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="title"
+            type="String" />
+
+        <variable
+            name="subtitle"
+            type="String" />
+
+        <variable
+            name="textInfo"
+            type="String" />
+
+    </data>
+
+
+    <!--<eightbitlab.com.blurview.BlurView-->
+        <!--android:id="@+id/blur_parent"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent">-->
+
+        <android.support.design.widget.CoordinatorLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/background_dark">
+
+            <android.support.design.widget.AppBarLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <android.support.v7.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?android:actionBarSize"
+                    app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+                    <ImageView
+                        android:id="@+id/toolbar_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:scaleType="center"
+                        android:src="@drawable/e_label_small" />
+                </android.support.v7.widget.Toolbar>
+            </android.support.design.widget.AppBarLayout>
+
+            <android.support.v4.widget.NestedScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:paddingLeft="@dimen/activity_horizontal_margin"
+                    android:paddingRight="@dimen/activity_horizontal_margin">
+
+                    <io.sympli.find_e.ui.widget.TypefaceTextView
+                        android:id="@+id/title"
+                        style="@style/TextMediumWhite"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="@{title}"
+                        android:textColor="@android:color/white"
+                        android:textSize="17sp"
+                        tools:text="@string/dont_disturb_title" />
+
+                    <io.sympli.find_e.ui.widget.TypefaceTextView
+                        android:id="@+id/subtitle"
+                        style="@style/TextRegular"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:alpha="0.7"
+                        android:gravity="center"
+                        android:paddingTop="10dp"
+                        android:text="@{subtitle}"
+                        android:textColor="@android:color/white"
+                        android:textSize="15sp"
+                        tools:text="@string/dont_disturb_subtitle" />
+
+                    <include
+                        android:id="@+id/view_tips_silent_area"
+                        layout="@layout/view_tips_silent_area"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="25dp"
+                        android:layout_marginTop="20dp"
+                        android:visibility="gone" />
+
+                    <include
+                        android:id="@+id/view_tips_dont_disturb"
+                        layout="@layout/view_tips_dont_disturb"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="25dp"
+                        android:layout_marginTop="20dp"
+                        android:visibility="gone" />
+
+                    <FrameLayout
+                        android:id="@+id/content_container"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="25dp"
+                        android:layout_marginTop="20dp" />
+
+                    <io.sympli.find_e.ui.widget.TypefaceTextView
+                        android:id="@+id/info"
+                        style="@style/TextRegular"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="25dp"
+                        android:alpha="0.7"
+                        android:gravity="center"
+                        android:text="@{textInfo}"
+                        android:textColor="@android:color/white"
+                        android:textSize="15sp"
+                        tools:text="@string/dont_disturb_text" />
+
+                    <io.sympli.find_e.ui.widget.TypefaceTextView
+                        android:id="@+id/go_to_settings"
+                        style="@style/TextRegularWhite"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginBottom="25dp"
+                        android:background="@drawable/btn_blue_selector"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:paddingBottom="16dp"
+                        android:paddingLeft="50dp"
+                        android:paddingRight="50dp"
+                        android:paddingTop="16dp"
+                        android:text="@string/go_to_settings_btn"
+                        android:textAllCaps="true"
+                        android:textColor="@color/light_blue" />
+
+                </LinearLayout>
+            </android.support.v4.widget.NestedScrollView>
+        </android.support.design.widget.CoordinatorLayout>
+    <!--</eightbitlab.com.blurview.BlurView>-->
+</layout>

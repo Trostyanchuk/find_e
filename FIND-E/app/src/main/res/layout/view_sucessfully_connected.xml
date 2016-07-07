@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_horizontal_margin">
+
+    <io.sympli.find_e.ui.widget.TypefaceTextView
+        android:id="@+id/title"
+        style="@style/TextLightWhite"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="5dp"
+        android:gravity="center"
+        android:text="@string/connected_label"
+        android:textSize="30sp" />
+
+    <io.sympli.find_e.ui.widget.TypefaceTextView
+        android:id="@+id/subtitle"
+        style="@style/TextMediumWhite"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/title"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="5dp"
+        android:alpha="0.7"
+        android:gravity="center"
+        android:text="@string/connected_text"
+        android:textSize="18sp" />
+
+    <ImageView
+        android:id="@+id/staff_iv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:scaleType="center"
+        android:src="@drawable/staff" />
+
+    <io.sympli.find_e.ui.widget.TypefaceTextView
+        style="@style/TextLightWhite"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/staff_iv"
+        android:layout_marginTop="40dp"
+        android:alpha="0.7"
+        android:gravity="center"
+        android:text="@string/connected_info" />
+
+    <io.sympli.find_e.ui.widget.TypefaceTextView
+        android:id="@+id/continue_btn"
+        style="@style/TextRegularWhite"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="25dp"
+        android:background="@drawable/btn_blue_selector"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center"
+        android:paddingBottom="16dp"
+        android:paddingLeft="50dp"
+        android:paddingRight="50dp"
+        android:paddingTop="16dp"
+        android:text="@string/lets_start"
+        android:textAllCaps="true"
+        android:textColor="@color/light_blue"
+        android:visibility="visible" />
+
+</RelativeLayout>

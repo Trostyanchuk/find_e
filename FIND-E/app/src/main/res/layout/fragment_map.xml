@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:mapbox="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="myLocation"
+            type="boolean" />
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#000000"
+        android:onClick="null">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            android:elevation="4dp"
+            android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
+            <io.sympli.find_e.ui.widget.TypefaceTextView
+                style="@style/TextBoldWhite"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="@string/fragment_label"
+                android:textSize="17sp" />
+
+            <io.sympli.find_e.ui.widget.TypefaceTextView
+                android:id="@+id/done"
+                style="@style/TextRegular"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="end"
+                android:gravity="center"
+                android:paddingRight="@dimen/activity_horizontal_margin"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:text="@string/done_label"
+                android:textColor="@color/light_blue_pressed" />
+
+        </android.support.v7.widget.Toolbar>
+
+        <LinearLayout
+            android:id="@+id/lost_info_parent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/toolbar"
+            android:orientation="vertical"
+            android:padding="@dimen/activity_horizontal_margin">
+
+            <io.sympli.find_e.ui.widget.TypefaceTextView
+                android:id="@+id/approximate_distance"
+                style="@style/TextRegular"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/approximate_distance_label"
+                android:textColor="@color/white"
+                android:textSize="14sp" />
+
+            <io.sympli.find_e.ui.widget.TypefaceTextView
+                android:id="@+id/connection_lost"
+                style="@style/TextRegular"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/connection_lost_label"
+                android:textColor="@color/white"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <com.mapbox.mapboxsdk.maps.MapView
+            android:id="@+id/mapview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/bottom_info"
+            android:layout_below="@+id/lost_info_parent"
+            mapbox:style_url="@string/mapbox_style_extremely_dark_url"
+            mapbox:tilt="20"
+            mapbox:zoom="12" />
+
+        <LinearLayout
+            android:id="@+id/bottom_info"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_alignParentBottom="true"
+            android:orientation="horizontal">
+
+            <io.sympli.find_e.ui.widget.TypefaceTextView
+                android:id="@+id/my_location_label"
+                style="@style/TextRegular"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/me_label"
+                android:textColor="@{myLocation ? @color/light_blue_pressed : @color/white}"
+                android:textSize="16sp" />
+
+            <io.sympli.find_e.ui.widget.TypefaceTextView
+                android:id="@+id/last_location_label"
+                style="@style/TextRegular"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/last_location_label"
+                android:textColor="@{!myLocation ? @color/light_blue_pressed : @color/white}"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+    </RelativeLayout>
+</layout>
