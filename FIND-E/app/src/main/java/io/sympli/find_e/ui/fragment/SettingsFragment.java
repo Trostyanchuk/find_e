@@ -42,13 +42,13 @@ public class SettingsFragment extends Fragment {
 
         final float radius = 16;
 
-        final View decorView = getActivity().getWindow().getDecorView();
-        final View rootView = decorView.findViewById(android.R.id.content);
-        final Drawable windowBackground = decorView.getBackground();
-        binding.scrollableParent.setupWith(rootView)
-                .windowBackground(windowBackground)
-                .blurAlgorithm(new RenderScriptBlur(getContext(), true))
-                .blurRadius(radius);
+//        final View decorView = getActivity().getWindow().getDecorView();
+//        final View rootView = decorView.findViewById(android.R.id.content);
+//        final Drawable windowBackground = decorView.getBackground();
+//        binding.scrollableParent.setupWith(rootView)
+//                .windowBackground(windowBackground)
+//                .blurAlgorithm(new RenderScriptBlur(getContext(), true))
+//                .blurRadius(radius);
 
         binding.silentAreaParent.setOnClickListener(new View.OnClickListener() {
             @Override

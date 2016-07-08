@@ -2,10 +2,13 @@ package io.sympli.find_e.ui.main;
 
 import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
@@ -20,8 +23,10 @@ import io.sympli.find_e.databinding.ActivityMainBinding;
 import io.sympli.find_e.event.ChangeScreenEvent;
 import io.sympli.find_e.event.PermissionsGrantResultEvent;
 import io.sympli.find_e.services.IBroadcast;
+import io.sympli.find_e.ui.fragment.ConnectedFragment;
 import io.sympli.find_e.ui.fragment.MainUsageFragment;
 import io.sympli.find_e.ui.fragment.MapFragment;
+import io.sympli.find_e.ui.fragment.PairFragment;
 import io.sympli.find_e.ui.fragment.PermissionsFragment;
 import io.sympli.find_e.ui.fragment.Screen;
 import io.sympli.find_e.ui.fragment.SettingsFragment;
@@ -49,8 +54,9 @@ public class MainActivity extends AppCompatActivity {
         setupMenu();
 
         Screen startScreen = LocalStorageUtil.isFirstLaunch() ? Screen.SPLASH :
-                PermissionsUtil.permissionsGranted(this, PermissionsFragment.REQUIRED_PERMISSIONS) ?
-                        Screen.SETUP : Screen.PERMISSIONS;
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+                        !PermissionsUtil.permissionsGranted(this, PermissionsFragment.REQUIRED_PERMISSIONS) ?
+                        Screen.PERMISSIONS : Screen.PAIR;
 
         replaceMainFragment(startScreen);
     }
@@ -101,19 +107,29 @@ public class MainActivity extends AppCompatActivity {
         boolean settingsVisible = true;
         switch (screen) {
             case SPLASH:
+                settingsVisible = false;
                 fragment = new SplashFragment();
                 break;
             case PERMISSIONS:
                 settingsVisible = false;
                 fragment = new PermissionsFragment();
                 break;
+            case PAIR:
+                settingsVisible = false;
+                fragment = new PairFragment();
+                break;
             case SETUP:
                 settingsVisible = false;
                 fragment = new SetupFragment();
                 break;
+            case CONNECTED:
+                settingsVisible = false;
+                fragment = new ConnectedFragment();
+                break;
             case MAIN_USAGE:
                 settingsVisible = true;
                 fragment = new MainUsageFragment();
+                break;
         }
         bindingObject.toolbar.setVisibility(fragment instanceof SplashFragment ? View.INVISIBLE : View.VISIBLE);
         bindingObject.settings.setVisibility(settingsVisible ? View.VISIBLE : View.INVISIBLE);
@@ -131,6 +147,9 @@ public class MainActivity extends AppCompatActivity {
         int disappearanceAnimation = 0;
         switch (screen) {
             case MAP:
+                if (childFragment instanceof SettingsFragment) {
+                    return;
+                }
                 fragment = new MapFragment();
                 appearanceAnimation = R.anim.slide_in_right;
                 disappearanceAnimation = R.anim.slide_out_right;
@@ -173,5 +192,6 @@ public class MainActivity extends AppCompatActivity {
                 .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_right)
                 .remove(childFragment)
                 .commit();
+        childFragment = null;
     }
 }

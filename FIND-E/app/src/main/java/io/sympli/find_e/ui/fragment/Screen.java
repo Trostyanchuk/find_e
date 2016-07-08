@@ -4,7 +4,11 @@ public enum Screen {
 
     SPLASH,
     PERMISSIONS,
+    //TODO
+    PAIR,
     SETUP,
+    CONNECTED,
+
     MAIN_USAGE,
 
     MAP,

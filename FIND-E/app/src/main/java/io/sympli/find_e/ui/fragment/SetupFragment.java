@@ -35,106 +35,110 @@ public class SetupFragment extends Fragment {
         ApplicationController.getComponent().inject(this);
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_setup, container, false);
 
-        binding.continueBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                broadcast.postEvent(new ChangeScreenEvent(Screen.MAIN_USAGE, ChangeScreenEvent.ScreenGroup.MAIN));
-            }
-        });
+//        binding.continueBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                broadcast.postEvent(new ChangeScreenEvent(Screen.MAIN_USAGE, ChangeScreenEvent.ScreenGroup.MAIN));
+//            }
+//        });
 
         //TODO remove when will have video
-        UIUtil.runTaskWithDelay(1000, new UIUtil.DelayTaskListener() {
+        UIUtil.runTaskWithDelay(3000, new UIUtil.DelayTaskListener() {
             @Override
             public void onFinished() {
-                showPairUI();
+                showSuccessfullyConnectedUI();
             }
         });
 
         return binding.getRoot();
     }
 
-    private void showPairUI() {
-        Animation animation = new AlphaAnimation(0.0f, 1.0f);
-        animation.setDuration(ANIM_DURATION);
-        animation.setAnimationListener(new AbstractAnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-                binding.pairLt.setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                UIUtil.runTaskWithDelay(1000, new UIUtil.DelayTaskListener() {
-                    @Override
-                    public void onFinished() {
-                        showSetupUI();
-                    }
-                });
-            }
-        });
-        binding.pairLt.startAnimation(animation);
-    }
-
-    private void showSetupUI() {
-        binding.videoViewStubIv.setImageResource(R.drawable.setup_stub);
-        binding.pairLt.setVisibility(View.GONE);
-
-        Animation animation = new AlphaAnimation(0.0f, 1.0f);
-        animation.setDuration(ANIM_DURATION);
-        animation.setAnimationListener(new AbstractAnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-                binding.setupLt.setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                UIUtil.runTaskWithDelay(1000, new UIUtil.DelayTaskListener() {
-                    @Override
-                    public void onFinished() {
-                        showSuccessfullyConnectedUI();
-                    }
-                });
-            }
-        });
-        binding.setupLt.startAnimation(animation);
-    }
-
     private void showSuccessfullyConnectedUI() {
-        binding.setupLt.setVisibility(View.INVISIBLE);
-        binding.pairLt.setVisibility(View.INVISIBLE);
-        binding.videoViewStubIv.setVisibility(View.INVISIBLE);
-
-        Animation animation = new AlphaAnimation(0.0f, 1.0f);
-        animation.setDuration(ANIM_DURATION);
-        animation.setAnimationListener(new AbstractAnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-                binding.sucessfullyConnectedLt.setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                showBtnGotIt();
-            }
-        });
-        binding.sucessfullyConnectedLt.startAnimation(animation);
+        broadcast.postEvent(new ChangeScreenEvent(Screen.CONNECTED, ChangeScreenEvent.ScreenGroup.MAIN));
     }
 
-    private void showBtnGotIt() {
-        Animation animation = new AlphaAnimation(0.0f, 1.0f);
-        animation.setDuration(ANIM_DURATION);
-        animation.setAnimationListener(new AbstractAnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-                binding.continueBtn.setVisibility(View.VISIBLE);
-            }
+//    private void showPairUI() {
+//        Animation animation = new AlphaAnimation(0.0f, 1.0f);
+//        animation.setDuration(ANIM_DURATION);
+//        animation.setAnimationListener(new AbstractAnimationListener() {
+//            @Override
+//            public void onAnimationStart(Animation animation) {
+//                binding.pairLt.setVisibility(View.VISIBLE);
+//            }
+//
+//            @Override
+//            public void onAnimationEnd(Animation animation) {
+//                UIUtil.runTaskWithDelay(1000, new UIUtil.DelayTaskListener() {
+//                    @Override
+//                    public void onFinished() {
+//                        showSetupUI();
+//                    }
+//                });
+//            }
+//        });
+//        binding.pairLt.startAnimation(animation);
+//    }
 
-            @Override
-            public void onAnimationEnd(Animation animation) {
-
-            }
-        });
-        binding.continueBtn.startAnimation(animation);
-    }
+//    private void showSetupUI() {
+//        binding.videoViewStubIv.setImageResource(R.drawable.setup_stub);
+//        binding.pairLt.setVisibility(View.GONE);
+//
+//        Animation animation = new AlphaAnimation(0.0f, 1.0f);
+//        animation.setDuration(ANIM_DURATION);
+//        animation.setAnimationListener(new AbstractAnimationListener() {
+//            @Override
+//            public void onAnimationStart(Animation animation) {
+//                binding.setupLt.setVisibility(View.VISIBLE);
+//            }
+//
+//            @Override
+//            public void onAnimationEnd(Animation animation) {
+//                UIUtil.runTaskWithDelay(1000, new UIUtil.DelayTaskListener() {
+//                    @Override
+//                    public void onFinished() {
+//                        showSuccessfullyConnectedUI();
+//                    }
+//                });
+//            }
+//        });
+//        binding.setupLt.startAnimation(animation);
+//    }
+//
+//    private void showSuccessfullyConnectedUI() {
+//        binding.setupLt.setVisibility(View.INVISIBLE);
+//        binding.pairLt.setVisibility(View.INVISIBLE);
+//        binding.videoViewStubIv.setVisibility(View.INVISIBLE);
+//
+//        Animation animation = new AlphaAnimation(0.0f, 1.0f);
+//        animation.setDuration(ANIM_DURATION);
+//        animation.setAnimationListener(new AbstractAnimationListener() {
+//            @Override
+//            public void onAnimationStart(Animation animation) {
+//                binding.sucessfullyConnectedLt.setVisibility(View.VISIBLE);
+//            }
+//
+//            @Override
+//            public void onAnimationEnd(Animation animation) {
+//                showBtnGotIt();
+//            }
+//        });
+//        binding.sucessfullyConnectedLt.startAnimation(animation);
+//    }
+//
+//    private void showBtnGotIt() {
+//        Animation animation = new AlphaAnimation(0.0f, 1.0f);
+//        animation.setDuration(ANIM_DURATION);
+//        animation.setAnimationListener(new AbstractAnimationListener() {
+//            @Override
+//            public void onAnimationStart(Animation animation) {
+//                binding.continueBtn.setVisibility(View.VISIBLE);
+//            }
+//
+//            @Override
+//            public void onAnimationEnd(Animation animation) {
+//
+//            }
+//        });
+//        binding.continueBtn.startAnimation(animation);
+//    }
 }

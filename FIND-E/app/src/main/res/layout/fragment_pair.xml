@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <android.support.percent.PercentRelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/background_dark"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <VideoView
+            android:id="@+id/video_player"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="invisible"
+            app:layout_heightPercent="65%" />
+
+        <ImageView
+            android:id="@+id/video_view_stub_iv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignBottom="@+id/video_player"
+            android:scaleType="fitXY"
+            android:src="@drawable/pair_screen_stub" />
+
+        <LinearLayout
+            android:id="@+id/pair_lt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/video_player"
+            android:orientation="vertical"
+            android:visibility="visible">
+
+            <io.sympli.find_e.ui.widget.TypefaceTextView
+                style="@style/TextRegularWhite"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/pair_label"
+                android:textSize="17sp" />
+
+            <io.sympli.find_e.ui.widget.TypefaceTextView
+                style="@style/TextLightWhite"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:alpha="0.7"
+                android:gravity="center"
+                android:text="@string/pair_text"
+                android:textSize="15sp" />
+        </LinearLayout>
+    </android.support.percent.PercentRelativeLayout>
+</layout>

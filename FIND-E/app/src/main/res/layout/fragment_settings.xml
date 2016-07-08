@@ -13,216 +13,217 @@
             type="boolean" />
     </data>
 
-    <eightbitlab.com.blurview.BlurView
-        android:id="@+id/scrollable_parent"
+    <!--<eightbitlab.com.blurview.BlurView-->
+    <!--android:id="@+id/scrollable_parent"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent">-->
+
+    <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@android:color/black">
 
-        <android.support.design.widget.CoordinatorLayout
+        <android.support.design.widget.AppBarLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
-            <android.support.design.widget.AppBarLayout
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="?android:actionBarSize"
+                app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-                <android.support.v7.widget.Toolbar
-                    android:id="@+id/toolbar"
-                    android:layout_width="match_parent"
-                    android:layout_height="?android:actionBarSize"
-                    app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+                <ImageView
+                    android:id="@+id/toolbar_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:scaleType="center"
+                    android:src="@drawable/e_label_small" />
 
-                    <ImageView
-                        android:id="@+id/toolbar_label"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="center"
-                        android:scaleType="center"
-                        android:src="@drawable/e_label_small" />
+                <io.sympli.find_e.ui.widget.TypefaceTextView
+                    android:id="@+id/done"
+                    style="@style/TextRegular"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="end"
+                    android:gravity="center"
+                    android:paddingLeft="@dimen/activity_horizontal_margin"
+                    android:paddingRight="@dimen/activity_horizontal_margin"
+                    android:text="@string/done_label"
+                    android:textColor="@color/light_blue_pressed" />
+            </android.support.v7.widget.Toolbar>
+        </android.support.design.widget.AppBarLayout>
 
-                    <io.sympli.find_e.ui.widget.TypefaceTextView
-                        android:id="@+id/done"
-                        style="@style/TextRegular"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="end"
-                        android:gravity="center"
-                        android:paddingLeft="@dimen/activity_horizontal_margin"
-                        android:paddingRight="@dimen/activity_horizontal_margin"
-                        android:text="@string/done_label"
-                        android:textColor="@color/light_blue_pressed" />
-                </android.support.v7.widget.Toolbar>
-            </android.support.design.widget.AppBarLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+            <io.sympli.find_e.ui.widget.TypefaceTextView
+                style="@style/TextMediumWhite"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/title_info"
+                android:textColor="@android:color/white"
+                android:textSize="17sp" />
+
+            <io.sympli.find_e.ui.widget.TypefaceTextView
+                style="@style/TextRegular"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:alpha="0.7"
+                android:gravity="center"
+                android:paddingTop="@dimen/activity_vertical_margin"
+                android:text="@string/subtitle_info_3l"
+                android:textColor="@android:color/white"
+                android:textSize="15sp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior">
+                android:layout_height="40dp"
+                android:layout_marginTop="80dp"
+                android:orientation="horizontal"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:paddingRight="@dimen/activity_horizontal_margin">
 
-                <io.sympli.find_e.ui.widget.TypefaceTextView
-                    style="@style/TextMediumWhite"
-                    android:layout_width="match_parent"
+                <ImageView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="@string/title_info"
-                    android:textColor="@android:color/white"
-                    android:textSize="17sp" />
-
-                <io.sympli.find_e.ui.widget.TypefaceTextView
-                    style="@style/TextRegular"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:alpha="0.7"
-                    android:gravity="center"
-                    android:paddingTop="@dimen/activity_vertical_margin"
-                    android:text="@string/subtitle_info_3l"
-                    android:textColor="@android:color/white"
-                    android:textSize="15sp" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:layout_marginTop="80dp"
-                    android:orientation="horizontal"
-                    android:paddingLeft="@dimen/activity_horizontal_margin"
-                    android:paddingRight="@dimen/activity_horizontal_margin">
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:src="@drawable/ic_do_not_disturb_on_white_24dp" />
-                    <!--android:src="@{doNotDisturb ? @drawable/ic_do_not_disturb_on_white_24dp : @drawable/ic_do_not_disturb_off_white_24dp}" />-->
-
-                    <io.sympli.find_e.ui.widget.TypefaceTextView
-                        style="@style/TextRegularWhite"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-                        android:layout_weight="4"
-                        android:gravity="center_vertical"
-                        android:text="@string/do_not_disturb_label"
-                        android:textSize="17sp" />
-
-                    <android.support.v7.widget.SwitchCompat
-                        android:id="@+id/do_not_dicturb_switch"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_weight="1"
-                        android:checked="@{doNotDisturb}"
-                        android:theme="@style/SwitchTheme" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:orientation="horizontal"
-                    android:paddingLeft="@dimen/activity_horizontal_margin"
-                    android:paddingRight="@dimen/activity_horizontal_margin">
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:src="@drawable/ic_wifi_tethering_white_24dp" />
-
-                    <io.sympli.find_e.ui.widget.TypefaceTextView
-                        style="@style/TextRegularWhite"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-                        android:layout_weight="4"
-                        android:gravity="center_vertical"
-                        android:text="@string/silent_area_label"
-                        android:textSize="17sp" />
-
-                    <android.support.v7.widget.SwitchCompat
-                        android:id="@+id/silent_area_switch"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_weight="1"
-                        android:checked="@{silentArea}"
-                        android:theme="@style/SwitchTheme" />
-                </LinearLayout>
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/ic_do_not_disturb_on_white_24dp" />
+                <!--android:src="@{doNotDisturb ? @drawable/ic_do_not_disturb_on_white_24dp : @drawable/ic_do_not_disturb_off_white_24dp}" />-->
 
                 <io.sympli.find_e.ui.widget.TypefaceTextView
                     style="@style/TextRegularWhite"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="30dp"
-                    android:alpha="0.5"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                    android:layout_weight="4"
                     android:gravity="center_vertical"
-                    android:paddingLeft="@dimen/activity_horizontal_margin"
-                    android:text="TIPS"
-                    android:textSize="13sp" />
+                    android:text="@string/do_not_disturb_label"
+                    android:textSize="17sp" />
 
-                <LinearLayout
-                    android:id="@+id/do_not_dicturb_parent"
-                    android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:background="@drawable/settings_menu_selector"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:orientation="horizontal"
-                    android:paddingLeft="@dimen/activity_horizontal_margin"
-                    android:paddingRight="@dimen/activity_horizontal_margin">
-
-                    <io.sympli.find_e.ui.widget.TypefaceTextView
-                        style="@style/TextRegularWhite"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_weight="4"
-                        android:gravity="center_vertical"
-                        android:text="@string/do_not_disturb_mode_label"
-                        android:textSize="17sp" />
-
-                    <ImageView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_weight="1"
-                        android:scaleType="fitEnd"
-                        android:src="@drawable/ic_chevron_right_white_24dp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/silent_area_parent"
-                    android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:background="@drawable/settings_menu_selector"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:orientation="horizontal"
-                    android:paddingLeft="@dimen/activity_horizontal_margin"
-                    android:paddingRight="@dimen/activity_horizontal_margin">
-
-                    <io.sympli.find_e.ui.widget.TypefaceTextView
-                        style="@style/TextRegularWhite"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_weight="4"
-                        android:gravity="center_vertical"
-                        android:text="@string/setting_up_silent_area_label"
-                        android:textSize="17sp" />
-
-                    <ImageView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_weight="1"
-                        android:scaleType="fitEnd"
-                        android:src="@drawable/ic_chevron_right_white_24dp" />
-                </LinearLayout>
-
+                <android.support.v7.widget.SwitchCompat
+                    android:id="@+id/do_not_dicturb_switch"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:checked="@{doNotDisturb}"
+                    android:theme="@style/SwitchTheme" />
             </LinearLayout>
 
-        </android.support.design.widget.CoordinatorLayout>
-    </eightbitlab.com.blurview.BlurView>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:orientation="horizontal"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:paddingRight="@dimen/activity_horizontal_margin">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/ic_wifi_tethering_white_24dp" />
+
+                <io.sympli.find_e.ui.widget.TypefaceTextView
+                    style="@style/TextRegularWhite"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                    android:layout_weight="4"
+                    android:gravity="center_vertical"
+                    android:text="@string/silent_area_label"
+                    android:textSize="17sp" />
+
+                <android.support.v7.widget.SwitchCompat
+                    android:id="@+id/silent_area_switch"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:checked="@{silentArea}"
+                    android:theme="@style/SwitchTheme" />
+            </LinearLayout>
+
+            <io.sympli.find_e.ui.widget.TypefaceTextView
+                style="@style/TextRegularWhite"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:alpha="0.5"
+                android:gravity="center_vertical"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:text="TIPS"
+                android:textSize="13sp" />
+
+            <LinearLayout
+                android:id="@+id/do_not_dicturb_parent"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="@drawable/settings_menu_selector"
+                android:clickable="true"
+                android:focusable="true"
+                android:orientation="horizontal"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:paddingRight="@dimen/activity_horizontal_margin">
+
+                <io.sympli.find_e.ui.widget.TypefaceTextView
+                    style="@style/TextRegularWhite"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="4"
+                    android:gravity="center_vertical"
+                    android:text="@string/do_not_disturb_mode_label"
+                    android:textSize="17sp" />
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:scaleType="fitEnd"
+                    android:src="@drawable/ic_chevron_right_white_24dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/silent_area_parent"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="@drawable/settings_menu_selector"
+                android:clickable="true"
+                android:focusable="true"
+                android:orientation="horizontal"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:paddingRight="@dimen/activity_horizontal_margin">
+
+                <io.sympli.find_e.ui.widget.TypefaceTextView
+                    style="@style/TextRegularWhite"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="4"
+                    android:gravity="center_vertical"
+                    android:text="@string/setting_up_silent_area_label"
+                    android:textSize="17sp" />
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:scaleType="fitEnd"
+                    android:src="@drawable/ic_chevron_right_white_24dp" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </android.support.design.widget.CoordinatorLayout>
+    <!--</eightbitlab.com.blurview.BlurView>-->
 </layout>

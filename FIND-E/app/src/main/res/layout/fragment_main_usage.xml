@@ -4,15 +4,23 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#000000"
         android:orientation="vertical">
 
+        <io.sympli.find_e.ui.widget.ButtonWidget
+            android:id="@+id/btn_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/bottom_status_bar"/>
+
         <LinearLayout
+            android:id="@+id/bottom_status_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_marginBottom="@dimen/activity_vertical_margin"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin">
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -55,9 +63,9 @@
                     style="@style/TextRegularWhite"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:gravity="end"
                     android:text="0%"
-                    android:textSize="20sp"
-                    android:gravity="end" />
+                    android:textSize="20sp" />
 
                 <io.sympli.find_e.ui.widget.TypefaceTextView
                     style="@style/TextLightWhite"

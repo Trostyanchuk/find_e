@@ -6,4 +6,15 @@
     <dimen name="circle_number_size">42dp</dimen>
     <dimen name="circle_number_text_size">17sp</dimen>
     <dimen name="circle_number_stroke_width">1.5dp</dimen>
+
+    <dimen name="msg_bottom_margin">48dp</dimen>
+    <dimen name="btn_text_size">12sp</dimen>
+    <dimen name="fail_to_reconnect_text_size">16sp</dimen>
+    <dimen name="bottom_bar_text_size">15sp</dimen>
+    <dimen name="error_text_size_small">12sp</dimen>
+
+    <dimen name="magic_padding_fix_it">15dp</dimen>
+
+    <dimen name="line_spacing">5dp</dimen>
+    <dimen name="triangle_height">2dp</dimen>
 </resources>

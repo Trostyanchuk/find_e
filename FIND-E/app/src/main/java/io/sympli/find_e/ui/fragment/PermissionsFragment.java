@@ -78,7 +78,7 @@ public class PermissionsFragment extends Fragment {
         binding.continueBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                broadcast.postEvent(new ChangeScreenEvent(Screen.SETUP, ChangeScreenEvent.ScreenGroup.MAIN));
+                broadcast.postEvent(new ChangeScreenEvent(Screen.PAIR, ChangeScreenEvent.ScreenGroup.MAIN));
             }
         });
 

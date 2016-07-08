@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="battery_life">Battery Life</string>
+    <string name="signal_quality">Signal Quality</string>
+
+    <!-- Lost signal-->
+    <string name="lost_usual_msg">FIND-E will reconnect again\n once it\'s close enough to you</string>
+    <string name="lost_bottom_msg">FIND-E will reconnect again \nonce it\'s close enough to you</string>
+    <string name="disconnected_mgs">Disconnected</string>
+</resources>

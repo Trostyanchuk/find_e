@@ -11,4 +11,11 @@
 
     <color name="white">#FFFFFF</color>
     <color name="white_01_aplha">#15FFFFFF</color>
+
+    <color name="btn_gradient_start_color">#FFFFFF</color>
+    <color name="btn_gradient_ent_color">#f1d1f7</color>
+    <color name="bg_gradient_start_color">#000000</color>
+    <color name="bg_gradient_end_color">#353654</color>
+    <color name="bottom_message_bg">#20FFFFFF</color>
+    <color name="btn_text_color">#333349</color>
 </resources>

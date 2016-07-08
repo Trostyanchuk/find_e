@@ -3,6 +3,7 @@ package io.sympli.find_e.ui.fragment;
 import android.databinding.DataBindingUtil;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -58,7 +59,8 @@ public class SplashFragment extends Fragment {
         splashBinding.continueBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                broadcast.postEvent(new ChangeScreenEvent(Screen.PERMISSIONS, ChangeScreenEvent.ScreenGroup.MAIN));
+                broadcast.postEvent(new ChangeScreenEvent(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ?
+                        Screen.PERMISSIONS : Screen.PAIR, ChangeScreenEvent.ScreenGroup.MAIN));
             }
         });
 

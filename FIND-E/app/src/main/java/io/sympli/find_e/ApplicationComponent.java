@@ -1,8 +1,10 @@
 package io.sympli.find_e;
 
 import dagger.Component;
+import io.sympli.find_e.ui.fragment.ConnectedFragment;
 import io.sympli.find_e.ui.fragment.MainUsageFragment;
 import io.sympli.find_e.ui.fragment.MapFragment;
+import io.sympli.find_e.ui.fragment.PairFragment;
 import io.sympli.find_e.ui.fragment.PermissionsFragment;
 import io.sympli.find_e.ui.fragment.SettingsFragment;
 import io.sympli.find_e.ui.fragment.SetupFragment;
@@ -22,6 +24,10 @@ public interface ApplicationComponent {
     void inject(PermissionsFragment fragment);
 
     void inject(SetupFragment fragment);
+
+    void inject(PairFragment fragment);
+
+    void inject(ConnectedFragment fragment);
 
     void inject(MapFragment fragment);
 

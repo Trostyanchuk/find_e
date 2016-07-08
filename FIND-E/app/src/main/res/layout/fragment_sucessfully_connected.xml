@@ -8,62 +8,58 @@
         android:background="@android:color/background_dark"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <VideoView
-            android:id="@+id/video_player"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="invisible"
-            app:layout_heightPercent="45%" />
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_alignBottom="@+id/video_player"
-            android:src="@drawable/splash_video_stub"
-            android:scaleType="fitXY" />
-
         <RelativeLayout
-            android:id="@+id/info_parent"
+            android:id="@+id/sucessfully_connected_lt"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/video_player"
-            android:orientation="vertical"
-            app:layout_heightPercent="55%">
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:paddingTop="@dimen/activity_horizontal_margin"
+            android:visibility="visible">
 
             <io.sympli.find_e.ui.widget.TypefaceTextView
-                android:id="@+id/label"
-                style="@style/TextRegularWhite"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:alpha="0.7"
-                android:drawableTop="@drawable/e_label_large"
-                android:gravity="center"
-                android:text="@string/label_subtitle"
-                android:textSize="12sp"
-                android:visibility="invisible" />
-
-            <io.sympli.find_e.ui.widget.TypefaceTextView
-                android:id="@+id/info"
-                style="@style/TextRegularWhite"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/label"
-                android:layout_marginTop="30dp"
-                android:gravity="center"
-                android:text="@string/title_info"
-                android:textSize="15sp"
-                android:visibility="invisible" />
-
-            <io.sympli.find_e.ui.widget.TypefaceTextView
-                android:id="@+id/info_detail"
+                android:id="@+id/title"
                 style="@style/TextLightWhite"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/info"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="5dp"
+                android:gravity="center"
+                android:text="@string/connected_label"
+                android:textSize="30sp" />
+
+            <io.sympli.find_e.ui.widget.TypefaceTextView
+                android:id="@+id/subtitle"
+                style="@style/TextMediumWhite"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/title"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="5dp"
                 android:alpha="0.7"
                 android:gravity="center"
-                android:text="@string/subtitle_info"
-                android:visibility="invisible" />
+                android:text="@string/connected_text"
+                android:textSize="18sp" />
+
+            <ImageView
+                android:id="@+id/staff_iv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:scaleType="center"
+                android:src="@drawable/staff" />
+
+            <io.sympli.find_e.ui.widget.TypefaceTextView
+                style="@style/TextLightWhite"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/staff_iv"
+                android:layout_marginTop="40dp"
+                android:alpha="0.7"
+                android:gravity="center"
+                android:text="@string/connected_info" />
 
             <io.sympli.find_e.ui.widget.TypefaceTextView
                 android:id="@+id/continue_btn"
@@ -81,11 +77,12 @@
                 android:paddingLeft="50dp"
                 android:paddingRight="50dp"
                 android:paddingTop="16dp"
-                android:text="@string/btn_continue"
+                android:text="@string/lets_start"
                 android:textAllCaps="true"
                 android:textColor="@color/light_blue"
                 android:visibility="invisible" />
-        </RelativeLayout>
-    </android.support.percent.PercentRelativeLayout>
 
+        </RelativeLayout>
+
+    </android.support.percent.PercentRelativeLayout>
 </layout>
