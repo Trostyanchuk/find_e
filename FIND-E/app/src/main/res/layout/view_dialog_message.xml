@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <RelativeLayout
+        android:id="@+id/root"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <View
+            android:id="@+id/half_transparent_bg"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignBottom="@+id/content"
+            android:layout_alignLeft="@+id/content"
+            android:layout_alignRight="@+id/content"
+            android:alpha="0.2"
+            android:background="@drawable/bg_dialog" />
+
+        <View
+            android:id="@+id/top_line"
+            android:layout_width="30dp"
+            android:layout_height="2dp"
+            android:layout_centerHorizontal="true" />
+
+        <LinearLayout
+            android:id="@+id/content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="false"
+            android:layout_marginLeft="45dp"
+            android:layout_marginRight="45dp"
+            android:background="@android:color/transparent"
+            android:orientation="vertical"
+            android:padding="14dp">
+
+            <io.sympli.find_e.ui.widget.TypefaceTextView
+                android:id="@+id/message"
+                style="@style/TextRegular"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textColor="@android:color/white"
+                tools:text="TEST" />
+
+            <io.sympli.find_e.ui.widget.TypefaceTextView
+                android:id="@+id/warning"
+                style="@style/TextRegular"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                tools:text="You've lost connection" />
+
+        </LinearLayout>
+
+        <!--place for triangle-->
+        <ImageView
+            android:layout_width="10dp"
+            android:layout_height="5dp"
+            android:layout_alignParentBottom="false"
+            android:layout_below="@+id/content"
+            android:layout_centerHorizontal="true"
+            android:alpha="0.2"
+            android:src="@drawable/triangle" />
+    </RelativeLayout>
+</layout>

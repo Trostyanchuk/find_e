@@ -6,12 +6,14 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.CompoundButton;
 
 import org.greenrobot.eventbus.Subscribe;
@@ -21,6 +23,7 @@ import javax.inject.Inject;
 import io.sympli.find_e.ApplicationController;
 import io.sympli.find_e.R;
 import io.sympli.find_e.databinding.FragmentPermissionsBinding;
+import io.sympli.find_e.event.AnimationFinishedEvent;
 import io.sympli.find_e.event.ChangeScreenEvent;
 import io.sympli.find_e.event.PermissionsGrantResultEvent;
 import io.sympli.find_e.services.IBroadcast;
@@ -47,6 +50,7 @@ public class PermissionsFragment extends Fragment {
 
     private boolean blePermissionGranted;
     private boolean locationPermissionGranted;
+    private boolean cameraPermissionGranted;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
@@ -75,20 +79,33 @@ public class PermissionsFragment extends Fragment {
                 }
             }
         });
+        binding.cameraGrantSwitch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                boolean isChecked = ((CompoundButton) view).isChecked();
+                if (isChecked) {
+                    PermissionsUtil.requestPermissions((AppCompatActivity) getActivity(), 0, Manifest.permission.CAMERA);
+                }
+            }
+        });
         binding.continueBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 broadcast.postEvent(new ChangeScreenEvent(Screen.PAIR, ChangeScreenEvent.ScreenGroup.MAIN));
             }
         });
+        binding.continueBtn.setEnabled(false);
 
         blePermissionGranted = PermissionsUtil.permissionsGranted(getContext(),
                 Manifest.permission.BLUETOOTH_ADMIN);
         locationPermissionGranted = PermissionsUtil.permissionsGranted(getContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION);
+        cameraPermissionGranted = PermissionsUtil.permissionsGranted(getContext(),
+                Manifest.permission.CAMERA);
 
         binding.setBlePermissionGranted(blePermissionGranted);
         binding.setLocationPermissionGranted(locationPermissionGranted);
+        binding.setCameraPermissionGranted(cameraPermissionGranted);
 
         return binding.getRoot();
     }
@@ -120,29 +137,62 @@ public class PermissionsFragment extends Fragment {
     public void onPermissionsGrantResultEvent(PermissionsGrantResultEvent event) {
         broadcast.removeStickyEvent(PermissionsGrantResultEvent.class);
         UIUtil.hideSnackBar();
-        if (event.permissionsGranted && event.permissions.contains(Manifest.permission.ACCESS_FINE_LOCATION)) {
-            binding.setLocationPermissionGranted(true);
-            showContinueBtn();
+        if (event.permissionsGranted) {
+            if (event.permissions.contains(Manifest.permission.ACCESS_FINE_LOCATION)) {
+                binding.setLocationPermissionGranted(true);
+            }
+            if (event.permissions.contains(Manifest.permission.CAMERA)) {
+                binding.setCameraPermissionGranted(true);
+            }
+            if (binding.getCameraPermissionGranted() && binding.getLocationPermissionGranted()) {
+                showContinueBtn();
+            }
         } else {
-            binding.setLocationPermissionGranted(false);
-            UIUtil.showSnackBar(binding.getRoot(), getString(R.string.permission_not_granted),
-                    Snackbar.LENGTH_LONG);
+            if (event.permissions.contains(Manifest.permission.ACCESS_FINE_LOCATION)) {
+                binding.setLocationPermissionGranted(false);
+                UIUtil.showSnackBar(binding.getRoot(), getString(R.string.permission_not_granted),
+                        Snackbar.LENGTH_LONG);
+            }
+            if (event.permissions.contains(Manifest.permission.CAMERA)) {
+                binding.setLocationPermissionGranted(false);
+                UIUtil.showSnackBar(binding.getRoot(), getString(R.string.permission_not_granted),
+                        Snackbar.LENGTH_LONG);
+            }
         }
     }
 
     private void showContinueBtn() {
-        Animation animation = new AlphaAnimation(0.0f, 1.0f);
-        animation.setDuration(ANIM_DURATION);
-        animation.setAnimationListener(new AbstractAnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-                binding.continueBtn.setVisibility(View.VISIBLE);
-            }
+        binding.continueBtn.setEnabled(true);
+        binding.continueBtn.setBackgroundResource(R.drawable.btn_blue_selector);
+        binding.continueBtn.setTextColor(ContextCompat.getColor(getContext(), R.color.light_blue));
+        binding.continueBtn.setPadding((int) getResources().getDimension(R.dimen.btn_continue_left),
+                (int) getResources().getDimension(R.dimen.btn_continue_top),
+                (int) getResources().getDimension(R.dimen.btn_continue_right),
+                (int) getResources().getDimension(R.dimen.btn_continue_bottom));
+    }
 
-            @Override
-            public void onAnimationEnd(Animation animation) {
-            }
-        });
-        binding.continueBtn.startAnimation(animation);
+    @Override
+    public Animation onCreateAnimation(int transit, final boolean enter, int nextAnim) {
+        Animation animation = super.onCreateAnimation(transit, enter, nextAnim);
+        if (animation == null && nextAnim != 0) {
+            animation = AnimationUtils.loadAnimation(getActivity(), nextAnim);
+        }
+        if (animation != null) {
+            getView().setLayerType(View.LAYER_TYPE_HARDWARE, null);
+            animation.setAnimationListener(new AbstractAnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    if (enter) {
+                        broadcast.postEvent(new AnimationFinishedEvent(Screen.PERMISSIONS));
+                    }
+                }
+            });
+        }
+
+        return animation;
     }
 }

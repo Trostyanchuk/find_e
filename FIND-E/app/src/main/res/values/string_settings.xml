@@ -4,6 +4,7 @@
     <string name="silent_area_label">Silent WI-FI area</string>
     <string name="do_not_disturb_label">Do not disturb</string>
 
+    <string name="remote_camera_shutter_label">Remote camera shutter button</string>
     <string name="do_not_disturb_mode_label">Do not disturb mode</string>
     <string name="setting_up_silent_area_label">Setting up a silent area</string>
 </resources>

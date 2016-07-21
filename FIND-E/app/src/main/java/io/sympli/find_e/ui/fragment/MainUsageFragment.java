@@ -7,6 +7,8 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 
 import javax.inject.Inject;
 
@@ -15,7 +17,9 @@ import io.sympli.find_e.R;
 import io.sympli.find_e.databinding.FragmentMainUsageBinding;
 import io.sympli.find_e.event.ChangeScreenEvent;
 import io.sympli.find_e.services.IBroadcast;
+import io.sympli.find_e.ui.widget.DialogMessageWidget;
 import io.sympli.find_e.ui.widget.OnClickListener;
+import io.sympli.find_e.utils.UIUtil;
 
 public class MainUsageFragment extends Fragment {
 
@@ -37,6 +41,27 @@ public class MainUsageFragment extends Fragment {
             }
         });
 
+        binding.messageView.setVisibility(View.INVISIBLE);
+
+        UIUtil.runTaskWithDelay(1000, new UIUtil.DelayTaskListener() {
+            @Override
+            public void onFinished() {
+                showMessage();
+            }
+        });
         return binding.getRoot();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    private void showMessage() {
+        binding.messageView.setMessage("ERROR, ERROR")
+                .setWarning("We lost it", DialogMessageWidget.Warning.ERROR);
+        binding.messageView.setVisibility(View.VISIBLE);
+        Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.dialog_fade_in);
+        binding.messageView.startAnimation(animation);
     }
 }

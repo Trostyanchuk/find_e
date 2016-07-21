@@ -1,22 +1,25 @@
 package io.sympli.find_e.ui.fragment;
 
 import android.databinding.DataBindingUtil;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 
 import javax.inject.Inject;
 
-import eightbitlab.com.blurview.RenderScriptBlur;
 import io.sympli.find_e.ApplicationController;
 import io.sympli.find_e.R;
 import io.sympli.find_e.databinding.FragmentSettingsBinding;
+import io.sympli.find_e.event.AnimationFinishedEvent;
 import io.sympli.find_e.event.ChangeScreenEvent;
 import io.sympli.find_e.services.IBroadcast;
+import io.sympli.find_e.ui.widget.AbstractAnimationListener;
 
 public class SettingsFragment extends Fragment {
 
@@ -40,15 +43,12 @@ public class SettingsFragment extends Fragment {
             }
         });
 
-        final float radius = 16;
-
-//        final View decorView = getActivity().getWindow().getDecorView();
-//        final View rootView = decorView.findViewById(android.R.id.content);
-//        final Drawable windowBackground = decorView.getBackground();
-//        binding.scrollableParent.setupWith(rootView)
-//                .windowBackground(windowBackground)
-//                .blurAlgorithm(new RenderScriptBlur(getContext(), true))
-//                .blurRadius(radius);
+        binding.remoteCameraShutter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                broadcast.postEvent(new ChangeScreenEvent(Screen.TIPS_CAMERA, ChangeScreenEvent.ScreenGroup.SHADOWING));
+            }
+        });
 
         binding.silentAreaParent.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -65,5 +65,11 @@ public class SettingsFragment extends Fragment {
         });
 
         return binding.getRoot();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        broadcast.postEvent(new AnimationFinishedEvent(Screen.SETTINGS));
     }
 }

@@ -27,8 +27,8 @@ public final class LocalStorageUtil {
     }
 
     public static LatLng getLastPosition() {
-        return new LatLng(Double.parseDouble(getPreferences().getString(LAST_POSITION_LAT, "40.728566")),
-                Double.parseDouble(getPreferences().getString(LAST_POSITION_LON, "-74.080827")));
+        return new LatLng(Double.parseDouble(getPreferences().getString(LAST_POSITION_LAT, "50.440055")),
+                Double.parseDouble(getPreferences().getString(LAST_POSITION_LON, "30.548027")));
     }
 
     private static SharedPreferences.Editor getEditor() {

@@ -13,6 +13,7 @@ public enum Screen {
 
     MAP,
     SETTINGS,
+    TIPS_CAMERA,
     TIPS_SILENT,
     TIPS_DISTURB,
     NONE

@@ -1,5 +1,9 @@
 package io.sympli.find_e.ui.fragment;
 
+import android.content.ComponentName;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.databinding.DataBindingUtil;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -22,7 +26,7 @@ public class TipsFragment extends Fragment {
     private static final String TIPS_AREA_POINTER = "tips_area";
 
     public enum TipsArea {
-        DO_NOT_DISTURB, SILENT_AREA
+        DO_NOT_DISTURB, SILENT_AREA, TIPS_CAMERA
     }
 
     public static TipsFragment getInstance(TipsArea area) {
@@ -44,16 +48,6 @@ public class TipsFragment extends Fragment {
         ApplicationController.getComponent().inject(this);
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_tips, container, false);
 
-        final float radius = 16;
-
-        final View decorView = getActivity().getWindow().getDecorView();
-        final View rootView = decorView.findViewById(android.R.id.content);
-        final Drawable windowBackground = decorView.getBackground();
-//        binding.blurParent.setupWith(rootView)
-//                .windowBackground(windowBackground)
-//                .blurAlgorithm(new RenderScriptBlur(getContext(), true))
-//                .blurRadius(radius);
-
         setupToolbar();
         setupUI(TipsArea.values()[getArguments().getInt(TIPS_AREA_POINTER)]);
 
@@ -72,7 +66,7 @@ public class TipsFragment extends Fragment {
         binding.toolbar.getMenu().clear();
     }
 
-    private void setupUI(TipsArea area) {
+    private void setupUI(final TipsArea area) {
 
         switch (area) {
             case DO_NOT_DISTURB: {
@@ -92,9 +86,24 @@ public class TipsFragment extends Fragment {
 
                 break;
             }
+            case TIPS_CAMERA: {
+                binding.setTitle(getString(R.string.camera_title));
+                binding.setSubtitle(getString(R.string.camera_subtitle));
+                binding.contentContainer.addView(LayoutInflater.from(getContext())
+                        .inflate(R.layout.view_tips_camera, binding.contentContainer, false));
+                binding.contentContainer.findViewById(R.id.try_now_btn).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        openCameraApp();
+                    }
+                });
+                binding.info.setVisibility(View.GONE);
+                break;
+            }
         }
-
-        binding.goToSettings.setOnClickListener(new View.OnClickListener() {
+        binding.actionBtn.setVisibility(area == TipsArea.TIPS_CAMERA ? View.GONE : View.VISIBLE);
+        binding.actionBtn.setText(getString(R.string.go_to_settings_btn));
+        binding.actionBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 returnToSettings();
@@ -104,5 +113,23 @@ public class TipsFragment extends Fragment {
 
     private void returnToSettings() {
         broadcast.postEvent(new ChangeScreenEvent(Screen.SETTINGS, ChangeScreenEvent.ScreenGroup.SHADOWING));
+    }
+
+    private void openCameraApp() {
+        Intent i = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+        try {
+            PackageManager pm = getContext().getPackageManager();
+
+            final ResolveInfo mInfo = pm.resolveActivity(i, 0);
+
+            Intent intent = new Intent();
+            intent.setComponent(new ComponentName(mInfo.activityInfo.packageName, mInfo.activityInfo.name));
+            intent.setAction(Intent.ACTION_MAIN);
+            intent.addCategory(Intent.CATEGORY_LAUNCHER);
+
+            startActivity(intent);
+        } catch (Exception e) {
+
+        }
     }
 }

@@ -12,6 +12,10 @@
         <variable
             name="locationPermissionGranted"
             type="boolean" />
+
+        <variable
+            name="cameraPermissionGranted"
+            type="boolean" />
     </data>
 
     <RelativeLayout
@@ -142,6 +146,50 @@
 
             </LinearLayout>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_done_white_24dp"
+                    android:visibility="@{cameraPermissionGranted ? View.VISIBLE : View.INVISIBLE}" />
+
+                <io.sympli.find_e.ui.widget.TypefaceTextView
+                    style="@style/TextRegularWhite"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="4"
+                    android:gravity="center_vertical"
+                    android:text="@string/label_camera"
+                    android:textSize="17sp" />
+
+                <ImageView
+                    android:id="@+id/camera_info"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_info_outline_white_24dp" />
+
+                <android.support.v7.widget.SwitchCompat
+                    android:id="@+id/camera_grant_switch"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginRight="10dp"
+                    android:layout_weight="1"
+                    android:checked="@{cameraPermissionGranted}"
+                    android:enabled="@{!cameraPermissionGranted}"
+                    android:theme="@style/SwitchTheme" />
+
+            </LinearLayout>
+
         </LinearLayout>
 
         <io.sympli.find_e.ui.widget.TypefaceTextView
@@ -162,18 +210,17 @@
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="25dp"
-            android:background="@drawable/btn_blue_selector"
+            android:background="@drawable/bg_btn_grey_rounded_default"
             android:clickable="true"
             android:focusable="true"
             android:gravity="center"
-            android:paddingBottom="16dp"
-            android:paddingLeft="50dp"
-            android:paddingRight="50dp"
-            android:paddingTop="16dp"
+            android:paddingBottom="@dimen/btn_continue_top"
+            android:paddingLeft="@dimen/btn_continue_left"
+            android:paddingRight="@dimen/btn_continue_right"
+            android:paddingTop="@dimen/btn_continue_bottom"
             android:text="@string/btn_continue"
             android:textAllCaps="true"
-            android:textColor="@color/light_blue"
-            android:visibility="invisible" />
+            android:textColor="@color/white_03_alpha" />
 
     </RelativeLayout>
 </layout>

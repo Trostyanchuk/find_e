@@ -7,4 +7,5 @@
     <string name="connection_lost_label">Connection lost</string>
     <string name="me_label">Me</string>
     <string name="last_location_label">Last Location</string>
+    <string name="last_location_text">- %d meters</string>
 </resources>

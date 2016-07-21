@@ -1,0 +1,8 @@
+<resources>
+
+    <dimen name="settings_top_margin">80dp</dimen>
+    <dimen name="settings_tips_text_size">17sp</dimen>
+    <dimen name="settings_tips_field_height">40dp</dimen>
+    <dimen name="settings_logo_height">60dp</dimen>
+
+</resources>

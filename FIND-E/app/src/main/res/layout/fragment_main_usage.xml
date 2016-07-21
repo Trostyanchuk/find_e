@@ -10,7 +10,14 @@
             android:id="@+id/btn_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@+id/bottom_status_bar"/>
+            android:layout_above="@+id/bottom_status_bar" />
+
+        <io.sympli.find_e.ui.widget.DialogMessageWidget
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/bottom_status_bar"
+            android:layout_marginBottom="10dp"
+            android:id="@+id/message_view" />
 
         <LinearLayout
             android:id="@+id/bottom_status_bar"

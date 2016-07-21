@@ -16,5 +16,12 @@
          while your phone is connected to particular Wi-Fi\n
         Once you leave this area, FIND-E will automatically  turn itself on.</string>
 
+    <string name="camera_title">How to use your FIND-E as a camera shutter button?</string>
+    <string name="camera_subtitle">You can take photos remotely\nusing a button on your FIND-E</string>
+    <string name="camera_first">Make sure yor FIND-E\n is connected</string>
+    <string name="camera_second">Open your camera app</string>
+    <string name="camera_third">Push FIND-E button\n to take a photo</string>
+
+    <string name="try_now_btn">TRY NOW</string>
     <string name="go_to_settings_btn">GO TO SETTINGS</string>
 </resources>

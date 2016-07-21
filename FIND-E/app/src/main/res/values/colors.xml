@@ -9,8 +9,9 @@
 
     <color name="switch_dark">#FFFFFFFF</color>
 
-    <color name="white">#FFFFFF</color>
+    <color name="white">#ffffff</color>
     <color name="white_01_aplha">#15FFFFFF</color>
+    <color name="white_03_alpha">#55FFFFFF</color>
 
     <color name="btn_gradient_start_color">#FFFFFF</color>
     <color name="btn_gradient_ent_color">#f1d1f7</color>
