@@ -105,8 +105,6 @@ public class ButtonWidget extends View {
         drawStatusText(canvas);
 
         drawButton(canvas);
-
-        drawBottomMessageBar(canvas);
     }
 
     private void drawIndicator() {
@@ -160,7 +158,7 @@ public class ButtonWidget extends View {
         int startX = viewWidth / 2 - btnWidth / 2;
         int startY = viewHeight / 2 - btnHeight / 2;
         int endX = viewWidth / 2 - btnWidth / 2;
-        int endY = viewHeight / 2 + viewHeight / 2;
+        int endY = viewHeight / 2 + btnHeight / 2;
         bgBtnPaint.setShader(new LinearGradient(startX, startY, endX, endY, btnStartGradient, btnEndGradient, Shader.TileMode.MIRROR));
         canvas.drawCircle(viewWidth / 2, viewHeight / 2, btnWidth / 2, bgBtnPaint);
 
@@ -175,10 +173,6 @@ public class ButtonWidget extends View {
         textX = viewWidth / 2 - btnTextRect.width() / 2;
         textY = viewHeight / 2 + btnTextRect.height() + lineSpacing;
         canvas.drawText(secondLine, textX, textY, textBtnPaint);
-    }
-
-    private void drawBottomMessageBar(Canvas canvas) {
-
     }
 
     public void setOnClickListener(io.sympli.find_e.ui.widget.OnClickListener listener) {

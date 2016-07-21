@@ -1,13 +1,19 @@
 package io.sympli.find_e.ui.main;
 
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
@@ -33,14 +39,20 @@ import io.sympli.find_e.ui.fragment.SetupFragment;
 import io.sympli.find_e.ui.fragment.SplashFragment;
 import io.sympli.find_e.ui.fragment.TipsFragment;
 import io.sympli.find_e.ui.widget.AbstractAnimationListener;
+import io.sympli.find_e.ui.widget.parallax.FloatArrayEvaluator;
+import io.sympli.find_e.ui.widget.parallax.SensorAnalyzer;
 import io.sympli.find_e.utils.LocalStorageUtil;
 import io.sympli.find_e.utils.PermissionsUtil;
 import jp.wasabeef.blurry.Blurry;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
     private ActivityMainBinding bindingObject;
     private Fragment childFragment;
+    private FloatArrayEvaluator evaluator = new FloatArrayEvaluator(2);
+    private SensorManager sensorManager;
+    private Sensor sensor;
+    private SensorAnalyzer sensorAnalyzer;
 
     @Inject
     IBroadcast broadcast;
@@ -50,6 +62,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         bindingObject = DataBindingUtil.setContentView(this, R.layout.activity_main);
         ApplicationController.getComponent().inject(this);
+
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        sensor = sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY);
+        sensorAnalyzer = new SensorAnalyzer(evaluator);
+        final int rotation = ((WindowManager) getSystemService(Context.WINDOW_SERVICE))
+                .getDefaultDisplay().getRotation();
+        sensorAnalyzer.remapAxis(rotation);
 
         setupMenu();
 
@@ -86,12 +105,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         broadcast.register(this);
+        sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_FASTEST);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         broadcast.unregister(this);
+        sensorManager.unregisterListener(this);
     }
 
     @Subscribe
@@ -112,8 +133,26 @@ public class MainActivity extends AppCompatActivity {
             }
             case PERMISSIONS: {
                 bindingObject.toolbar.setVisibility(View.VISIBLE);
+                break;
+            }
+            case MAIN_USAGE: {
+                bindingObject.settings.setVisibility(View.VISIBLE);
+                bindingObject.circlesBg.setVisibility(View.VISIBLE);
+                break;
             }
         }
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        float[] newOffsetItems = sensorAnalyzer.normalizeAxisDueToEvent(event);
+        if (newOffsetItems != null) {
+            bindingObject.circlesBg.setOffset(newOffsetItems[0], newOffsetItems[1]);
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int i) {
     }
 
     @Override
@@ -159,7 +198,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
         bindingObject.toolbar.setVisibility(toolbarVisible ? View.VISIBLE : View.INVISIBLE);
-        bindingObject.settings.setVisibility(settingsVisible ? View.VISIBLE : View.INVISIBLE);
+        bindingObject.settings.setVisibility(View.INVISIBLE);
 
         getSupportFragmentManager().beginTransaction()
                 .setCustomAnimations(R.anim.fade_in, R.anim.fade_out)

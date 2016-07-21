@@ -37,12 +37,29 @@
                 android:src="@drawable/ic_settings_white_24dp" />
         </android.support.v7.widget.Toolbar>
 
-        <FrameLayout
-            android:id="@+id/main_container"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/toolbar"
-            android:background="@drawable/btn_screen_gradient_normal" />
+            android:background="@drawable/btn_screen_gradient_normal">
+
+            <io.sympli.find_e.ui.widget.BgCirclesWidget
+                android:id="@+id/circles_bg"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="invisible" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/bg_btn_gradient" />
+
+            <FrameLayout
+                android:id="@+id/main_container"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="?attr/actionBarSize" />
+
+        </RelativeLayout>
 
         <ImageView
             android:id="@+id/blurBackground"
