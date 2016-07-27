@@ -33,13 +33,6 @@ public class PairFragment extends Fragment {
         ApplicationController.getComponent().inject(this);
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_pair, container, false);
 
-//        binding.continueBtn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                broadcast.postEvent(new ChangeScreenEvent(Screen.MAIN_USAGE, ChangeScreenEvent.ScreenGroup.MAIN));
-//            }
-//        });
-
         //TODO remove when will have video
         UIUtil.runTaskWithDelay(3000, new UIUtil.DelayTaskListener() {
             @Override

@@ -6,9 +6,9 @@ import org.greenrobot.eventbus.EventBus;
 
 import dagger.Module;
 import dagger.Provides;
-import io.sympli.find_e.services.IBleService;
+import io.sympli.find_e.services.IBluetoothManager;
 import io.sympli.find_e.services.IBroadcast;
-import io.sympli.find_e.services.impl.BleServiceImpl;
+import io.sympli.find_e.services.impl.BleManagerAPI18Impl;
 import io.sympli.find_e.services.impl.EventBusBroadcastImpl;
 
 @Module
@@ -21,8 +21,9 @@ public class ApplicationModule {
     }
 
     @Provides
-    public IBleService provideBleService() {
-        return new BleServiceImpl();
+    public IBluetoothManager provideBleService() {
+        //TODO return due to API version
+        return new BleManagerAPI18Impl(context);
     }
 
     @Provides

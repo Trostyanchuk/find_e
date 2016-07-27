@@ -31,7 +31,15 @@ public final class UIUtil {
     }
 
     public static void showSnackBar(View root, String message, int duration) {
+        showSnackBar(root, message, duration, 0, null);
+    }
+
+    public static void showSnackBar(View root, String message, int duration,
+                                    int resActionId, View.OnClickListener onActionClick) {
         snackbar = Snackbar.make(root, message, duration);
+        if (onActionClick != null) {
+            snackbar.setAction(resActionId, onActionClick);
+        }
         snackbar.show();
     }
 

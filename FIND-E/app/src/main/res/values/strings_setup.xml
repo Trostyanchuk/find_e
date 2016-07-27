@@ -12,4 +12,6 @@
 
     <string name="lets_start">OK, LET\'S START</string>
 
+    <string name="msg_bluetooth_unavailable_alert">Turn on bluetooth to continue processing</string>
+    <string name="label_turn_on">Turn on</string>
 </resources>

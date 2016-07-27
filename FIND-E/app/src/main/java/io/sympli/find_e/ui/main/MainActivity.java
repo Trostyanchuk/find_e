@@ -1,37 +1,26 @@
 package io.sympli.find_e.ui.main;
 
-import android.content.Context;
-import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
 import org.greenrobot.eventbus.Subscribe;
-
-import javax.inject.Inject;
 
 import io.sympli.find_e.ApplicationController;
 import io.sympli.find_e.R;
 import io.sympli.find_e.databinding.ActivityMainBinding;
 import io.sympli.find_e.event.AnimationFinishedEvent;
 import io.sympli.find_e.event.ChangeScreenEvent;
-import io.sympli.find_e.event.PermissionsGrantResultEvent;
-import io.sympli.find_e.services.IBroadcast;
 import io.sympli.find_e.ui.fragment.ConnectedFragment;
+import io.sympli.find_e.ui.fragment.ConnectionFragment;
 import io.sympli.find_e.ui.fragment.MainUsageFragment;
 import io.sympli.find_e.ui.fragment.MapFragment;
-import io.sympli.find_e.ui.fragment.PairFragment;
 import io.sympli.find_e.ui.fragment.PermissionsFragment;
 import io.sympli.find_e.ui.fragment.Screen;
 import io.sympli.find_e.ui.fragment.SettingsFragment;
@@ -45,7 +34,7 @@ import io.sympli.find_e.utils.LocalStorageUtil;
 import io.sympli.find_e.utils.PermissionsUtil;
 import jp.wasabeef.blurry.Blurry;
 
-public class MainActivity extends AppCompatActivity implements SensorEventListener {
+public class MainActivity extends BaseActivity {
 
     private ActivityMainBinding bindingObject;
     private Fragment childFragment;
@@ -54,21 +43,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private Sensor sensor;
     private SensorAnalyzer sensorAnalyzer;
 
-    @Inject
-    IBroadcast broadcast;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         bindingObject = DataBindingUtil.setContentView(this, R.layout.activity_main);
         ApplicationController.getComponent().inject(this);
-
-        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        sensor = sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY);
-        sensorAnalyzer = new SensorAnalyzer(evaluator);
-        final int rotation = ((WindowManager) getSystemService(Context.WINDOW_SERVICE))
-                .getDefaultDisplay().getRotation();
-        sensorAnalyzer.remapAxis(rotation);
 
         setupMenu();
 
@@ -101,20 +80,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 .into(bindingObject.blurBackground);
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        broadcast.register(this);
-        sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_FASTEST);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        broadcast.unregister(this);
-        sensorManager.unregisterListener(this);
-    }
-
     @Subscribe
     public void onChangeScreenEvent(ChangeScreenEvent event) {
         if (event.getScreenGroup() == ChangeScreenEvent.ScreenGroup.MAIN) {
@@ -125,8 +90,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
 
     @Subscribe
-    public void onChangeScreenEvent(AnimationFinishedEvent event) {
-        switch (event.getScreen()){
+    public void onAnimationFinishedEvent(AnimationFinishedEvent event) {
+        switch (event.getScreen()) {
             case SETTINGS: {
                 bindingObject.settings.setEnabled(true);
                 break;
@@ -143,57 +108,29 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
     }
 
-    @Override
-    public void onSensorChanged(SensorEvent event) {
-        float[] newOffsetItems = sensorAnalyzer.normalizeAxisDueToEvent(event);
-        if (newOffsetItems != null) {
-            bindingObject.circlesBg.setOffset(newOffsetItems[0], newOffsetItems[1]);
-        }
-    }
-
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int i) {
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String permissions[], @NonNull int[] grantResults) {
-        if (!(grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-            broadcast.postStickyEvent(new PermissionsGrantResultEvent(false, permissions));
-        } else {
-            broadcast.postStickyEvent(new PermissionsGrantResultEvent(true, permissions));
-        }
-    }
-
     private void replaceMainFragment(Screen screen) {
         Fragment fragment = null;
-        boolean settingsVisible = true;
         boolean toolbarVisible = true;
         switch (screen) {
             case SPLASH:
-                settingsVisible = false;
                 toolbarVisible = false;
                 fragment = new SplashFragment();
                 break;
             case PERMISSIONS:
-                settingsVisible = false;
                 toolbarVisible = false;
                 fragment = new PermissionsFragment();
                 break;
             case PAIR:
-                settingsVisible = false;
-                fragment = new PairFragment();
+                fragment = new ConnectionFragment();
+//                fragment = new PairFragment();
                 break;
             case SETUP:
-                settingsVisible = false;
                 fragment = new SetupFragment();
                 break;
             case CONNECTED:
-                settingsVisible = false;
                 fragment = new ConnectedFragment();
                 break;
             case MAIN_USAGE:
-                settingsVisible = true;
                 fragment = new MainUsageFragment();
                 break;
         }
