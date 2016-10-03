@@ -12,15 +12,7 @@
             android:id="@+id/video_player"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="invisible"
             app:layout_heightPercent="45%" />
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_alignBottom="@+id/video_player"
-            android:src="@drawable/splash_video_stub"
-            android:scaleType="fitXY" />
 
         <RelativeLayout
             android:id="@+id/info_parent"

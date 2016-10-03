@@ -38,8 +38,6 @@ public class ButtonWidget extends View {
     private int bottomMsgTextSize;
     private float lineSpacing;
 
-    private io.sympli.find_e.ui.widget.OnClickListener listener;
-
     public ButtonWidget(Context context) {
         super(context);
         init();
@@ -175,9 +173,9 @@ public class ButtonWidget extends View {
         canvas.drawText(secondLine, textX, textY, textBtnPaint);
     }
 
-    public void setOnClickListener(io.sympli.find_e.ui.widget.OnClickListener listener) {
-        this.listener = listener;
-    }
+//    public void setOnClickListener(io.sympli.find_e.ui.widget.OnClickListener listener) {
+//        this.listener = listener;
+//    }
 
     @Override
     public boolean onTouchEvent(MotionEvent motionEvent) {
@@ -185,9 +183,9 @@ public class ButtonWidget extends View {
                 && motionEvent.getX() < viewWidth / 2 + btnWidth / 2
                 && motionEvent.getY() > viewHeight / 2 - btnHeight / 2
                 && motionEvent.getY() < viewHeight / 2 + btnHeight / 2) {
-            if (listener != null) {
-                listener.onButtonCLick();
-            }
+//            if (listener != null) {
+//                listener.onButtonCLick();
+//            }
         }
         return super.onTouchEvent(motionEvent);
     }

@@ -21,7 +21,7 @@ import io.sympli.find_e.services.IBroadcast;
 import io.sympli.find_e.ui.widget.parallax.FloatArrayEvaluator;
 import io.sympli.find_e.ui.widget.parallax.SensorAnalyzer;
 
-public class BaseActivity extends AppCompatActivity implements SensorEventListener {
+public class BaseActivity extends AppCompatActivity implements SensorEventListener  {
 
     private FloatArrayEvaluator evaluator = new FloatArrayEvaluator(2);
     private SensorManager sensorManager;
@@ -60,6 +60,7 @@ public class BaseActivity extends AppCompatActivity implements SensorEventListen
     public void onSensorChanged(SensorEvent sensorEvent) {
         float[] newOffsetItems = sensorAnalyzer.normalizeAxisDueToEvent(sensorEvent);
         if (newOffsetItems != null) {
+            broadcast.postEvent(new io.sympli.find_e.event.SensorEvent(newOffsetItems[0], newOffsetItems[1]));
             //TODO post event about it
 //            bindingObject.circlesBg.setOffset(newOffsetItems[0], newOffsetItems[1]);
         }

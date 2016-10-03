@@ -19,4 +19,7 @@
     <color name="bg_gradient_end_color">#353654</color>
     <color name="bottom_message_bg">#20FFFFFF</color>
     <color name="btn_text_color">#333349</color>
+    <color name="line_default">#54C7FC</color>
+    <color name="line_searching">#54C7FC</color>
+    <color name="line_disconnect">#FFFFFF</color>
 </resources>

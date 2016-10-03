@@ -23,4 +23,7 @@
 
     <dimen name="line_spacing">5dp</dimen>
     <dimen name="triangle_height">2dp</dimen>
+    <dimen name="circle_offset">30dp</dimen>
+    <dimen name="robo_width">54dp</dimen>
+    <dimen name="robo_height">37dp</dimen>
 </resources>

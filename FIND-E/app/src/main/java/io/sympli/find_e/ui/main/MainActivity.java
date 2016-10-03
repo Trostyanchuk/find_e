@@ -38,10 +38,6 @@ public class MainActivity extends BaseActivity {
 
     private ActivityMainBinding bindingObject;
     private Fragment childFragment;
-    private FloatArrayEvaluator evaluator = new FloatArrayEvaluator(2);
-    private SensorManager sensorManager;
-    private Sensor sensor;
-    private SensorAnalyzer sensorAnalyzer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,7 +98,7 @@ public class MainActivity extends BaseActivity {
             }
             case MAIN_USAGE: {
                 bindingObject.settings.setVisibility(View.VISIBLE);
-                bindingObject.circlesBg.setVisibility(View.VISIBLE);
+//                bindingObject.circlesBg.setVisibility(View.VISIBLE);
                 break;
             }
         }

@@ -13,8 +13,6 @@ import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 
-import com.google.repacked.antlr.v4.misc.Utils;
-
 import javax.inject.Inject;
 
 import io.sympli.find_e.ApplicationController;
@@ -24,7 +22,6 @@ import io.sympli.find_e.event.ChangeScreenEvent;
 import io.sympli.find_e.services.IBroadcast;
 import io.sympli.find_e.ui.widget.AbstractAnimationListener;
 import io.sympli.find_e.utils.LocalStorageUtil;
-import io.sympli.find_e.utils.UIUtil;
 
 public class SplashFragment extends Fragment {
 
@@ -64,40 +61,31 @@ public class SplashFragment extends Fragment {
             }
         });
 
-        LocalStorageUtil.saveFirstLaunch();
-
         //TODO remove when will have video
-        UIUtil.runTaskWithDelay(1000, new UIUtil.DelayTaskListener() {
-            @Override
-            public void onFinished() {
-                showLabel();
-            }
-        });
+//        LocalStorageUtil.saveFirstLaunch();
+
         return splashBinding.getRoot();
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        //TODO uncomment when will have video
-//        loadVideo();
+        loadVideo();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        //TODO uncomment when will have video
-//        resumeVideo();
+        resumeVideo();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        //TODO uncomment when will have video
-//        pauseVideo();
+        pauseVideo();
     }
 
     private void loadVideo() {
-        String videoResource = "android.resource://" + getContext().getPackageName() + "/" + R.raw.test;
+        String videoResource = "android.resource://" + getContext().getPackageName() + "/" + R.raw.main_video;
         splashBinding.videoPlayer.setVideoURI(Uri.parse(videoResource));
         splashBinding.videoPlayer.setOnCompletionListener(onCompletionListener);
         splashBinding.videoPlayer.setOnErrorListener(onErrorListener);
