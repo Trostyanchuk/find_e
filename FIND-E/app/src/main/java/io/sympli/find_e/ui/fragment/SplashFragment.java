@@ -61,8 +61,7 @@ public class SplashFragment extends Fragment {
             }
         });
 
-        //TODO remove when will have video
-//        LocalStorageUtil.saveFirstLaunch();
+        LocalStorageUtil.saveFirstLaunch();
 
         return splashBinding.getRoot();
     }

@@ -21,13 +21,13 @@ public class ApplicationModule {
     }
 
     @Provides
-    public IBluetoothManager provideBleService() {
-        //TODO return due to API version
-        return new BleManagerAPI18Impl(context);
+    public IBroadcast provideBroadcastService() {
+        return new EventBusBroadcastImpl(EventBus.getDefault());
     }
 
     @Provides
-    public IBroadcast provideBroadcastService() {
-        return new EventBusBroadcastImpl(EventBus.getDefault());
+    public IBluetoothManager provideBleService(IBroadcast broadcast) {
+        //TODO return due to API version
+        return new BleManagerAPI18Impl(context, broadcast);
     }
 }

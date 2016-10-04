@@ -71,6 +71,7 @@ public class MapFragment extends Fragment implements com.mapbox.mapboxsdk.maps.O
 
         locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
 
+        binding.root.setOnClickListener(null);
         binding.myLocationLabel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

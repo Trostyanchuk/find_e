@@ -14,4 +14,9 @@
 
     <string name="msg_bluetooth_unavailable_alert">Turn on bluetooth to continue processing</string>
     <string name="label_turn_on">Turn on</string>
+
+    <string name="unable_to_find">We cannot recognize any devices near by you. Please, press
+     button on tag and try once more.</string>
+    <string name="retry_recognition_btn">Retry</string>
+    <string name="cancel_recognition_btn">Cancel</string>
 </resources>

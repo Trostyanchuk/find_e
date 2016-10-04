@@ -1,10 +1,11 @@
 package io.sympli.find_e.ui.main;
 
+import android.content.ComponentName;
+import android.content.ServiceConnection;
 import android.databinding.DataBindingUtil;
-import android.hardware.Sensor;
-import android.hardware.SensorManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.view.View;
 import android.view.animation.Animation;
@@ -17,6 +18,7 @@ import io.sympli.find_e.R;
 import io.sympli.find_e.databinding.ActivityMainBinding;
 import io.sympli.find_e.event.AnimationFinishedEvent;
 import io.sympli.find_e.event.ChangeScreenEvent;
+import io.sympli.find_e.services.impl.BluetoothService;
 import io.sympli.find_e.ui.fragment.ConnectedFragment;
 import io.sympli.find_e.ui.fragment.ConnectionFragment;
 import io.sympli.find_e.ui.fragment.MainUsageFragment;
@@ -28,8 +30,6 @@ import io.sympli.find_e.ui.fragment.SetupFragment;
 import io.sympli.find_e.ui.fragment.SplashFragment;
 import io.sympli.find_e.ui.fragment.TipsFragment;
 import io.sympli.find_e.ui.widget.AbstractAnimationListener;
-import io.sympli.find_e.ui.widget.parallax.FloatArrayEvaluator;
-import io.sympli.find_e.ui.widget.parallax.SensorAnalyzer;
 import io.sympli.find_e.utils.LocalStorageUtil;
 import io.sympli.find_e.utils.PermissionsUtil;
 import jp.wasabeef.blurry.Blurry;
@@ -38,6 +38,18 @@ public class MainActivity extends BaseActivity {
 
     private ActivityMainBinding bindingObject;
     private Fragment childFragment;
+    private BluetoothService bluetoothService;
+    private ServiceConnection mServiceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            bluetoothService = ((BluetoothService.ConnectionServiceBinder) service).getService();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            bluetoothService = null;
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +65,15 @@ public class MainActivity extends BaseActivity {
                         Screen.PERMISSIONS : Screen.PAIR;
 
         replaceMainFragment(startScreen);
+    }
+
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (bluetoothService != null) {
+            unbindService(mServiceConnection);
+        }
     }
 
     private void setupMenu() {
@@ -118,7 +139,6 @@ public class MainActivity extends BaseActivity {
                 break;
             case PAIR:
                 fragment = new ConnectionFragment();
-//                fragment = new PairFragment();
                 break;
             case SETUP:
                 fragment = new SetupFragment();
@@ -132,6 +152,10 @@ public class MainActivity extends BaseActivity {
         }
         bindingObject.toolbar.setVisibility(toolbarVisible ? View.VISIBLE : View.INVISIBLE);
         bindingObject.settings.setVisibility(View.INVISIBLE);
+
+        if (screen == Screen.SETUP) {
+//            bindService(new Intent(this, BluetoothService.class), mServiceConnection, 0);
+        }
 
         getSupportFragmentManager().beginTransaction()
                 .setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
