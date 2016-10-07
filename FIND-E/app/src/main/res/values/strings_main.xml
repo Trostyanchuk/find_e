@@ -8,4 +8,9 @@
     <string name="lost_usual_msg">FIND-E will reconnect again\n once it\'s close enough to you</string>
     <string name="lost_bottom_msg">FIND-E will reconnect again \nonce it\'s close enough to you</string>
     <string name="disconnected_mgs">Disconnected</string>
+
+    <string name="message_connection_lost">CONNECTION LOST</string>
+    <string name="warning_text_connection_lost">Tap on button to find last location</string>
+
+    <string name="warning_text_profit">Profit: You can use FIND-E as a remote camera shutter button</string>
 </resources>

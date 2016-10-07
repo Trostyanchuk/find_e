@@ -12,6 +12,12 @@
             android:layout_height="match_parent"
             android:layout_above="@+id/bottom_status_bar" />
 
+        <io.sympli.find_e.ui.widget.states.ButtonView
+            android:id="@+id/btn_view"
+            android:layout_centerInParent="true"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
         <io.sympli.find_e.ui.widget.DialogMessageWidget
             android:id="@+id/message_view"
             android:layout_width="match_parent"

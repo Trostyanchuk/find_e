@@ -242,7 +242,9 @@ public class MapFragment extends Fragment implements com.mapbox.mapboxsdk.maps.O
     }
 
     private void setDistanceInfo(int distanceMeters) {
-        binding.approximateDistance.setText(String.format(getString(R.string.last_location_text), distanceMeters));
+        if (isAdded()) {
+            binding.approximateDistance.setText(String.format(getString(R.string.last_location_text), distanceMeters));
+        }
     }
 
     private void setConnectionLostInfo() {

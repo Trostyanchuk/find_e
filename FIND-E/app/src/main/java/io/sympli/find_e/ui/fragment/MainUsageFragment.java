@@ -19,16 +19,14 @@ import io.sympli.find_e.R;
 import io.sympli.find_e.databinding.FragmentMainUsageBinding;
 import io.sympli.find_e.event.AnimationFinishedEvent;
 import io.sympli.find_e.event.ChangeScreenEvent;
+import io.sympli.find_e.event.SendDataToTagEvent;
 import io.sympli.find_e.event.SensorEvent;
+import io.sympli.find_e.event.TagAction;
 import io.sympli.find_e.services.IBroadcast;
 import io.sympli.find_e.ui.widget.AbstractAnimationListener;
 import io.sympli.find_e.ui.widget.DialogMessageWidget;
 import io.sympli.find_e.ui.widget.states.ButtonClickListener;
 import io.sympli.find_e.ui.widget.states.ConnectionState;
-import io.sympli.find_e.ui.widget.states.ViewStateBase;
-import io.sympli.find_e.ui.widget.states.ViewStateDefault;
-import io.sympli.find_e.ui.widget.states.ViewStateDisconnect;
-import io.sympli.find_e.ui.widget.states.ViewStateSearching;
 import io.sympli.find_e.utils.UIUtil;
 
 public class MainUsageFragment extends Fragment implements ButtonClickListener {
@@ -38,8 +36,7 @@ public class MainUsageFragment extends Fragment implements ButtonClickListener {
     @Inject
     IBroadcast broadcast;
 
-    private ViewStateBase viewStateBase;
-    private ConnectionState connectionState = ConnectionState.CONNECTED;
+    private ConnectionState connectionState = ConnectionState.SEARCHING;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
@@ -53,7 +50,6 @@ public class MainUsageFragment extends Fragment implements ButtonClickListener {
             @Override
             public void onFinished() {
                 setConnectionState(ConnectionState.DISCONNECTED);
-                showMessage();
             }
         });
         return binding.getRoot();
@@ -63,6 +59,7 @@ public class MainUsageFragment extends Fragment implements ButtonClickListener {
     public void onResume() {
         super.onResume();
         broadcast.register(this);
+        binding.btnView.animateSelf();
         setConnectionState(connectionState);
     }
 
@@ -70,38 +67,36 @@ public class MainUsageFragment extends Fragment implements ButtonClickListener {
     public void onPause() {
         super.onPause();
         broadcast.unregister(this);
-        viewStateBase.stopAnimation();
+        binding.btnView.stopAnimation();
     }
 
     @Subscribe
     public void onSensorEvent(SensorEvent event) {
-        viewStateBase.setParallaxOffset(event.getxOffset(), event.getyOffset());
+        broadcast.removeStickyEvent(SensorEvent.class);
+        binding.btnView.setParallaxOffset(event.getxOffset(), event.getyOffset());
     }
 
     private void setConnectionState(ConnectionState connectionState) {
         this.connectionState = connectionState;
-        binding.viewContainer.removeAllViews();
-        switch (connectionState) {
-            case CONNECTED:
-                viewStateBase = new ViewStateDefault(getContext());
-                break;
-            case SEARCHING:
-                viewStateBase = new ViewStateSearching(getContext());
-                break;
-            case DISCONNECTED:
-                viewStateBase = new ViewStateDisconnect(getContext());
-                break;
-        }
-        viewStateBase.setOnButtonClickListener(this);
-        binding.viewContainer.addView(viewStateBase);
-        binding.viewContainer.requestLayout();
+        binding.btnView.setConnectionState(connectionState);
+        binding.btnView.setOnButtonClickListener(this);
         binding.robotIvState.switchImageByState(connectionState);
-        viewStateBase.animateSelf();
+        binding.btnView.animateSelf();
+        hideMessage();
+        if (connectionState == ConnectionState.DISCONNECTED) {
+            showMessage(getString(R.string.message_connection_lost),
+                    getString(R.string.warning_text_connection_lost),
+                    DialogMessageWidget.Warning.ERROR);
+        }
+        if (connectionState == ConnectionState.CONNECTED) {
+            showMessage(null,
+                    getString(R.string.warning_text_profit),
+                    DialogMessageWidget.Warning.INFO);
+        }
     }
 
-    private void showMessage() {
-        binding.messageView.setMessage("CONNECTION LOST")
-                .setWarning("Tap on button to find last location", DialogMessageWidget.Warning.ERROR);
+    private void showMessage(String message, String warning, DialogMessageWidget.Warning type) {
+        binding.messageView.setMessage(message).setWarning(warning, type);
         binding.messageView.setVisibility(View.VISIBLE);
         Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.dialog_fade_in);
         binding.messageView.startAnimation(animation);
@@ -140,8 +135,18 @@ public class MainUsageFragment extends Fragment implements ButtonClickListener {
     @Override
     public void onButtonClick() {
         hideMessage();
-        if (connectionState == ConnectionState.DISCONNECTED) {
-            broadcast.postEvent(new ChangeScreenEvent(Screen.MAP, ChangeScreenEvent.ScreenGroup.SHADOWING));
+        switch (connectionState) {
+            case SEARCHING:
+                setConnectionState(ConnectionState.CONNECTED);
+                broadcast.postEvent(new SendDataToTagEvent(TagAction.IMMEDIATE_ALERT_TURN_OFF));
+                break;
+            case CONNECTED:
+                setConnectionState(ConnectionState.SEARCHING);
+                broadcast.postEvent(new SendDataToTagEvent(TagAction.IMMEDIATE_ALERT_TURN_ON));
+                break;
+            case DISCONNECTED:
+                broadcast.postEvent(new ChangeScreenEvent(Screen.MAP, ChangeScreenEvent.ScreenGroup.SHADOWING));
+                break;
         }
     }
 }

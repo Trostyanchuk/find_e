@@ -77,12 +77,12 @@ public class ConnectionFragment extends Fragment {
                 .setBtnPositiveText(getString(R.string.retry_recognition_btn))
                 .setBtnNegativeText(getString(R.string.cancel_recognition_btn));
 
-        UIUtil.runTaskWithDelay(3000, new UIUtil.DelayTaskListener() {
-            @Override
-            public void onFinished() {
-                onSuccessfullyScanned();
-            }
-        });
+//        UIUtil.runTaskWithDelay(3000, new UIUtil.DelayTaskListener() {
+//            @Override
+//            public void onFinished() {
+//                onSuccessfullyScanned();
+//            }
+//        });
 
         return binding.getRoot();
     }
@@ -124,6 +124,7 @@ public class ConnectionFragment extends Fragment {
         if (event.isAvailable()) {
             service.searchKey();
         } else {
+            //TODO turn on location
             UIUtil.showSnackBar(binding.getRoot(), getString(R.string.msg_bluetooth_unavailable_alert),
                     Snackbar.LENGTH_INDEFINITE, R.string.label_turn_on, new View.OnClickListener() {
                         @Override

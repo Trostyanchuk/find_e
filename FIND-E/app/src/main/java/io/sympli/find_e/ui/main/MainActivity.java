@@ -18,7 +18,6 @@ import io.sympli.find_e.R;
 import io.sympli.find_e.databinding.ActivityMainBinding;
 import io.sympli.find_e.event.AnimationFinishedEvent;
 import io.sympli.find_e.event.ChangeScreenEvent;
-import io.sympli.find_e.services.impl.BluetoothService;
 import io.sympli.find_e.ui.fragment.ConnectedFragment;
 import io.sympli.find_e.ui.fragment.ConnectionFragment;
 import io.sympli.find_e.ui.fragment.MainUsageFragment;
@@ -38,18 +37,6 @@ public class MainActivity extends BaseActivity {
 
     private ActivityMainBinding bindingObject;
     private Fragment childFragment;
-    private BluetoothService bluetoothService;
-    private ServiceConnection mServiceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            bluetoothService = ((BluetoothService.ConnectionServiceBinder) service).getService();
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            bluetoothService = null;
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,10 +46,11 @@ public class MainActivity extends BaseActivity {
 
         setupMenu();
 
-        Screen startScreen = LocalStorageUtil.isFirstLaunch() ? Screen.SPLASH :
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-                        !PermissionsUtil.permissionsGranted(this, PermissionsFragment.REQUIRED_PERMISSIONS) ?
-                        Screen.PERMISSIONS : Screen.PAIR;
+//        Screen startScreen = LocalStorageUtil.isFirstLaunch() ? Screen.SPLASH :
+//                Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+//                        !PermissionsUtil.permissionsGranted(this, PermissionsFragment.REQUIRED_PERMISSIONS) ?
+//                        Screen.PERMISSIONS : Screen.PAIR;
+        Screen startScreen = Screen.SPLASH;
 
         replaceMainFragment(startScreen);
     }
@@ -71,9 +59,6 @@ public class MainActivity extends BaseActivity {
     @Override
     public void onStop() {
         super.onStop();
-        if (bluetoothService != null) {
-            unbindService(mServiceConnection);
-        }
     }
 
     private void setupMenu() {
@@ -152,10 +137,6 @@ public class MainActivity extends BaseActivity {
         }
         bindingObject.toolbar.setVisibility(toolbarVisible ? View.VISIBLE : View.INVISIBLE);
         bindingObject.settings.setVisibility(View.INVISIBLE);
-
-        if (screen == Screen.SETUP) {
-//            bindService(new Intent(this, BluetoothService.class), mServiceConnection, 0);
-        }
 
         getSupportFragmentManager().beginTransaction()
                 .setCustomAnimations(R.anim.fade_in, R.anim.fade_out)

@@ -26,4 +26,6 @@
     <dimen name="circle_offset">30dp</dimen>
     <dimen name="robo_width">54dp</dimen>
     <dimen name="robo_height">37dp</dimen>
+
+    <dimen name="circle_width">25dp</dimen>
 </resources>

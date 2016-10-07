@@ -9,4 +9,10 @@
 
     <string name="ok">OK</string>
     <string name="btn_continue">Continue</string>
+
+    <string name="unknown_service">Unknown service</string>
+    <string name="no_known_services">No known services</string>
+    <string name="unknown">unknown</string>
+    <string name="unknown_characteristic">Unknown characteristic</string>
+    <string name="unknown_device">Unknown device</string>
 </resources>

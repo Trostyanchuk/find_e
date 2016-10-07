@@ -5,6 +5,9 @@ import android.preference.PreferenceManager;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import io.sympli.find_e.ApplicationController;
 
 public final class LocalStorageUtil {
@@ -12,6 +15,7 @@ public final class LocalStorageUtil {
     private static final String FIRST_LAUNCH = "first_launch";
     private static final String LAST_POSITION_LAT = "last_position_lat";
     private static final String LAST_POSITION_LON = "last_position_lon";
+    private static final String SILENT_AREAS = "silent_areas";
 
     public static boolean isFirstLaunch() {
         return !getPreferences().contains(FIRST_LAUNCH);
@@ -29,6 +33,11 @@ public final class LocalStorageUtil {
     public static LatLng getLastPosition() {
         return new LatLng(Double.parseDouble(getPreferences().getString(LAST_POSITION_LAT, "50.440055")),
                 Double.parseDouble(getPreferences().getString(LAST_POSITION_LON, "30.548027")));
+    }
+
+    public static List<String> getSilentWifiSSIDs() {
+//        getPreferences().getString()
+        return new ArrayList<>();
     }
 
     private static SharedPreferences.Editor getEditor() {

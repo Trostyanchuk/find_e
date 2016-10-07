@@ -2,6 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt'
 
 repositories {
+    maven { url "https://dl.bintray.com/alt236/maven" }
     maven { url 'https://maven.fabric.io/public' }
     mavenCentral()
 }
@@ -12,7 +13,7 @@ android {
 
     defaultConfig {
         applicationId "io.sympli.find_e"
-        minSdkVersion 15
+        minSdkVersion 18
         targetSdkVersion 24
         versionCode 1
         versionName "1.0"
@@ -59,4 +60,5 @@ dependencies {
     }
     compile 'com.eightbitlab:blurview:1.1.0'
     compile 'jp.wasabeef:blurry:2.0.2'
+    compile 'uk.co.alt236:bluetooth-le-library-android:1.0.0'
 }
