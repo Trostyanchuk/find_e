@@ -4,10 +4,11 @@ public enum Screen {
 
     SPLASH,
     PERMISSIONS,
-    //TODO
+    CONNECTING,
     PAIR,
     SETUP,
     CONNECTED,
+    HOW_TO_USE,
 
     MAIN_USAGE,
 

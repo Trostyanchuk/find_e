@@ -1,16 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="pair_label">Press the button on your FIND-E \nto pair it with your smartphone</string>
-    <string name="pair_text">Put FIND-E near your smartphone\n and hold the button until you hear the beep.</string>
+    <string name="pair_label">Hold the button on your FIND-E</string>
+    <string name="pair_text">To start pairing, put your smartphone near FIND-E and hold the button.</string>
+
+    <string name="pairing_label">Pairing with your smartphone</string>
+    <string name="pairing_text">It can take several seconds to establish the connection.</string>
 
     <string name="setup_label">Connecting FIND-E \nto your smartphone</string>
     <string name="setup_text">It can take several seconds\n to estabish the connection.</string>
 
-    <string name="connected_label">Great, we\'re connected!</string>
-    <string name="connected_text">Now choose what you want to track:</string>
+    <string name="connected_label">Pairing complited</string>
+    <string name="connected_text">We’re good to go!</string>
     <string name="connected_info">You can use FIND-E with whatever you want,\n just attach it to things you don\'t want to lose.</string>
 
+    <string name="how_to_use_label">How to use FIND-E?</string>
+    <string name="how_to_use_text">Just attach it to things you don’t want to lose.</string>
+
     <string name="lets_start">OK, LET\'S START</string>
+
+    <string name="msg_location_unavailable_alert">Turn on location to find devices nearby you</string>
 
     <string name="msg_bluetooth_unavailable_alert">Turn on bluetooth to continue processing</string>
     <string name="label_turn_on">Turn on</string>
@@ -19,4 +27,6 @@
      button on tag and try once more.</string>
     <string name="retry_recognition_btn">Retry</string>
     <string name="cancel_recognition_btn">Cancel</string>
+    <string name="unable_to_continue_general">Unable to continue without device, press \'Close\' to finish</string>
+    <string name="continue_close">CLOSE</string>
 </resources>

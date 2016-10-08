@@ -1,13 +1,16 @@
 package io.sympli.find_e;
 
 import android.app.Application;
+import android.bluetooth.BluetoothGattService;
 import android.content.Context;
+import android.content.Intent;
 
 import com.mapbox.mapboxsdk.MapboxAccountManager;
 
 public class ApplicationController extends Application {
 
     private static ApplicationController instance;
+    private static int activityCounter = 0;
 
     private ApplicationComponent component;
 
@@ -33,5 +36,21 @@ public class ApplicationController extends Application {
 
     public static Context getInstance() {
         return instance;
+    }
+
+    public static void increaseActivityCounter() {
+        activityCounter++;
+    }
+
+    public static void decreaseActivityCounter() {
+        activityCounter--;
+    }
+
+    public static boolean isAppInForeground() {
+        return activityCounter > 0;
+    }
+
+    private void startConnectionService() {
+        startService(new Intent(getBaseContext(), BluetoothGattService.class));
     }
 }

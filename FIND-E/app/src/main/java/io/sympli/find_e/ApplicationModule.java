@@ -27,7 +27,6 @@ public class ApplicationModule {
 
     @Provides
     public IBluetoothManager provideBleService(IBroadcast broadcast) {
-        //TODO return due to API version
         return new BleManagerAPI18Impl(context, broadcast);
     }
 }

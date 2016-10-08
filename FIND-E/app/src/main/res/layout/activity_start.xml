@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <import type="io.sympli.find_e.ui.fragment.Screen" />
+
+        <variable
+            name="screen"
+            type="io.sympli.find_e.ui.fragment.Screen" />
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/black">
+
+        <com.afollestad.easyvideoplayer.EasyVideoPlayer
+            android:id="@+id/player"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <RelativeLayout
+            android:id="@+id/player_img_stub_parent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/player_img_stub"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/splash" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentLeft="true"
+                android:layout_marginBottom="50dp"
+                android:layout_marginLeft="65dp"
+                android:src="@drawable/ic_btn_focus"
+                android:visibility="@{screen == Screen.PAIR ? View.VISIBLE : View.INVISIBLE}" />
+        </RelativeLayout>
+
+        <io.sympli.find_e.ui.widget.ViewPermissions
+            android:id="@+id/view_permissions"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/main_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="60dp"
+            android:orientation="vertical"
+            android:visibility="invisible">
+
+            <io.sympli.find_e.ui.widget.TypefaceTextView
+                android:id="@+id/label"
+                style="@style/TextRegularWhite"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:alpha="0.7"
+                android:drawableTop="@drawable/e_label_large"
+                android:gravity="center"
+                android:text="@string/label_subtitle"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/explanation_parent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/continue_btn"
+            android:orientation="vertical"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:visibility="invisible">
+
+            <io.sympli.find_e.ui.widget.TypefaceTextView
+                android:id="@+id/explanation_title"
+                style="@style/TextRegular"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/activity_vertical_margin"
+                android:alpha="0.7"
+                android:gravity="center"
+                android:text="@string/connected_label"
+                android:textColor="@android:color/white"
+                android:textSize="20sp" />
+
+            <io.sympli.find_e.ui.widget.TypefaceTextView
+                android:id="@+id/explanation_text"
+                style="@style/TextLight"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/activity_vertical_margin"
+                android:alpha="0.7"
+                android:gravity="center"
+                android:text="@string/label_bottom_explain"
+                android:textColor="@android:color/white"
+                android:textSize="16sp" />
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/ic_ready"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/explanation_parent"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/ic_pair_ready"
+            android:visibility="invisible" />
+
+        <io.sympli.find_e.ui.widget.TypefaceTextView
+            android:id="@+id/continue_btn"
+            style="@style/TextRegularWhite"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="25dp"
+            android:background="@drawable/btn_blue_selector"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:paddingBottom="16dp"
+            android:paddingLeft="50dp"
+            android:paddingRight="50dp"
+            android:paddingTop="16dp"
+            android:text="@{screen == Screen.HOW_TO_USE ? @string/lets_start : @string/btn_continue}"
+            android:textAllCaps="true"
+            android:textColor="@color/light_blue"
+            android:visibility="invisible" />
+
+    </RelativeLayout>
+</layout>

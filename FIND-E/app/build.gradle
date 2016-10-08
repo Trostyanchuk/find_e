@@ -61,4 +61,5 @@ dependencies {
     compile 'com.eightbitlab:blurview:1.1.0'
     compile 'jp.wasabeef:blurry:2.0.2'
     compile 'uk.co.alt236:bluetooth-le-library-android:1.0.0'
+    compile project(path: ':library')
 }

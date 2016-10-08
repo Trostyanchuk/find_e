@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="blePermissionGranted"
+            type="boolean" />
+
+        <variable
+            name="locationPermissionGranted"
+            type="boolean" />
+
+        <variable
+            name="cameraPermissionGranted"
+            type="boolean" />
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#99000000"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:orientation="vertical"
+            android:paddingBottom="70dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_done_white_24dp"
+                    android:visibility="@{blePermissionGranted ? View.VISIBLE : View.INVISIBLE}" />
+
+                <io.sympli.find_e.ui.widget.TypefaceTextView
+                    style="@style/TextRegularWhite"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="4"
+                    android:gravity="center_vertical"
+                    android:text="@string/label_ble"
+                    android:textSize="17sp" />
+
+                <ImageView
+                    android:id="@+id/ble_info"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_info_outline_white_24dp" />
+
+                <android.support.v7.widget.SwitchCompat
+                    android:id="@+id/ble_grant_switch"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginRight="10dp"
+                    android:layout_weight="1"
+                    android:checked="@{blePermissionGranted}"
+                    android:enabled="@{!blePermissionGranted}"
+                    android:theme="@style/SwitchTheme" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_done_white_24dp"
+                    android:visibility="@{locationPermissionGranted ? View.VISIBLE : View.INVISIBLE}" />
+
+                <io.sympli.find_e.ui.widget.TypefaceTextView
+                    style="@style/TextRegularWhite"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="4"
+                    android:gravity="center_vertical"
+                    android:text="@string/label_location"
+                    android:textSize="17sp" />
+
+                <ImageView
+                    android:id="@+id/location_info"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_info_outline_white_24dp" />
+
+                <android.support.v7.widget.SwitchCompat
+                    android:id="@+id/location_grant_switch"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginRight="10dp"
+                    android:layout_weight="1"
+                    android:checked="@{locationPermissionGranted}"
+                    android:enabled="@{!locationPermissionGranted}"
+                    android:theme="@style/SwitchTheme" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_done_white_24dp"
+                    android:visibility="@{cameraPermissionGranted ? View.VISIBLE : View.INVISIBLE}" />
+
+                <io.sympli.find_e.ui.widget.TypefaceTextView
+                    style="@style/TextRegularWhite"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="4"
+                    android:gravity="center_vertical"
+                    android:text="@string/label_camera"
+                    android:textSize="17sp" />
+
+                <ImageView
+                    android:id="@+id/camera_info"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_info_outline_white_24dp" />
+
+                <android.support.v7.widget.SwitchCompat
+                    android:id="@+id/camera_grant_switch"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginRight="10dp"
+                    android:layout_weight="1"
+                    android:checked="@{cameraPermissionGranted}"
+                    android:enabled="@{!cameraPermissionGranted}"
+                    android:theme="@style/SwitchTheme" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/explanation_parent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/continue_btn"
+            android:orientation="vertical"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin">
+
+            <io.sympli.find_e.ui.widget.TypefaceTextView
+                android:id="@+id/explanation_title"
+                style="@style/TextRegular"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/activity_vertical_margin"
+                android:alpha="0.7"
+                android:gravity="center"
+                android:text="@string/title"
+                android:textColor="@android:color/white"
+                android:textSize="20sp" />
+
+            <io.sympli.find_e.ui.widget.TypefaceTextView
+                android:id="@+id/explanation_text"
+                style="@style/TextLight"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/activity_vertical_margin"
+                android:alpha="0.7"
+                android:gravity="center"
+                android:text="@string/label_bottom_explain"
+                android:textColor="@android:color/white"
+                android:textSize="16sp" />
+
+        </LinearLayout>
+
+        <io.sympli.find_e.ui.widget.TypefaceTextView
+            android:id="@+id/continue_btn"
+            style="@style/TextRegularWhite"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="25dp"
+            android:background="@drawable/bg_btn_grey_rounded_default"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:paddingBottom="16dp"
+            android:paddingLeft="50dp"
+            android:paddingRight="50dp"
+            android:paddingTop="16dp"
+            android:text="@string/btn_continue"
+            android:textAllCaps="true"
+            android:textColor="@color/white_03_alpha" />
+
+    </RelativeLayout>
+</layout>

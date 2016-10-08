@@ -13,10 +13,11 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.WindowManager;
@@ -33,9 +34,10 @@ import javax.inject.Inject;
 import io.sympli.find_e.R;
 import io.sympli.find_e.event.BleDeviceFoundEvent;
 import io.sympli.find_e.event.BluetoothAvailableEvent;
-import io.sympli.find_e.event.OnTagReadyEvent;
+import io.sympli.find_e.event.LocationChangedEvent;
 import io.sympli.find_e.event.PermissionsGrantResultEvent;
 import io.sympli.find_e.event.SendDataToTagEvent;
+import io.sympli.find_e.event.TagAction;
 import io.sympli.find_e.services.IBluetoothManager;
 import io.sympli.find_e.services.IBroadcast;
 import io.sympli.find_e.services.impl.BleState;
@@ -43,10 +45,17 @@ import io.sympli.find_e.services.impl.BluetoothLeService;
 import io.sympli.find_e.ui.widget.parallax.FloatArrayEvaluator;
 import io.sympli.find_e.ui.widget.parallax.SensorAnalyzer;
 import io.sympli.find_e.utils.BLEUtil;
+import io.sympli.find_e.utils.LocationPermissionUtil;
+import io.sympli.find_e.utils.MyLocationListener;
+import io.sympli.find_e.utils.NotificationUtils;
+import io.sympli.find_e.utils.UIUtil;
 import uk.co.alt236.bluetoothlelib.resolvers.GattAttributeResolver;
 import uk.co.alt236.bluetoothlelib.util.ByteUtils;
 
-public class BaseActivity extends AppCompatActivity implements SensorEventListener {
+import static io.sympli.find_e.utils.LocationPermissionUtil.LOCATION_INTENT_CODE;
+
+public abstract class BaseActivity extends AbstractCounterActivity implements SensorEventListener,
+        MyLocationListener {
 
     private FloatArrayEvaluator evaluator = new FloatArrayEvaluator(2);
     private SensorManager sensorManager;
@@ -55,6 +64,8 @@ public class BaseActivity extends AppCompatActivity implements SensorEventListen
 
     @Inject
     IBroadcast broadcast;
+    @Inject
+    IBluetoothManager service;
 
     private String mDeviceAddress;
     private boolean mConnected;
@@ -62,6 +73,7 @@ public class BaseActivity extends AppCompatActivity implements SensorEventListen
     private BluetoothLeService mBluetoothLeService;
     private List<List<BluetoothGattCharacteristic>> mGattCharacteristics = new ArrayList<>();
     private List<List<Map<String, String>>> mGattCharacteristicData;
+    private int lastRSSI;
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(final ComponentName componentName, final IBinder service) {
@@ -90,6 +102,7 @@ public class BaseActivity extends AppCompatActivity implements SensorEventListen
                 mConnected = false;
                 Log.d("TAG", "Service disconnected");
             } else if (BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
+                Log.d("TAG", "Service discovered");
                 List<BluetoothGattService> deviceList = mBluetoothLeService.getSupportedGattServices();
                 String uuid;
                 final String unknownServiceString = getResources().getString(R.string.unknown_service);
@@ -112,9 +125,7 @@ public class BaseActivity extends AppCompatActivity implements SensorEventListen
                     // Loops through available Characteristics.
                     for (final BluetoothGattCharacteristic gattCharacteristic : gattCharacteristics) {
                         charas.add(gattCharacteristic);
-//                        if (gattCharacteristic.getProperties() & BluetoothGattCharacteristic.PROPERTY_NOTIFY) {
                         mBluetoothLeService.setCharacteristicNotification(gattCharacteristic, true);
-//                        }
                         final Map<String, String> currentCharaData = new HashMap<>();
                         uuid = gattCharacteristic.getUuid().toString();
                         currentCharaData.put(BluetoothLeService.LIST_NAME, GattAttributeResolver.getAttributeName(uuid, unknownCharaString));
@@ -125,11 +136,15 @@ public class BaseActivity extends AppCompatActivity implements SensorEventListen
                     mGattCharacteristics.add(charas);
                     mGattCharacteristicData.add(gattCharacteristicGroupData);
                 }
-                broadcast.postEvent(new OnTagReadyEvent());
+                onTagReady();
             } else if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
                 final String uuid = intent.getStringExtra(BluetoothLeService.EXTRA_UUID_CHAR);
                 final byte[] dataArr = intent.getByteArrayExtra(BluetoothLeService.EXTRA_DATA_RAW);
                 readDataAndNotify(uuid, dataArr);
+            } else if (BluetoothLeService.ACTION_RSSI.equals(action)) {
+                final int rssi = intent.getIntExtra(BluetoothLeService.EXTRA_RSSI, 0);
+                lastRSSI = rssi;
+                onRssiRead(rssi);
             }
         }
     };
@@ -137,6 +152,8 @@ public class BaseActivity extends AppCompatActivity implements SensorEventListen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        NotificationUtils.removeAllNotifications(this);
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         sensor = sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY);
         sensorAnalyzer = new SensorAnalyzer(evaluator);
@@ -151,7 +168,8 @@ public class BaseActivity extends AppCompatActivity implements SensorEventListen
         broadcast.register(this);
         sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_FASTEST);
         registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
-        if (mBluetoothLeService != null && !TextUtils.isEmpty(mDeviceAddress)) {
+        if (mBluetoothLeService != null && !TextUtils.isEmpty(mDeviceAddress)
+                && mBluetoothLeService.isDisconnected()) {
             final boolean result = mBluetoothLeService.connect(mDeviceAddress);
             Log.d("TAG", "Connect request result=" + result);
         }
@@ -191,9 +209,12 @@ public class BaseActivity extends AppCompatActivity implements SensorEventListen
         broadcast.removeStickyEvent(BleDeviceFoundEvent.class);
         Log.d("TAG", "finding status " + event.isFound());
         if (event.isFound()) {
+            onDeviceDiscovered();
             mDeviceAddress = event.getDevice().getAddress();
             final Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
             bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
+        } else {
+            onUnsuccessfulSearch();
         }
     }
 
@@ -222,18 +243,51 @@ public class BaseActivity extends AppCompatActivity implements SensorEventListen
 
         }
         writeDataByEvent(characteristic);
+    }
 
-//        for (List<BluetoothGattCharacteristic> list : mGattCharacteristics) {
-//            for (BluetoothGattCharacteristic charact : list) {
-//                if (charact.getUuid().equals(UUID.fromString(BleState.IMMEDIATE_ALERT))) {
-//                    characteristic = charact;
-//                }
-//            }
-//        }
-//        if (characteristic != null) {
-//            characteristic.setValue(new byte[]{1});
-//            mBluetoothLeService.writeCharacteristic(characteristic);
-//        }
+    public void sendDataToTag(TagAction tagAction) {
+        BluetoothGattCharacteristic characteristic = null;
+        switch (tagAction) {
+            case IMMEDIATE_ALERT_TURN_ON: {
+                characteristic = BLEUtil.getBluetoothGattCharacteristicByUUID(mGattCharacteristics, BleState.IMMEDIATE_ALERT);
+                if (characteristic != null) {
+                    characteristic.setValue(new byte[]{2});
+                }
+                break;
+            }
+            case IMMEDIATE_ALERT_TURN_OFF: {
+                characteristic = BLEUtil.getBluetoothGattCharacteristicByUUID(mGattCharacteristics, BleState.IMMEDIATE_ALERT);
+                if (characteristic != null) {
+                    characteristic.setValue(new byte[]{0});
+                }
+                break;
+            }
+            case LINK_LOSS:
+                characteristic = BLEUtil.getBluetoothGattCharacteristicByUUID(mGattCharacteristics, BleState.LINK_LOSS);
+                break;
+
+        }
+        writeDataByEvent(characteristic);
+    }
+
+    @Subscribe
+    public void onBluetoothAvailableEvent(BluetoothAvailableEvent event) {
+        broadcast.removeStickyEvent(BluetoothAvailableEvent.class);
+        UIUtil.hideSnackBar();
+        if (!event.isAvailable()) {
+            onBleUnavailable();
+        } else {
+            onBleBecomeAvailable();
+        }
+    }
+
+    @Subscribe
+    public void onEventMainThread(LocationChangedEvent event) {
+        if (!isGPSEnabled()) {
+            onGPSLocationUnavailable();
+        } else {
+            onLocationAvailable();
+        }
     }
 
     private void writeDataByEvent(BluetoothGattCharacteristic characteristic) {
@@ -255,20 +309,63 @@ public class BaseActivity extends AppCompatActivity implements SensorEventListen
     }
 
     @Override
+    public void onLocationChanged(Location location) {
+    }
+
+    @Override
+    public void onSettingsAlertCancelled() {
+        onGPSLocationUnavailable();
+    }
+
+    public void checkGPSEnabled() {
+        if (!isGPSEnabled()) {
+            LocationPermissionUtil.showSettingsAlert(this, this);
+        } else {
+            startConnecting();
+        }
+    }
+
+    public void startConnecting() {
+        if (service.isBluetoothEnabled()) {
+            service.searchKey();
+        } else {
+            service.enableBluetooth(this);
+        }
+    }
+
+    public boolean isGPSEnabled() {
+        return ((LocationManager) getSystemService(Context.LOCATION_SERVICE)).isProviderEnabled(LocationManager.GPS_PROVIDER);
+    }
+
+    @Override
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String permissions[], @NonNull int[] grantResults) {
         if (!(grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-            broadcast.postStickyEvent(new PermissionsGrantResultEvent(false, permissions));
+            broadcast.postEvent(new PermissionsGrantResultEvent(false, permissions));
         } else {
-            broadcast.postStickyEvent(new PermissionsGrantResultEvent(true, permissions));
+            broadcast.postEvent(new PermissionsGrantResultEvent(true, permissions));
         }
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case IBluetoothManager.REQUEST_ENABLE_BT: {
                 broadcast.postEvent(new BluetoothAvailableEvent(resultCode == RESULT_OK));
+                if (resultCode == RESULT_OK) {
+                    service.searchKey();
+                } else {
+                    onBleUnavailable();
+                }
+                break;
+            }
+            case LOCATION_INTENT_CODE: {
+                if (isGPSEnabled()) {
+                    startConnecting();
+                } else {
+                    onGPSLocationUnavailable();
+                }
                 break;
             }
         }
@@ -280,6 +377,27 @@ public class BaseActivity extends AppCompatActivity implements SensorEventListen
         intentFilter.addAction(BluetoothLeService.ACTION_GATT_DISCONNECTED);
         intentFilter.addAction(BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED);
         intentFilter.addAction(BluetoothLeService.ACTION_DATA_AVAILABLE);
+        intentFilter.addAction(BluetoothLeService.ACTION_RSSI);
         return intentFilter;
+    }
+
+    public abstract void onGPSLocationUnavailable();
+
+    public abstract void onLocationAvailable();
+
+    public abstract void onBleUnavailable();
+
+    public abstract void onBleBecomeAvailable();
+
+    public abstract void onUnsuccessfulSearch();
+
+    public abstract void onDeviceDiscovered();
+
+    public abstract void onTagReady();
+
+    public abstract void onRssiRead(int rssi);
+
+    public int getLastRSSI() {
+        return lastRSSI;
     }
 }

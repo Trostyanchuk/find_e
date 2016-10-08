@@ -1,11 +1,7 @@
 package io.sympli.find_e.ui.main;
 
-import android.content.ComponentName;
-import android.content.ServiceConnection;
 import android.databinding.DataBindingUtil;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.view.View;
 import android.view.animation.Animation;
@@ -18,19 +14,12 @@ import io.sympli.find_e.R;
 import io.sympli.find_e.databinding.ActivityMainBinding;
 import io.sympli.find_e.event.AnimationFinishedEvent;
 import io.sympli.find_e.event.ChangeScreenEvent;
-import io.sympli.find_e.ui.fragment.ConnectedFragment;
-import io.sympli.find_e.ui.fragment.ConnectionFragment;
 import io.sympli.find_e.ui.fragment.MainUsageFragment;
 import io.sympli.find_e.ui.fragment.MapFragment;
-import io.sympli.find_e.ui.fragment.PermissionsFragment;
 import io.sympli.find_e.ui.fragment.Screen;
 import io.sympli.find_e.ui.fragment.SettingsFragment;
-import io.sympli.find_e.ui.fragment.SetupFragment;
-import io.sympli.find_e.ui.fragment.SplashFragment;
 import io.sympli.find_e.ui.fragment.TipsFragment;
 import io.sympli.find_e.ui.widget.AbstractAnimationListener;
-import io.sympli.find_e.utils.LocalStorageUtil;
-import io.sympli.find_e.utils.PermissionsUtil;
 import jp.wasabeef.blurry.Blurry;
 
 public class MainActivity extends BaseActivity {
@@ -46,13 +35,49 @@ public class MainActivity extends BaseActivity {
 
         setupMenu();
 
-//        Screen startScreen = LocalStorageUtil.isFirstLaunch() ? Screen.SPLASH :
-//                Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-//                        !PermissionsUtil.permissionsGranted(this, PermissionsFragment.REQUIRED_PERMISSIONS) ?
-//                        Screen.PERMISSIONS : Screen.PAIR;
-        Screen startScreen = Screen.SPLASH;
+        Screen startScreen = Screen.MAIN_USAGE;
 
         replaceMainFragment(startScreen);
+    }
+
+    @Override
+    public void onGPSLocationUnavailable() {
+
+    }
+
+    @Override
+    public void onLocationAvailable() {
+
+    }
+
+    @Override
+    public void onBleUnavailable() {
+
+    }
+
+    @Override
+    public void onBleBecomeAvailable() {
+
+    }
+
+    @Override
+    public void onUnsuccessfulSearch() {
+
+    }
+
+    @Override
+    public void onDeviceDiscovered() {
+
+    }
+
+    @Override
+    public void onTagReady() {
+
+    }
+
+    @Override
+    public void onRssiRead(int rssi) {
+
     }
 
 
@@ -98,10 +123,10 @@ public class MainActivity extends BaseActivity {
                 bindingObject.settings.setEnabled(true);
                 break;
             }
-            case PERMISSIONS: {
-                bindingObject.toolbar.setVisibility(View.VISIBLE);
-                break;
-            }
+//            case PERMISSIONS: {
+//                bindingObject.toolbar.setVisibility(View.VISIBLE);
+//                break;
+//            }
             case MAIN_USAGE: {
                 bindingObject.settings.setVisibility(View.VISIBLE);
 //                bindingObject.circlesBg.setVisibility(View.VISIBLE);
@@ -114,23 +139,6 @@ public class MainActivity extends BaseActivity {
         Fragment fragment = null;
         boolean toolbarVisible = true;
         switch (screen) {
-            case SPLASH:
-                toolbarVisible = false;
-                fragment = new SplashFragment();
-                break;
-            case PERMISSIONS:
-                toolbarVisible = false;
-                fragment = new PermissionsFragment();
-                break;
-            case PAIR:
-                fragment = new ConnectionFragment();
-                break;
-            case SETUP:
-                fragment = new SetupFragment();
-                break;
-            case CONNECTED:
-                fragment = new ConnectedFragment();
-                break;
             case MAIN_USAGE:
                 fragment = new MainUsageFragment();
                 break;

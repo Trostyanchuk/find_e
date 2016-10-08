@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 import javax.inject.Inject;
 
@@ -13,6 +14,8 @@ import io.sympli.find_e.event.BluetoothAvailableEvent;
 import io.sympli.find_e.services.IBroadcast;
 
 public class BluetoothStateReceiver extends BroadcastReceiver {
+
+    private static final String TAG = BluetoothStateReceiver.class.getSimpleName();
 
     @Inject
     IBroadcast broadcast;
@@ -24,6 +27,7 @@ public class BluetoothStateReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
+        Log.d(TAG, action);
         switch (action) {
             case BluetoothAdapter.ACTION_STATE_CHANGED:
                 if (intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, -1) == BluetoothAdapter.STATE_OFF) {
@@ -34,10 +38,13 @@ public class BluetoothStateReceiver extends BroadcastReceiver {
                 break;
             case BluetoothDevice.ACTION_FOUND: {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                // Add the name and address to an array adapter to show in a ListView
-//                mArrayAdapter.add(device.getName() + "\n" + device.getAddress());
                 break;
             }
+            case BluetoothDevice.ACTION_ACL_CONNECTED:
+                int RSSI = intent.getShortExtra(BluetoothDevice.EXTRA_RSSI, Short.MIN_VALUE);
+                String mDeviceName = intent.getStringExtra(BluetoothDevice.EXTRA_NAME);
+                Log.d(TAG, "DEVICE - " + mDeviceName + " " + RSSI);
+                break;
         }
     }
 }

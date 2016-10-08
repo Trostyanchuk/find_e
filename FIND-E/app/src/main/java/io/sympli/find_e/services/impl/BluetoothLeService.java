@@ -14,6 +14,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
@@ -26,8 +27,10 @@ public class BluetoothLeService extends Service {
     public final static String ACTION_GATT_DISCONNECTED = "com.example.bluetooth.le.ACTION_GATT_DISCONNECTED";
     public final static String ACTION_GATT_SERVICES_DISCOVERED = "com.example.bluetooth.le.ACTION_GATT_SERVICES_DISCOVERED";
     public final static String ACTION_DATA_AVAILABLE = "com.example.bluetooth.le.ACTION_DATA_AVAILABLE";
+    public final static String ACTION_RSSI = "com.example.bluetooth.le.ACTION_RSSI";
     public final static String EXTRA_DATA_RAW = "com.example.bluetooth.le.EXTRA_DATA_RAW";
     public final static String EXTRA_UUID_CHAR = "com.example.bluetooth.le.EXTRA_UUID_CHAR";
+    public final static String EXTRA_RSSI = "com.example.bluetooth.le.EXTRA_RSSI";
     private final static String TAG = BluetoothLeService.class.getSimpleName();
     private static final int STATE_DISCONNECTED = 0;
     private static final int STATE_CONNECTING = 1;
@@ -35,6 +38,9 @@ public class BluetoothLeService extends Service {
 
     public static final String LIST_NAME = "NAME";
     public static final String LIST_UUID = "UUID";
+
+    private Handler readRSSIHandler;
+    private Runnable readRSSIRunnable;
 
     private final IBinder mBinder = new LocalBinder();
     private BluetoothManager mBluetoothManager;
@@ -87,13 +93,38 @@ public class BluetoothLeService extends Service {
         @Override
         public void onReadRemoteRssi(BluetoothGatt gatt, int rssi, int status) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
-
+                Log.d(TAG, "REMOTE RRSI " + rssi);
+                final Intent intent = new Intent(ACTION_RSSI);
+                intent.putExtra(EXTRA_RSSI, rssi);
+                readRemoteRSSIHandler();
             }
         }
     };
 
+    private void readRemoteRSSIHandler() {
+        readRSSIHandler = new Handler(this.getMainLooper());
+        readRSSIHandler.postDelayed(readRSSIRunnable = new Runnable() {
+            @Override
+            public void run() {
+                mBluetoothGatt.readRemoteRssi();
+            }
+        }, 3000);
+    }
+
+    private void stopReadRemoteRSSIHandler() {
+        if (readRSSIHandler != null) {
+            readRSSIHandler.removeCallbacks(readRSSIRunnable);
+            readRSSIHandler = null;
+            readRSSIRunnable = null;
+        }
+    }
+
     private void broadcastUpdate(final String action) {
         final Intent intent = new Intent(action);
+        sendBroadcast(intent);
+    }
+
+    private void broadcastUpdate(final Intent intent) {
         sendBroadcast(intent);
     }
 
@@ -215,17 +246,19 @@ public class BluetoothLeService extends Service {
     }
 
     @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        return START_NOT_STICKY;
+    }
+
+    @Override
     public IBinder onBind(final Intent intent) {
         return mBinder;
     }
 
     @Override
-    public boolean onUnbind(final Intent intent) {
-        // After using a given device, you should make sure that BluetoothGatt.close() is called
-        // such that resources are cleaned up properly.  In this particular example, close() is
-        // invoked when the UI is disconnected from the Service.
+    public void onDestroy() {
+        stopReadRemoteRSSIHandler();
         close();
-        return super.onUnbind(intent);
     }
 
     /**
@@ -263,6 +296,10 @@ public class BluetoothLeService extends Service {
             return;
         }
         mBluetoothGatt.setCharacteristicNotification(characteristic, enabled);
+    }
+
+    public boolean isDisconnected() {
+        return mConnectionState == STATE_DISCONNECTED;
     }
 
     public class LocalBinder extends Binder {
