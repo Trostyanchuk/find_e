@@ -93,9 +93,9 @@ public class BluetoothLeService extends Service {
         @Override
         public void onReadRemoteRssi(BluetoothGatt gatt, int rssi, int status) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                Log.d(TAG, "REMOTE RRSI " + rssi);
                 final Intent intent = new Intent(ACTION_RSSI);
                 intent.putExtra(EXTRA_RSSI, rssi);
+                sendBroadcast(intent);
                 readRemoteRSSIHandler();
             }
         }

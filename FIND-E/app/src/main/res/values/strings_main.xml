@@ -13,4 +13,13 @@
     <string name="warning_text_connection_lost">Tap on button to find last location</string>
 
     <string name="warning_text_profit">Profit: You can use FIND-E as a remote camera shutter button</string>
+
+    <string name="excellent">Excellent</string>
+    <string name="high">High</string>
+    <string name="medium">Normal</string>
+    <string name="low">Low</string>
+
+    <string name="tap_to_beep">TAP TO \nBEEP</string>
+    <string name="tap_to_stop">TAP TO \nSTOP</string>
+    <string name="tap_to_show_last_loc">TAP TO SHOW\nLAST LOCATION</string>
 </resources>

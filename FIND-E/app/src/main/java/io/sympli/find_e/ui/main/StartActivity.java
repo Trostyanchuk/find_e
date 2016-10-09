@@ -36,8 +36,12 @@ import io.sympli.find_e.ui.widget.AbstractAnimationListener;
 import io.sympli.find_e.ui.widget.AbstractEasyVideoCallback;
 import io.sympli.find_e.ui.widget.ViewPermissions;
 import io.sympli.find_e.utils.LocalStorageUtil;
+import io.sympli.find_e.utils.NotificationUtils;
 import io.sympli.find_e.utils.PermissionsUtil;
+import io.sympli.find_e.utils.SoundUtil;
 import io.sympli.find_e.utils.UIUtil;
+
+import static io.sympli.find_e.ui.fragment.Screen.CONNECTING;
 
 public class StartActivity extends BaseActivity {
 
@@ -78,9 +82,10 @@ public class StartActivity extends BaseActivity {
         @Override
         public void onClick(View view) {
             if (lastScreen == Screen.SPLASH) {
+                LocalStorageUtil.saveFirstLaunch();
                 updateUIState(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
                         !PermissionsUtil.permissionsGranted(StartActivity.this, PermissionsFragment.REQUIRED_PERMISSIONS) ?
-                        Screen.PERMISSIONS : Screen.CONNECTING);
+                        Screen.PERMISSIONS : CONNECTING);
             }
             if (lastScreen == Screen.HOW_TO_USE) {
                 Intent intent = new Intent(StartActivity.this, MainActivity.class);
@@ -115,7 +120,7 @@ public class StartActivity extends BaseActivity {
         public void onCompletion(EasyVideoPlayer player) {
             Log.d("TAG", "onCompleted " + player.getCurrentPosition() + " " + player.getDuration());
 
-            if (player.getCurrentPosition() >= 1900 && player.getCurrentPosition() <= player.getDuration()) {
+            if (player.getCurrentPosition() >= 1800 && player.getCurrentPosition() <= player.getDuration()) {
                 if (lastScreen == Screen.SPLASH) {
                     videoFinished = true;
                     continueAnimationForSplash();
@@ -137,20 +142,22 @@ public class StartActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+
         bindingObject = DataBindingUtil.setContentView(this, R.layout.activity_start);
         ApplicationController.getComponent().inject(this);
+        ApplicationController.setLastInstance(Instance.START);
 
         Screen startScreen = LocalStorageUtil.isFirstLaunch() ? Screen.SPLASH :
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
                         !PermissionsUtil.permissionsGranted(this, PermissionsFragment.REQUIRED_PERMISSIONS) ?
-                        Screen.PERMISSIONS : Screen.CONNECTING;
+                        Screen.PERMISSIONS : CONNECTING;
 
         bindingObject.viewPermissions.setPermissionsListener(viewPermissionsListener);
         bindingObject.viewPermissions.setOnContinueClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (lastScreen == Screen.PERMISSIONS) {
-                    updateUIState(Screen.CONNECTING);
+                    updateUIState(CONNECTING);
                 }
             }
         });
@@ -177,7 +184,6 @@ public class StartActivity extends BaseActivity {
         bindingObject.player.setAutoPlay(true);
         bindingObject.player.disableControls();
 
-        startScreen = Screen.HOW_TO_USE;
         updateUIState(startScreen);
     }
 
@@ -229,7 +235,6 @@ public class StartActivity extends BaseActivity {
                 break;
             case HOW_TO_USE:
                 bindingObject.icReady.setVisibility(View.INVISIBLE);
-                bindingObject.explanationParent.setVisibility(View.VISIBLE);
                 bindingObject.explanationTitle.setText(getString(R.string.how_to_use_label));
                 bindingObject.explanationText.setText(getString(R.string.how_to_use_text));
                 bindingObject.playerImgStub.setImageResource(R.drawable.staff);
@@ -247,6 +252,9 @@ public class StartActivity extends BaseActivity {
         Log.d("TAG", "On resume " + lastPosition);
         if (lastScreen == Screen.SPLASH || lastScreen == Screen.PAIR) {
             if (lastPosition != 0) {
+                if (videoFinished) {
+                    lastPosition = bindingObject.player.getDuration();
+                }
                 bindingObject.player.seekTo(lastPosition);
                 bindingObject.player.start();
             } else {
@@ -300,7 +308,7 @@ public class StartActivity extends BaseActivity {
 
     @Override
     public void onBleBecomeAvailable() {
-        updateUIState(Screen.CONNECTING);
+        updateUIState(CONNECTING);
     }
 
     @Override
@@ -315,6 +323,16 @@ public class StartActivity extends BaseActivity {
 
     @Override
     public void onRssiRead(int rssi) {
+    }
+
+    @Override
+    public void onDisconnected() {
+        updateUIState(CONNECTING);
+    }
+
+    @Override
+    public void playMobileSound(boolean turnOn) {
+        //STUB
     }
 
     private void stopSplashTimer() {
@@ -467,6 +485,23 @@ public class StartActivity extends BaseActivity {
     }
 
     private void startAnimationForHowToUse() {
+        Animation animation = AnimationUtils.loadAnimation(this, R.anim.fade_in);
+        animation.setDuration(ANIM_DURATION);
+        animation.setAnimationListener(new AbstractAnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                bindingObject.explanationParent.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                startAnimationForHowToUseBtn();
+            }
+        });
+        bindingObject.explanationParent.startAnimation(animation);
+    }
+
+    private void startAnimationForHowToUseBtn() {
         Animation animation = AnimationUtils.loadAnimation(this, R.anim.fade_in);
         animation.setDuration(ANIM_DURATION);
         animation.setAnimationListener(new AbstractAnimationListener() {

@@ -15,8 +15,8 @@ public final class LocalStorageUtil {
     private static final String FIRST_LAUNCH = "first_launch";
     private static final String LAST_POSITION_LAT = "last_position_lat";
     private static final String LAST_POSITION_LON = "last_position_lon";
-    private static final String SILENT_AREAS = "silent_areas";
     private static final String ENTRANCE_COUNT = "entrance_count";
+    private static final String SILENT_AREA = "silent_area";
 
     public static boolean isFirstLaunch() {
         return !getPreferences().contains(FIRST_LAUNCH);
@@ -29,6 +29,11 @@ public final class LocalStorageUtil {
     public static void saveLastPosition(LatLng lastPosition) {
         getEditor().putString(LAST_POSITION_LAT, String.valueOf(lastPosition.latitude)).apply();
         getEditor().putString(LAST_POSITION_LON, String.valueOf(lastPosition.longitude)).apply();
+    }
+
+    public static void saveLastPosition(double lat, double lon) {
+        getEditor().putString(LAST_POSITION_LAT, String.valueOf(lat)).apply();
+        getEditor().putString(LAST_POSITION_LON, String.valueOf(lon)).apply();
     }
 
     public static LatLng getLastPosition() {
@@ -47,6 +52,14 @@ public final class LocalStorageUtil {
     public static void increaseEntranceCount() {
         int entranceCount = getEntranceCount() + 1;
         getEditor().putInt(ENTRANCE_COUNT, entranceCount).apply();
+    }
+
+    public static boolean isSilentArea() {
+        return getPreferences().getBoolean(SILENT_AREA, false);
+    }
+
+    public static void setSilentArea(boolean silentArea) {
+        getEditor().putBoolean(SILENT_AREA, silentArea).apply();
     }
 
     private static SharedPreferences.Editor getEditor() {

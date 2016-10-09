@@ -29,9 +29,18 @@ public final class SoundUtil {
         mediaPlayer.start();
     }
 
-    public static void playPhoneLocator(Context context) {
+    public static void playPhoneLocator(final Context context) {
         resetPlayer();
         mediaPlayer = MediaPlayer.create(context, R.raw.phone_locator);
+        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mediaPlayer) {
+                SoundUtil.mediaPlayer.reset();
+                SoundUtil.mediaPlayer = MediaPlayer.create(context, R.raw.phone_locator);
+                SoundUtil.mediaPlayer.setOnCompletionListener(this);
+                SoundUtil.mediaPlayer.start();
+            }
+        });
         mediaPlayer.start();
     }
 

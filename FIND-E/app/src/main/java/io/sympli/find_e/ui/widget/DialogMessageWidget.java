@@ -151,6 +151,14 @@ public class DialogMessageWidget extends RelativeLayout {
         binding.warning.setVisibility(GONE);
     }
 
+    public void setUIForStopBeeping() {
+        lastState = Warning.INFO;
+        binding.topLine.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.light_blue));
+        binding.message.setText(textT2);
+        binding.tapToLearnMoreText.setVisibility(VISIBLE);
+        binding.warning.setVisibility(GONE);
+    }
+
     public void setUIForDisconnected() {
         lastState = Warning.ERROR;
         binding.topLine.setBackgroundColor(ContextCompat.getColor(getContext(), android.R.color.holo_red_light));

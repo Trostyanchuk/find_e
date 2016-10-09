@@ -1,11 +1,17 @@
 package io.sympli.find_e.ui.main;
 
 import android.databinding.DataBindingUtil;
+import android.location.Location;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+
+import com.google.android.gms.maps.model.LatLng;
+import com.mapbox.mapboxsdk.location.LocationServices;
 
 import org.greenrobot.eventbus.Subscribe;
 
@@ -16,11 +22,14 @@ import io.sympli.find_e.R;
 import io.sympli.find_e.databinding.ActivityMainBinding;
 import io.sympli.find_e.event.AnimationFinishedEvent;
 import io.sympli.find_e.event.ChangeScreenEvent;
-import io.sympli.find_e.event.SendDataToTagEvent;
 import io.sympli.find_e.event.SensorEvent;
 import io.sympli.find_e.event.TagAction;
 import io.sympli.find_e.services.IBroadcast;
+import io.sympli.find_e.ui.dialog.DialogClickListener;
+import io.sympli.find_e.ui.dialog.DialogInfo;
+import io.sympli.find_e.ui.dialog.InfoPopup;
 import io.sympli.find_e.ui.fragment.MapFragment;
+import io.sympli.find_e.ui.fragment.OnDontDisturbOptionsListener;
 import io.sympli.find_e.ui.fragment.Screen;
 import io.sympli.find_e.ui.fragment.SettingsFragment;
 import io.sympli.find_e.ui.fragment.TipsFragment;
@@ -33,23 +42,69 @@ import io.sympli.find_e.utils.SoundUtil;
 import io.sympli.find_e.utils.UIUtil;
 import jp.wasabeef.blurry.Blurry;
 
-public class MainActivity extends BaseActivity implements ButtonClickListener {
+public class MainActivity extends BaseActivity implements ButtonClickListener, OnDontDisturbOptionsListener {
+
+    private static final String TAG = MainActivity.class.getSimpleName();
 
     private ActivityMainBinding binding;
     private Fragment childFragment;
 
     @Inject
     IBroadcast broadcast;
+    private InfoPopup infoPopup;
+    private DialogInfo dialogInfo;
+    private DialogClickListener listener = new DialogClickListener() {
+        @Override
+        public void onPositiveBtnClickListener() {
+            startConnecting();
+        }
+
+        @Override
+        public void onNegativeBtnClickListener() {
+            UIUtil.showSnackBar(binding.getRoot(), getString(R.string.unable_to_continue_general),
+                    Snackbar.LENGTH_INDEFINITE, R.string.continue_close, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            finish();
+                        }
+                    });
+        }
+    };
 
     private ConnectionState connectionState = ConnectionState.HAPPY;
+    private String excellentLabel;
+    private String highLabel;
+    private String mediumLabel;
+    private String lowLabel;
+
+    private String tapToBeepLabel;
+    private String tapToStopLabel;
+    private String tapToShowLastLocLabel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         ApplicationController.getComponent().inject(this);
+        ApplicationController.setLastInstance(Instance.MAIN);
+
+        excellentLabel = getString(R.string.excellent);
+        highLabel = getString(R.string.high);
+        mediumLabel = getString(R.string.medium);
+        lowLabel = getString(R.string.low);
+
+        tapToBeepLabel = getString(R.string.tap_to_beep);
+        tapToStopLabel = getString(R.string.tap_to_stop);
+        tapToShowLastLocLabel = getString(R.string.tap_to_show_last_loc);
 
         setupMenu();
+
+        infoPopup = new InfoPopup(this, listener);
+        dialogInfo = new DialogInfo()
+                .setBody(getString(R.string.unable_to_find))
+                .setBtnPositiveText(getString(R.string.retry_recognition_btn))
+                .setBtnNegativeText(getString(R.string.cancel_recognition_btn));
 
         binding.messageView.setOnProtipClickListener(new DialogMessageWidget.OnProtipClickListener() {
             @Override
@@ -61,11 +116,12 @@ public class MainActivity extends BaseActivity implements ButtonClickListener {
             @Override
             public void openBleSettings() {
                 hideMessage();
-                //TODO open ble
+                startConnecting();
             }
         });
         binding.messageView.setVisibility(View.INVISIBLE);
         binding.robotIvState.switchImageByState(ConnectionState.HAPPY);
+        binding.batteryLife.setText(getPowerLevel() + "%");
         showMessageForEntranceCount();
         UIUtil.runTaskWithDelay(2664, new UIUtil.DelayTaskListener() {
             @Override
@@ -97,44 +153,84 @@ public class MainActivity extends BaseActivity implements ButtonClickListener {
 
     @Override
     public void onGPSLocationUnavailable() {
-
+        Log.d(TAG, "onGPSLocationUnavailable");
     }
 
     @Override
     public void onLocationAvailable() {
-
+        Log.d(TAG, "onLocationAvailable");
     }
 
     @Override
     public void onBleUnavailable() {
         showMessageForBleDisconnected();
+        setConnectionState(ConnectionState.DISCONNECTED);
+        Log.d(TAG, "onLocationAvailable");
     }
 
     @Override
     public void onBleBecomeAvailable() {
-
+        Log.d(TAG, "onBleBecomeAvailable");
     }
 
     @Override
     public void onUnsuccessfulSearch() {
-
+        Log.d(TAG, "onUnsuccessfulSearch");
+        infoPopup.show(dialogInfo);
     }
 
     @Override
     public void onDeviceDiscovered() {
-
+        Log.d(TAG, "onDeviceDiscovered");
+        setConnectionState(ConnectionState.SEARCHING);
     }
 
     @Override
     public void onTagReady() {
-
+        Log.d(TAG, "onTagReady");
+        setConnectionState(ConnectionState.CONNECTED);
     }
 
     @Override
     public void onRssiRead(int rssi) {
-
+        rssi = -rssi;
+        String signal = "";
+        if (rssi < 25) {
+            signal = excellentLabel;
+        } else if (rssi < 50) {
+            signal = highLabel;
+        } else if (rssi < 75) {
+            signal = mediumLabel;
+        } else {
+            signal = lowLabel;
+        }
+        binding.signalQuality.setText(signal);
     }
 
+    @Override
+    public void onDisconnected() {
+        Log.d(TAG, "onDisconnected");
+        //TODO get last location
+        LocationServices locationServices = LocationServices.getLocationServices(this);
+        Location location = locationServices.getLastLocation();
+        if (location != null) {
+            Log.d(TAG, "Location " + location.getLatitude() + " " + location.getLongitude());
+            LocalStorageUtil.saveLastPosition(location.getLatitude(), location.getLongitude());
+        }
+        service.searchKey();
+        setConnectionState(ConnectionState.DISCONNECTED);
+    }
+
+    @Override
+    public void playMobileSound(boolean turnOn) {
+        if (deviceIsBeeping) {
+            SoundUtil.resetPlayer();
+            deviceIsBeeping = false;
+        } else {
+            SoundUtil.playPhoneLocator(this);
+            deviceIsBeeping = true;
+        }
+    }
 
     @Override
     public void onStop() {
@@ -239,6 +335,7 @@ public class MainActivity extends BaseActivity implements ButtonClickListener {
         if (showBgBlur) {
             openBlurWithAnim();
         }
+        hideMessage();
         getSupportFragmentManager().beginTransaction()
                 .setCustomAnimations(appearanceAnimation, disappearanceAnimation)
                 .replace(R.id.shadow_container, fragment)
@@ -299,19 +396,34 @@ public class MainActivity extends BaseActivity implements ButtonClickListener {
         binding.partlyTransparentBackground.startAnimation(partlyTransparent);
     }
 
+    boolean beeping = false;
+
     @Override
     public void onButtonClick() {
         hideMessage();
         switch (connectionState) {
-            case SEARCHING:
-                setConnectionState(ConnectionState.CONNECTED);
-                broadcast.postEvent(new SendDataToTagEvent(TagAction.IMMEDIATE_ALERT_TURN_OFF));
-                break;
             case CONNECTED:
+                setConnectionState(ConnectionState.CONNECTED);
+                if (beeping) {
+                    beeping = false;
+                    binding.btnMsg.setText(tapToBeepLabel);
+                    sendDataToTag(TagAction.IMMEDIATE_ALERT_TURN_OFF);
+                } else {
+                    beeping = true;
+                    binding.btnMsg.setText(tapToStopLabel);
+                    sendDataToTag(TagAction.IMMEDIATE_ALERT_TURN_ON);
+                    if (LocalStorageUtil.getEntranceCount() == 0) {
+                        showStartMessageForStopBeeping();
+                    }
+                }
+                break;
+            case SEARCHING:
+                binding.btnMsg.setText(tapToShowLastLocLabel);
                 setConnectionState(ConnectionState.SEARCHING);
-                broadcast.postEvent(new SendDataToTagEvent(TagAction.IMMEDIATE_ALERT_TURN_ON));
+                broadcast.postEvent(new ChangeScreenEvent(Screen.MAP, ChangeScreenEvent.ScreenGroup.SHADOWING));
                 break;
             case DISCONNECTED:
+                binding.btnMsg.setText(tapToShowLastLocLabel);
                 broadcast.postEvent(new ChangeScreenEvent(Screen.MAP, ChangeScreenEvent.ScreenGroup.SHADOWING));
                 break;
         }
@@ -326,6 +438,14 @@ public class MainActivity extends BaseActivity implements ButtonClickListener {
             Animation animation = AnimationUtils.loadAnimation(this, R.anim.dialog_fade_in);
             binding.messageView.startAnimation(animation);
         }
+    }
+
+    private void showStartMessageForStopBeeping() {
+        hideMessage();
+        binding.messageView.setUIForStopBeeping();
+        binding.messageView.setVisibility(View.VISIBLE);
+        Animation animation = AnimationUtils.loadAnimation(this, R.anim.dialog_fade_in);
+        binding.messageView.startAnimation(animation);
     }
 
     private void showMessageForDisconnected() {
@@ -353,7 +473,10 @@ public class MainActivity extends BaseActivity implements ButtonClickListener {
     }
 
     private void setConnectionState(ConnectionState connectionState) {
+        Log.d(TAG, "setConnectionState " + connectionState.name());
         this.connectionState = connectionState;
+        hideMessage();
+        SoundUtil.resetPlayer();
         binding.btnView.setConnectionState(connectionState);
         binding.btnView.setOnButtonClickListener(this);
         binding.robotIvState.switchImageByState(connectionState);
@@ -363,10 +486,25 @@ public class MainActivity extends BaseActivity implements ButtonClickListener {
             showMessageForDisconnected();
         }
         if (connectionState == ConnectionState.CONNECTED) {
-            SoundUtil.playPhoneLocator(this);
+
         }
         if (connectionState == ConnectionState.SEARCHING) {
 
         }
+    }
+
+    @Override
+    public boolean isDontDisturb() {
+        return isDontDisturbMode();
+    }
+
+    @Override
+    public void turnOnDontDisturb() {
+        sendDataToTag(TagAction.TURN_ON_DONT_DISTURB);
+    }
+
+    @Override
+    public void turnOffDontDisturb() {
+        sendDataToTag(TagAction.TURN_OFF_DONT_DISTURB);
     }
 }

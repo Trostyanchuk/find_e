@@ -7,12 +7,15 @@ import android.content.Intent;
 
 import com.mapbox.mapboxsdk.MapboxAccountManager;
 
+import io.sympli.find_e.ui.main.Instance;
 import io.sympli.find_e.utils.LocalStorageUtil;
 
 public class ApplicationController extends Application {
 
     private static ApplicationController instance;
     private static int activityCounter = 0;
+    private static boolean wifiEnabled = false;
+    private static Instance lastInstance = Instance.START;
 
     private ApplicationComponent component;
 
@@ -54,7 +57,19 @@ public class ApplicationController extends Application {
         return activityCounter > 0;
     }
 
-    private void startConnectionService() {
-        startService(new Intent(getBaseContext(), BluetoothGattService.class));
+    public static void setWifiEnabled(boolean enabled) {
+        wifiEnabled = enabled;
+    }
+
+    public static boolean getWifiEnabled() {
+        return wifiEnabled;
+    }
+
+    public static void setLastInstance(Instance instance) {
+        lastInstance = instance;
+    }
+
+    public static Instance getLastInstance() {
+        return lastInstance;
     }
 }

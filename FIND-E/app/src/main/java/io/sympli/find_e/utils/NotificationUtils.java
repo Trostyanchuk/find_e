@@ -10,24 +10,31 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 
+import io.sympli.find_e.ApplicationController;
 import io.sympli.find_e.R;
+import io.sympli.find_e.ui.main.Instance;
 import io.sympli.find_e.ui.main.MainActivity;
+import io.sympli.find_e.ui.main.StartActivity;
 
 public final class NotificationUtils {
 
     private static final int ID_ERROR = 0;
     private static final int ID_ORDER = 1;
 
-    public static void sendNewOrderNotification(Context context, String title, String text) {
+    public static void sendDisconnectedNotification(Context context) {
         NotificationManager notificationManager = (NotificationManager)
                 context.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancel(ID_ORDER);
 
-        Intent notificationIntent = new Intent(context, MainActivity.class);
+        Intent notificationIntent = ApplicationController.getLastInstance() == Instance.MAIN ?
+                new Intent(context, MainActivity.class) :
+                new Intent(context, StartActivity.class);
+
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
         PendingIntent intent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
-
+        String title = "Connection lost";
+        String text = "Tap to open last received tag location";
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
                 .setSmallIcon(R.drawable.aiia_logo)
                 .setColor(Color.BLACK)

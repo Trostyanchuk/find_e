@@ -8,7 +8,7 @@ public interface BleState {
     //R
     String DEVICE_NAME = "00002A00-0000-1000-8000-00805F9B34FB";
     //RW (0 - dont beep, 1 - beep   do not disturb mode.)
-    String LINK_LOSS = "00002A06-0000-1000-8000-0080F9B34FB";
+    String LINK_LOSS = "00002A06-0000-1000-8000-00805F9B34FB";
     //W (2 - turn on, 0 - turn off)
     String IMMEDIATE_ALERT = "00002A06-0000-1000-8000-00805F9B34FB";
     //R

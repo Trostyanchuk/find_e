@@ -12,6 +12,8 @@ import javax.inject.Inject;
 import io.sympli.find_e.ApplicationController;
 import io.sympli.find_e.event.BluetoothAvailableEvent;
 import io.sympli.find_e.services.IBroadcast;
+import io.sympli.find_e.utils.LocalStorageUtil;
+import io.sympli.find_e.utils.NotificationUtils;
 
 public class BluetoothStateReceiver extends BroadcastReceiver {
 
@@ -32,6 +34,12 @@ public class BluetoothStateReceiver extends BroadcastReceiver {
             case BluetoothAdapter.ACTION_STATE_CHANGED:
                 if (intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, -1) == BluetoothAdapter.STATE_OFF) {
                     broadcast.postEvent(new BluetoothAvailableEvent(false));
+                    if (!ApplicationController.isAppInForeground()) {
+                        if (!LocalStorageUtil.isSilentArea() ||
+                                (LocalStorageUtil.isSilentArea() && !ApplicationController.getWifiEnabled())) {
+                            NotificationUtils.sendDisconnectedNotification(context);
+                        }
+                    }
                 } else if (intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, -1) == BluetoothAdapter.STATE_ON) {
                     broadcast.postEvent(new BluetoothAvailableEvent(true));
                 }

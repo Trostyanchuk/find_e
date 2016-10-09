@@ -5,10 +5,13 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.os.Handler;
 import android.util.AttributeSet;
+import android.util.Log;
 
 import io.sympli.find_e.utils.SoundUtil;
 
 public class ButtonView extends ViewStateBase {
+
+    private static final String TAG = ButtonView.class.getSimpleName();
 
     private boolean invalidateInProgress;
 
@@ -57,6 +60,7 @@ public class ButtonView extends ViewStateBase {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+        Log.d(TAG, lastState.name());
         invalidateInProgress = true;
 
         switch (lastState) {
@@ -65,6 +69,7 @@ public class ButtonView extends ViewStateBase {
                 drawConnected(canvas);
                 break;
             case DISCONNECTED:
+                Log.d(TAG, "draw disconnected");
                 drawDisconnected(canvas);
                 break;
             case SEARCHING:

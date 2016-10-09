@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 
 import javax.inject.Inject;
 
@@ -17,9 +18,11 @@ import io.sympli.find_e.event.AnimationFinishedEvent;
 import io.sympli.find_e.event.ChangeScreenEvent;
 import io.sympli.find_e.services.IBroadcast;
 import io.sympli.find_e.utils.CameraUtil;
+import io.sympli.find_e.utils.LocalStorageUtil;
 
 public class SettingsFragment extends Fragment {
 
+    private static final String TAG = SettingsFragment.class.getSimpleName();
     @Inject
     IBroadcast broadcast;
 
@@ -31,8 +34,25 @@ public class SettingsFragment extends Fragment {
         ApplicationController.getComponent().inject(this);
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_settings, container, false);
 
-        binding.setDoNotDisturb(false);
-        binding.setSilentArea(false);
+        binding.setDoNotDisturb(((OnDontDisturbOptionsListener) getActivity()).isDontDisturb());
+        binding.setSilentArea(LocalStorageUtil.isSilentArea());
+
+        binding.silentAreaSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                LocalStorageUtil.setSilentArea(b);
+            }
+        });
+        binding.doNotDicturbSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b) {
+                    ((OnDontDisturbOptionsListener)getActivity()).turnOnDontDisturb();
+                } else {
+                    ((OnDontDisturbOptionsListener)getActivity()).turnOffDontDisturb();
+                }
+            }
+        });
         binding.done.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
