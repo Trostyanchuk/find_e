@@ -17,6 +17,7 @@ public final class LocalStorageUtil {
     private static final String LAST_POSITION_LON = "last_position_lon";
     private static final String ENTRANCE_COUNT = "entrance_count";
     private static final String SILENT_AREA = "silent_area";
+    private static final String LAST_DEVICE_ID = "last_device_id";
 
     public static boolean isFirstLaunch() {
         return !getPreferences().contains(FIRST_LAUNCH);
@@ -60,6 +61,18 @@ public final class LocalStorageUtil {
 
     public static void setSilentArea(boolean silentArea) {
         getEditor().putBoolean(SILENT_AREA, silentArea).apply();
+    }
+
+    public static void cleanLastDeviceId() {
+        getEditor().remove(LAST_DEVICE_ID).commit();
+    }
+
+    public static String getLastDeviceId() {
+        return getPreferences().getString(LAST_DEVICE_ID, null);
+    }
+
+    public static void setLastDeviceId(String lastDeviceId) {
+        getEditor().putString(LAST_DEVICE_ID, lastDeviceId).apply();
     }
 
     private static SharedPreferences.Editor getEditor() {

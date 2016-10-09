@@ -36,7 +36,7 @@ public final class NotificationUtils {
         String title = "Connection lost";
         String text = "Tap to open last received tag location";
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
-                .setSmallIcon(R.drawable.aiia_logo)
+                .setSmallIcon(R.mipmap.ic_launcher)
                 .setColor(Color.BLACK)
                 .setContentTitle(title)
                 .setContentText(text)

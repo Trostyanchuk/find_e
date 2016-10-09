@@ -34,6 +34,7 @@
         </android.support.v7.widget.Toolbar>
 
         <RelativeLayout
+            android:id="@+id/view_containers_root"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/btn_screen_gradient_normal">

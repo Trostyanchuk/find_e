@@ -29,6 +29,7 @@ public class ApplicationController extends Application {
         component.inject(this);
 
         LocalStorageUtil.increaseEntranceCount();
+        LocalStorageUtil.cleanLastDeviceId();
 
         setupMaps();
     }

@@ -1,6 +1,7 @@
 package io.sympli.find_e.ui.main;
 
 import android.databinding.DataBindingUtil;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -154,18 +155,32 @@ public class MainActivity extends BaseActivity implements ButtonClickListener, O
     @Override
     public void onGPSLocationUnavailable() {
         Log.d(TAG, "onGPSLocationUnavailable");
+        UIUtil.showSnackBar(binding.getRoot(), getString(R.string.msg_location_unavailable_alert),
+                Snackbar.LENGTH_INDEFINITE, R.string.label_turn_on, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        checkGPSEnabled();
+                    }
+                });
     }
 
     @Override
     public void onLocationAvailable() {
         Log.d(TAG, "onLocationAvailable");
+        LocationServices locationServices = LocationServices.getLocationServices(this);
+        Location location = locationServices.getLastLocation();
+        if (location != null) {
+            Log.d(TAG, "Location " + location.getLatitude() + " " + location.getLongitude());
+            LocalStorageUtil.saveLastPosition(location.getLatitude(), location.getLongitude());
+        }
+
     }
 
     @Override
     public void onBleUnavailable() {
         showMessageForBleDisconnected();
         setConnectionState(ConnectionState.DISCONNECTED);
-        Log.d(TAG, "onLocationAvailable");
+        Log.d(TAG, "onBleUnavailable");
     }
 
     @Override
@@ -211,12 +226,6 @@ public class MainActivity extends BaseActivity implements ButtonClickListener, O
     public void onDisconnected() {
         Log.d(TAG, "onDisconnected");
         //TODO get last location
-        LocationServices locationServices = LocationServices.getLocationServices(this);
-        Location location = locationServices.getLastLocation();
-        if (location != null) {
-            Log.d(TAG, "Location " + location.getLatitude() + " " + location.getLongitude());
-            LocalStorageUtil.saveLastPosition(location.getLatitude(), location.getLongitude());
-        }
         service.searchKey();
         setConnectionState(ConnectionState.DISCONNECTED);
     }
@@ -482,14 +491,24 @@ public class MainActivity extends BaseActivity implements ButtonClickListener, O
         binding.robotIvState.switchImageByState(connectionState);
         binding.btnView.animateSelf();
         if (connectionState == ConnectionState.DISCONNECTED) {
+            binding.batteryLife.setText("_");
+            binding.signalQuality.setText("_");
             SoundUtil.playDisconnected(this);
             showMessageForDisconnected();
+            binding.btnMsg.setText(tapToShowLastLocLabel);
+            binding.viewContainersRoot.setBackgroundColor(Color.BLACK);
         }
         if (connectionState == ConnectionState.CONNECTED) {
-
+            binding.batteryLife.setText(getPowerLevel() + "%");
+            onRssiRead(getLastRSSI());
+            binding.btnMsg.setText(tapToBeepLabel);
+            binding.viewContainersRoot.setBackgroundResource(R.drawable.btn_screen_gradient_normal);
         }
         if (connectionState == ConnectionState.SEARCHING) {
-
+            binding.batteryLife.setText("_");
+            binding.signalQuality.setText("_");
+            binding.btnMsg.setText(tapToShowLastLocLabel);
+            binding.viewContainersRoot.setBackgroundResource(R.drawable.btn_screen_gradient_normal);
         }
     }
 

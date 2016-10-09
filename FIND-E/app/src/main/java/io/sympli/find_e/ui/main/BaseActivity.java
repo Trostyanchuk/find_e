@@ -22,6 +22,10 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.WindowManager;
 
+import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.location.LocationListener;
+import com.mapbox.mapboxsdk.location.LocationServices;
+
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
@@ -46,6 +50,7 @@ import io.sympli.find_e.services.impl.BluetoothLeService;
 import io.sympli.find_e.ui.widget.parallax.FloatArrayEvaluator;
 import io.sympli.find_e.ui.widget.parallax.SensorAnalyzer;
 import io.sympli.find_e.utils.BLEUtil;
+import io.sympli.find_e.utils.LocalStorageUtil;
 import io.sympli.find_e.utils.LocationPermissionUtil;
 import io.sympli.find_e.utils.MyLocationListener;
 import io.sympli.find_e.utils.NotificationUtils;
@@ -71,7 +76,9 @@ public abstract class BaseActivity extends AbstractCounterActivity implements Se
     @Inject
     IBluetoothManager service;
 
-    private ConnectivityReceiver networkStateReceiver;
+    private LocationServices locationServices;
+    private LocationManager locationManager;
+    private LatLng myLastLocation;
 
     private String mDeviceAddress;
     private boolean mConnected;
@@ -91,7 +98,7 @@ public abstract class BaseActivity extends AbstractCounterActivity implements Se
                 return;
             }
             // Automatically connects to the device upon successful start-up initialization.
-            mBluetoothLeService.connect(mDeviceAddress);
+            mBluetoothLeService.connect(LocalStorageUtil.getLastDeviceId());
         }
 
         @Override
@@ -174,6 +181,19 @@ public abstract class BaseActivity extends AbstractCounterActivity implements Se
                 .getDefaultDisplay().getRotation();
         sensorAnalyzer.remapAxis(rotation);
 
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        locationServices = LocationServices.getLocationServices(this);
+        locationServices.toggleGPS(true);
+        locationServices.addLocationListener(new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                if (location != null) {
+                    myLastLocation = new LatLng(location.getLatitude(), location.getLongitude());
+                    LocalStorageUtil.saveLastPosition(location.getLatitude(), location.getLongitude());
+                }
+            }
+        });
+
         final Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
         bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
     }
@@ -184,9 +204,9 @@ public abstract class BaseActivity extends AbstractCounterActivity implements Se
         broadcast.register(this);
         sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_FASTEST);
         registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
-        if (mBluetoothLeService != null && !TextUtils.isEmpty(mDeviceAddress)
+        if (mBluetoothLeService != null && !TextUtils.isEmpty(LocalStorageUtil.getLastDeviceId())
                 && mBluetoothLeService.isDisconnected()) {
-            final boolean result = mBluetoothLeService.connect(mDeviceAddress);
+            final boolean result = mBluetoothLeService.connect(LocalStorageUtil.getLastDeviceId());
             Log.d("TAG", "Connect request result=" + result);
         }
     }
@@ -212,7 +232,7 @@ public abstract class BaseActivity extends AbstractCounterActivity implements Se
     public void onSensorChanged(SensorEvent sensorEvent) {
         float[] newOffsetItems = sensorAnalyzer.normalizeAxisDueToEvent(sensorEvent);
         if (newOffsetItems != null) {
-            broadcast.postEvent(new io.sympli.find_e.event.SensorEvent(newOffsetItems[0], newOffsetItems[1]));
+//            broadcast.postEvent(new io.sympli.find_e.event.SensorEvent(newOffsetItems[0], newOffsetItems[1]));
         }
     }
 
@@ -227,6 +247,7 @@ public abstract class BaseActivity extends AbstractCounterActivity implements Se
         if (event.isFound()) {
             onDeviceDiscovered();
             mDeviceAddress = event.getDevice().getAddress();
+            LocalStorageUtil.setLastDeviceId(mDeviceAddress);
             mBluetoothLeService.connect(mDeviceAddress);
         } else {
             onUnsuccessfulSearch();
@@ -422,5 +443,9 @@ public abstract class BaseActivity extends AbstractCounterActivity implements Se
 
     public int getPowerLevel() {
         return powerLevel;
+    }
+
+    public boolean isConnected() {
+        return !mBluetoothLeService.isDisconnected();
     }
 }

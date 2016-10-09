@@ -60,7 +60,6 @@ public class ButtonView extends ViewStateBase {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        Log.d(TAG, lastState.name());
         invalidateInProgress = true;
 
         switch (lastState) {
@@ -69,7 +68,6 @@ public class ButtonView extends ViewStateBase {
                 drawConnected(canvas);
                 break;
             case DISCONNECTED:
-                Log.d(TAG, "draw disconnected");
                 drawDisconnected(canvas);
                 break;
             case SEARCHING:
@@ -110,9 +108,9 @@ public class ButtonView extends ViewStateBase {
         float cX, cY;
         int alpha = ALPHA_MAX;
 
-        float stepOffset = DEGREES_MAX / 8 * 0.9f;
-        float stepEmpty = DEGREES_MAX / 8 * 0.1f;
-        int sectors = DEGREES_MAX / 8;
+        float stepOffset = DEGREES_MAX / 18 * 0.9f;
+        float stepEmpty = DEGREES_MAX / 18 * 0.1f;
+        int sectors = DEGREES_MAX / 18;
         for (int index = 0; index < CIRCLES; index++) {
             cX = x + xOffset * 2 + xOffset * 2 * index;
             cY = y + yOffset * 2 + yOffset * 2 * index;
@@ -120,7 +118,7 @@ public class ButtonView extends ViewStateBase {
             lineDisonnectedPaint.setAlpha(alpha);
             lineRectF.set(cX - radius, cY - radius, cX + radius, cY + radius);
 
-            for (int step = 0; step < 8; step++) {
+            for (int step = 0; step < 18; step++) {
                 float startAngle = step == 0 ? stepEmpty / 2 + rotationAngle : sectors * step + rotationAngle;
                 canvas.drawArc(lineRectF, startAngle, stepOffset, false, lineDisonnectedPaint);
             }
