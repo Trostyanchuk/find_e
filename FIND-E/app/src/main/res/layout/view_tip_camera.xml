@@ -2,17 +2,41 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="@dimen/activity_horizontal_margin">
+
+    <io.sympli.find_e.ui.widget.TypefaceTextView
+        android:id="@+id/title"
+        style="@style/TextRegular"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="How to use your FIND-E\nas a camera shutter button?"
+        android:textColor="@android:color/white"
+        android:textSize="17sp" />
+
+    <io.sympli.find_e.ui.widget.TypefaceTextView
+        android:id="@+id/subtitle"
+        style="@style/TextLightWhite"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:alpha="0.7"
+        android:gravity="center"
+        android:paddingTop="10dp"
+        android:text="You can take photos remotely \nusing a button on your FIND-E."
+        android:textColor="@android:color/white"
+        android:textSize="13sp" />
 
     <io.sympli.find_e.ui.widget.CircleTextView
         android:layout_width="@dimen/circle_number_size"
         android:layout_height="@dimen/circle_number_size"
         android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/activity_horizontal_margin"
         app:text="1" />
 
     <io.sympli.find_e.ui.widget.TypefaceTextView
-        style="@style/TextRegular"
+        style="@style/TextLight"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:alpha="0.7"
@@ -20,16 +44,17 @@
         android:padding="@dimen/activity_vertical_margin"
         android:text="@string/camera_first"
         android:textColor="@android:color/white"
-        android:textSize="15sp" />
+        android:textSize="13sp" />
 
     <io.sympli.find_e.ui.widget.CircleTextView
         android:layout_width="@dimen/circle_number_size"
         android:layout_height="@dimen/circle_number_size"
         android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/activity_horizontal_margin"
         app:text="2" />
 
     <io.sympli.find_e.ui.widget.TypefaceTextView
-        style="@style/TextRegular"
+        style="@style/TextLight"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:alpha="0.7"
@@ -37,16 +62,17 @@
         android:padding="@dimen/activity_vertical_margin_small"
         android:text="@string/camera_second"
         android:textColor="@android:color/white"
-        android:textSize="15sp" />
+        android:textSize="13sp" />
 
     <io.sympli.find_e.ui.widget.CircleTextView
         android:layout_width="@dimen/circle_number_size"
         android:layout_height="@dimen/circle_number_size"
         android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/activity_horizontal_margin"
         app:text="3" />
 
     <io.sympli.find_e.ui.widget.TypefaceTextView
-        style="@style/TextRegular"
+        style="@style/TextLightWhite"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:alpha="0.7"
@@ -54,25 +80,6 @@
         android:padding="@dimen/activity_vertical_margin_small"
         android:text="@string/camera_third"
         android:textColor="@android:color/white"
-        android:textSize="15sp" />
+        android:textSize="13sp" />
 
-    <io.sympli.find_e.ui.widget.TypefaceTextView
-        android:id="@+id/try_now_btn"
-        style="@style/TextRegularWhite"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="25dp"
-        android:layout_marginTop="25dp"
-        android:background="@drawable/btn_blue_selector"
-        android:clickable="true"
-        android:focusable="true"
-        android:gravity="center"
-        android:paddingBottom="16dp"
-        android:paddingLeft="50dp"
-        android:paddingRight="50dp"
-        android:paddingTop="16dp"
-        android:text="@string/try_now_btn"
-        android:textAllCaps="true"
-        android:textColor="@color/light_blue" />
 </LinearLayout>

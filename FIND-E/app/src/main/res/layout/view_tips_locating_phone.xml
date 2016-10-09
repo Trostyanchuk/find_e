@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="@dimen/activity_horizontal_margin">
+
+    <io.sympli.find_e.ui.widget.TypefaceTextView
+        android:id="@+id/title"
+        style="@style/TextRegularWhite"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="How to locate your phone\nwith FIND-E?"
+        android:textColor="@android:color/white"
+        android:textSize="17sp" />
+
+    <io.sympli.find_e.ui.widget.CircleTextView
+        android:layout_width="@dimen/circle_number_size"
+        android:layout_height="@dimen/circle_number_size"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/activity_horizontal_margin"
+        app:text="1" />
+
+    <io.sympli.find_e.ui.widget.TypefaceTextView
+        style="@style/TextLight"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:alpha="0.7"
+        android:gravity="center"
+        android:padding="@dimen/activity_vertical_margin"
+        android:text="Push FIND-E button\nto make your phone beep"
+        android:textColor="@android:color/white"
+        android:textSize="13sp" />
+
+    <io.sympli.find_e.ui.widget.CircleTextView
+        android:layout_width="@dimen/circle_number_size"
+        android:layout_height="@dimen/circle_number_size"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/activity_horizontal_margin"
+        app:text="2" />
+
+    <io.sympli.find_e.ui.widget.TypefaceTextView
+        style="@style/TextLight"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:alpha="0.7"
+        android:gravity="center"
+        android:padding="@dimen/activity_vertical_margin_small"
+        android:text="Push FIND-E button again to stop the beeping\nonce you\'ve found your phone"
+        android:textColor="@android:color/white"
+        android:textSize="13sp" />
+
+    <io.sympli.find_e.ui.widget.TypefaceTextView
+        style="@style/TextLight"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/activity_horizontal_margin"
+        android:alpha="0.7"
+        android:gravity="center"
+        android:padding="@dimen/activity_vertical_margin_small"
+        android:text="Your phone will beep regardless of it\'s sound settings,\nso you\'ll be able to find it in seconds!"
+        android:textColor="@android:color/white"
+        android:textSize="13sp" />
+
+</LinearLayout>

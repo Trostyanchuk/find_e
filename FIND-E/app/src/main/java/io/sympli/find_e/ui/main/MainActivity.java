@@ -9,35 +9,90 @@ import android.view.animation.AnimationUtils;
 
 import org.greenrobot.eventbus.Subscribe;
 
+import javax.inject.Inject;
+
 import io.sympli.find_e.ApplicationController;
 import io.sympli.find_e.R;
 import io.sympli.find_e.databinding.ActivityMainBinding;
 import io.sympli.find_e.event.AnimationFinishedEvent;
 import io.sympli.find_e.event.ChangeScreenEvent;
-import io.sympli.find_e.ui.fragment.MainUsageFragment;
+import io.sympli.find_e.event.SendDataToTagEvent;
+import io.sympli.find_e.event.SensorEvent;
+import io.sympli.find_e.event.TagAction;
+import io.sympli.find_e.services.IBroadcast;
 import io.sympli.find_e.ui.fragment.MapFragment;
 import io.sympli.find_e.ui.fragment.Screen;
 import io.sympli.find_e.ui.fragment.SettingsFragment;
 import io.sympli.find_e.ui.fragment.TipsFragment;
 import io.sympli.find_e.ui.widget.AbstractAnimationListener;
+import io.sympli.find_e.ui.widget.DialogMessageWidget;
+import io.sympli.find_e.ui.widget.states.ButtonClickListener;
+import io.sympli.find_e.ui.widget.states.ConnectionState;
+import io.sympli.find_e.utils.LocalStorageUtil;
+import io.sympli.find_e.utils.SoundUtil;
+import io.sympli.find_e.utils.UIUtil;
 import jp.wasabeef.blurry.Blurry;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements ButtonClickListener {
 
-    private ActivityMainBinding bindingObject;
+    private ActivityMainBinding binding;
     private Fragment childFragment;
+
+    @Inject
+    IBroadcast broadcast;
+
+    private ConnectionState connectionState = ConnectionState.HAPPY;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        bindingObject = DataBindingUtil.setContentView(this, R.layout.activity_main);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         ApplicationController.getComponent().inject(this);
 
         setupMenu();
 
-        Screen startScreen = Screen.MAIN_USAGE;
+        binding.messageView.setOnProtipClickListener(new DialogMessageWidget.OnProtipClickListener() {
+            @Override
+            public void openTips() {
+                hideMessage();
+                replaceShadowingFragment(Screen.SETTINGS);
+            }
 
-        replaceMainFragment(startScreen);
+            @Override
+            public void openBleSettings() {
+                hideMessage();
+                //TODO open ble
+            }
+        });
+        binding.messageView.setVisibility(View.INVISIBLE);
+        binding.robotIvState.switchImageByState(ConnectionState.HAPPY);
+        showMessageForEntranceCount();
+        UIUtil.runTaskWithDelay(2664, new UIUtil.DelayTaskListener() {
+            @Override
+            public void onFinished() {
+                connectionState = ConnectionState.CONNECTED;
+                setConnectionState(connectionState);
+            }
+        });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        binding.btnView.animateSelf();
+        setConnectionState(connectionState);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        binding.btnView.stopAnimation();
+    }
+
+    @Subscribe
+    public void onSensorEvent(SensorEvent event) {
+        broadcast.removeStickyEvent(SensorEvent.class);
+        binding.btnView.setParallaxOffset(event.getxOffset(), event.getyOffset());
     }
 
     @Override
@@ -52,7 +107,7 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public void onBleUnavailable() {
-
+        showMessageForBleDisconnected();
     }
 
     @Override
@@ -87,12 +142,12 @@ public class MainActivity extends BaseActivity {
     }
 
     private void setupMenu() {
-        bindingObject.toolbar.inflateMenu(R.menu.menu_main);
-        bindingObject.settings.setOnClickListener(new View.OnClickListener() {
+        binding.toolbar.inflateMenu(R.menu.menu_main);
+        binding.settings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 blurView();
-                bindingObject.settings.setEnabled(false);
+                binding.settings.setEnabled(false);
                 replaceShadowingFragment(Screen.SETTINGS);
             }
         });
@@ -103,54 +158,27 @@ public class MainActivity extends BaseActivity {
                 .radius(25)
                 .sampling(1)
                 .async()
-                .capture(bindingObject.root)
-                .into(bindingObject.blurBackground);
+                .capture(binding.root)
+                .into(binding.blurBackground);
     }
 
     @Subscribe
     public void onChangeScreenEvent(ChangeScreenEvent event) {
-        if (event.getScreenGroup() == ChangeScreenEvent.ScreenGroup.MAIN) {
-            replaceMainFragment(event.getNewState());
-        } else {
-            replaceShadowingFragment(event.getNewState());
-        }
+        replaceShadowingFragment(event.getNewState());
     }
 
     @Subscribe
     public void onAnimationFinishedEvent(AnimationFinishedEvent event) {
         switch (event.getScreen()) {
             case SETTINGS: {
-                bindingObject.settings.setEnabled(true);
+                binding.settings.setEnabled(true);
                 break;
             }
-//            case PERMISSIONS: {
-//                bindingObject.toolbar.setVisibility(View.VISIBLE);
-//                break;
-//            }
             case MAIN_USAGE: {
-                bindingObject.settings.setVisibility(View.VISIBLE);
-//                bindingObject.circlesBg.setVisibility(View.VISIBLE);
+                binding.settings.setVisibility(View.VISIBLE);
                 break;
             }
         }
-    }
-
-    private void replaceMainFragment(Screen screen) {
-        Fragment fragment = null;
-        boolean toolbarVisible = true;
-        switch (screen) {
-            case MAIN_USAGE:
-                fragment = new MainUsageFragment();
-                break;
-        }
-        bindingObject.toolbar.setVisibility(toolbarVisible ? View.VISIBLE : View.INVISIBLE);
-        bindingObject.settings.setVisibility(View.INVISIBLE);
-
-        getSupportFragmentManager().beginTransaction()
-                .setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
-                .replace(R.id.main_container, fragment)
-                .disallowAddToBackStack()
-                .commit();
     }
 
     private void replaceShadowingFragment(Screen screen) {
@@ -193,6 +221,16 @@ public class MainActivity extends BaseActivity {
                 appearanceAnimation = R.anim.slide_in_right;
                 disappearanceAnimation = R.anim.slide_out_left;
                 break;
+            case TIPS_LOCATING:
+                fragment = TipsFragment.getInstance(TipsFragment.TipsArea.LOCATE_PHONE);
+                appearanceAnimation = R.anim.slide_in_right;
+                disappearanceAnimation = R.anim.slide_out_left;
+                break;
+            case TIPS_BATTERY:
+                fragment = TipsFragment.getInstance(TipsFragment.TipsArea.CHANGE_BATTERY);
+                appearanceAnimation = R.anim.slide_in_right;
+                disappearanceAnimation = R.anim.slide_out_left;
+                break;
             case NONE:
                 removeShadowingFragment();
                 return;
@@ -225,12 +263,12 @@ public class MainActivity extends BaseActivity {
 
     private void openBlurWithAnim() {
         Animation fadeInAnim = AnimationUtils.loadAnimation(this, R.anim.fade_in);
-        bindingObject.blurBackground.setVisibility(View.VISIBLE);
-        bindingObject.blurBackground.startAnimation(fadeInAnim);
+        binding.blurBackground.setVisibility(View.VISIBLE);
+        binding.blurBackground.startAnimation(fadeInAnim);
 
         Animation partlyTransparent = AnimationUtils.loadAnimation(this, R.anim.slide_in_right);
-        bindingObject.partlyTransparentBackground.setVisibility(View.VISIBLE);
-        bindingObject.partlyTransparentBackground.startAnimation(partlyTransparent);
+        binding.partlyTransparentBackground.setVisibility(View.VISIBLE);
+        binding.partlyTransparentBackground.startAnimation(partlyTransparent);
     }
 
     private void closeBlur() {
@@ -242,10 +280,10 @@ public class MainActivity extends BaseActivity {
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                bindingObject.blurBackground.setVisibility(View.INVISIBLE);
+                binding.blurBackground.setVisibility(View.INVISIBLE);
             }
         });
-        bindingObject.blurBackground.startAnimation(animation);
+        binding.blurBackground.startAnimation(animation);
 
         Animation partlyTransparent = AnimationUtils.loadAnimation(this, R.anim.slide_out_right);
         partlyTransparent.setAnimationListener(new AbstractAnimationListener() {
@@ -255,9 +293,80 @@ public class MainActivity extends BaseActivity {
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                bindingObject.partlyTransparentBackground.setVisibility(View.INVISIBLE);
+                binding.partlyTransparentBackground.setVisibility(View.INVISIBLE);
             }
         });
-        bindingObject.partlyTransparentBackground.startAnimation(partlyTransparent);
+        binding.partlyTransparentBackground.startAnimation(partlyTransparent);
+    }
+
+    @Override
+    public void onButtonClick() {
+        hideMessage();
+        switch (connectionState) {
+            case SEARCHING:
+                setConnectionState(ConnectionState.CONNECTED);
+                broadcast.postEvent(new SendDataToTagEvent(TagAction.IMMEDIATE_ALERT_TURN_OFF));
+                break;
+            case CONNECTED:
+                setConnectionState(ConnectionState.SEARCHING);
+                broadcast.postEvent(new SendDataToTagEvent(TagAction.IMMEDIATE_ALERT_TURN_ON));
+                break;
+            case DISCONNECTED:
+                broadcast.postEvent(new ChangeScreenEvent(Screen.MAP, ChangeScreenEvent.ScreenGroup.SHADOWING));
+                break;
+        }
+    }
+
+
+    private void showMessageForEntranceCount() {
+        hideMessage();
+        if (LocalStorageUtil.getEntranceCount() < 7) {
+            binding.messageView.setUIForEntranceCount(LocalStorageUtil.getEntranceCount());
+            binding.messageView.setVisibility(View.VISIBLE);
+            Animation animation = AnimationUtils.loadAnimation(this, R.anim.dialog_fade_in);
+            binding.messageView.startAnimation(animation);
+        }
+    }
+
+    private void showMessageForDisconnected() {
+        hideMessage();
+        binding.messageView.setUIForDisconnected();
+        binding.messageView.setVisibility(View.VISIBLE);
+        Animation animation = AnimationUtils.loadAnimation(this, R.anim.dialog_fade_in);
+        binding.messageView.startAnimation(animation);
+    }
+
+    private void showMessageForBleDisconnected() {
+        hideMessage();
+        binding.messageView.setUIForTurnedOffBluetooth();
+        binding.messageView.setVisibility(View.VISIBLE);
+        Animation animation = AnimationUtils.loadAnimation(this, R.anim.dialog_fade_in);
+        binding.messageView.startAnimation(animation);
+    }
+
+    private void hideMessage() {
+        if (binding.messageView.getVisibility() == View.VISIBLE) {
+            Animation animation = AnimationUtils.loadAnimation(this, R.anim.dialog_fade_out);
+            binding.messageView.startAnimation(animation);
+            binding.messageView.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    private void setConnectionState(ConnectionState connectionState) {
+        this.connectionState = connectionState;
+        binding.btnView.setConnectionState(connectionState);
+        binding.btnView.setOnButtonClickListener(this);
+        binding.robotIvState.switchImageByState(connectionState);
+        binding.btnView.animateSelf();
+        if (connectionState == ConnectionState.DISCONNECTED) {
+            SoundUtil.playDisconnected(this);
+            showMessageForDisconnected();
+        }
+        if (connectionState == ConnectionState.CONNECTED) {
+            SoundUtil.playPhoneLocator(this);
+        }
+        if (connectionState == ConnectionState.SEARCHING) {
+
+        }
     }
 }

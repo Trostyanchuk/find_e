@@ -17,6 +17,8 @@ public enum Screen {
     TIPS_CAMERA,
     TIPS_SILENT,
     TIPS_DISTURB,
+    TIPS_LOCATING,
+    TIPS_BATTERY,
     NONE
 
 }

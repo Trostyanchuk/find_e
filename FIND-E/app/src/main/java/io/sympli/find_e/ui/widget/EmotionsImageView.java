@@ -43,11 +43,14 @@ public class EmotionsImageView extends ImageView {
     public void switchImageByState(ConnectionState state) {
         Drawable drawable = null;
         switch (state) {
+            case HAPPY:
+                drawable = ContextCompat.getDrawable(getContext(), R.drawable.animation_list_happy);
+                break;
             case DISCONNECTED:
                 drawable = ContextCompat.getDrawable(getContext(), R.drawable.animation_list_dead);
                 break;
             case CONNECTED:
-                drawable = ContextCompat.getDrawable(getContext(), R.drawable.animation_list_happy);
+                drawable = ContextCompat.getDrawable(getContext(), R.drawable.animation_list_standby);
                 break;
             case SEARCHING:
                 drawable = ContextCompat.getDrawable(getContext(), R.drawable.animation_list_searching);

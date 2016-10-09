@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="@dimen/activity_horizontal_margin">
+
+    <io.sympli.find_e.ui.widget.TypefaceTextView
+        android:id="@+id/title"
+        style="@style/TextRegular"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="How to change the battery\nin FIND-E?"
+        android:textColor="@android:color/white"
+        android:textSize="17sp" />
+
+    <io.sympli.find_e.ui.widget.TypefaceTextView
+        android:id="@+id/subtitle"
+        style="@style/TextLightWhite"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:alpha="0.7"
+        android:gravity="center"
+        android:paddingTop="10dp"
+        android:text="FIND-E uses a standard, wastly popular\nCR2032 battery."
+        android:textColor="@android:color/white"
+        android:textSize="13sp" />
+
+    <io.sympli.find_e.ui.widget.CircleTextView
+        android:layout_width="@dimen/circle_number_size"
+        android:layout_height="@dimen/circle_number_size"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/activity_horizontal_margin"
+        app:text="1" />
+
+    <io.sympli.find_e.ui.widget.TypefaceTextView
+        style="@style/TextLight"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:alpha="0.7"
+        android:gravity="center"
+        android:padding="@dimen/activity_vertical_margin"
+        android:text="Gently press on the front plate\nand rotate clockwise"
+        android:textColor="@android:color/white"
+        android:textSize="13sp" />
+
+    <io.sympli.find_e.ui.widget.CircleTextView
+        android:layout_width="@dimen/circle_number_size"
+        android:layout_height="@dimen/circle_number_size"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/activity_horizontal_margin"
+        app:text="2" />
+
+    <io.sympli.find_e.ui.widget.TypefaceTextView
+        style="@style/TextLight"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:alpha="0.7"
+        android:gravity="center"
+        android:padding="@dimen/activity_vertical_margin_small"
+        android:text="Remove the front plate\nand change the battery"
+        android:textColor="@android:color/white"
+        android:textSize="13sp" />
+
+    <io.sympli.find_e.ui.widget.CircleTextView
+        android:layout_width="@dimen/circle_number_size"
+        android:layout_height="@dimen/circle_number_size"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/activity_horizontal_margin"
+        app:text="3" />
+
+    <io.sympli.find_e.ui.widget.TypefaceTextView
+        style="@style/TextLightWhite"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:alpha="0.7"
+        android:gravity="center"
+        android:padding="@dimen/activity_vertical_margin_small"
+        android:text="Put the front plate back,\npress and rotate it counterclockwise"
+        android:textColor="@android:color/white"
+        android:textSize="13sp" />
+
+</LinearLayout>

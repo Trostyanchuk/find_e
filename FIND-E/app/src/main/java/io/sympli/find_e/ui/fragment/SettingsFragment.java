@@ -4,12 +4,9 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 
 import javax.inject.Inject;
 
@@ -19,7 +16,7 @@ import io.sympli.find_e.databinding.FragmentSettingsBinding;
 import io.sympli.find_e.event.AnimationFinishedEvent;
 import io.sympli.find_e.event.ChangeScreenEvent;
 import io.sympli.find_e.services.IBroadcast;
-import io.sympli.find_e.ui.widget.AbstractAnimationListener;
+import io.sympli.find_e.utils.CameraUtil;
 
 public class SettingsFragment extends Fragment {
 
@@ -43,6 +40,13 @@ public class SettingsFragment extends Fragment {
             }
         });
 
+        binding.goToCameraParent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                CameraUtil.openCameraApp(getContext());
+            }
+        });
+
         binding.remoteCameraShutter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -61,6 +65,19 @@ public class SettingsFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 broadcast.postEvent(new ChangeScreenEvent(Screen.TIPS_DISTURB, ChangeScreenEvent.ScreenGroup.SHADOWING));
+            }
+        });
+        binding.locatingPhoneParent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                broadcast.postEvent(new ChangeScreenEvent(Screen.TIPS_LOCATING, ChangeScreenEvent.ScreenGroup.SHADOWING));
+            }
+        });
+
+        binding.changindBatteryParent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                broadcast.postEvent(new ChangeScreenEvent(Screen.TIPS_BATTERY, ChangeScreenEvent.ScreenGroup.SHADOWING));
             }
         });
 

@@ -16,6 +16,7 @@ public final class LocalStorageUtil {
     private static final String LAST_POSITION_LAT = "last_position_lat";
     private static final String LAST_POSITION_LON = "last_position_lon";
     private static final String SILENT_AREAS = "silent_areas";
+    private static final String ENTRANCE_COUNT = "entrance_count";
 
     public static boolean isFirstLaunch() {
         return !getPreferences().contains(FIRST_LAUNCH);
@@ -36,8 +37,16 @@ public final class LocalStorageUtil {
     }
 
     public static List<String> getSilentWifiSSIDs() {
-//        getPreferences().getString()
         return new ArrayList<>();
+    }
+
+    public static int getEntranceCount() {
+        return getPreferences().getInt(ENTRANCE_COUNT, -1);
+    }
+
+    public static void increaseEntranceCount() {
+        int entranceCount = getEntranceCount() + 1;
+        getEditor().putInt(ENTRANCE_COUNT, entranceCount).apply();
     }
 
     private static SharedPreferences.Editor getEditor() {

@@ -8,4 +8,6 @@
     <string name="me_label">Me</string>
     <string name="last_location_label">Last Location</string>
     <string name="last_location_text">- %d meters</string>
+
+    <string name="notify_ok">FIND-E will not notify you until you leave the marked silent area.</string>
 </resources>

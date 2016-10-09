@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="dont_disturb_title">How to use "Do not disturb" mode?</string>
-    <string name="dont_disturb_subtitle">If you want to stop FIND-E from tracking and notifying you for a while, use \"Do not disturb\" mode.</string>
+    <string name="dont_disturb_title">How to use \'Do not disturb\ mode?</string>
+    <string name="dont_disturb_subtitle">If you want to stop FIND-E from tracking and notifying you for a while, use \'Do not disturb\' mode.</string>
     <string name="dont_disturb_first">Tap FIND-E\'s avatar \nto turn off tracking</string>
     <string name="dont_disturb_second">Tap again to turn it back on</string>
-    <string name="dont_disturb_text">Once you turn "Do not disturb" mode off, \n
+    <string name="dont_disturb_text">Once you turn \'Do not disturb\' mode off, \n
         FIND-E will automatically reconnect \nand start tracking again.</string>
 
     <string name="silent_title">How to set-up a silent area?</string>
@@ -19,9 +19,22 @@
     <string name="camera_title">How to use your FIND-E as a camera shutter button?</string>
     <string name="camera_subtitle">You can take photos remotely\nusing a button on your FIND-E</string>
     <string name="camera_first">Make sure yor FIND-E\n is connected</string>
-    <string name="camera_second">Open your camera app</string>
+    <string name="camera_second">Select \'Remote camera button\' in app settings</string>
     <string name="camera_third">Push FIND-E button\n to take a photo</string>
 
     <string name="try_now_btn">TRY NOW</string>
     <string name="go_to_settings_btn">GO TO SETTINGS</string>
+
+    <string name="text1">Tap the button below\nto see how FIND-E works</string>
+    <string name="text2">Tap the button again\nonce you\ve found it!</string>
+    <string name="text3">Protip: Tap on my face\nto turn on the sleep mode</string>
+    <string name="text4">Tap again to turn\nsleep mode off</string>
+    <string name="text5">Protip: You can use FIND-E\nas a remote camera shutter button</string>
+    <string name="text6">Protip: Set up a silent area\nfor you home or office</string>
+    <string name="text7">Protip: You can locate\nyour phone with FIND-E</string>
+
+    <string name="textN1">FIND-E will reconnect again\nonce it\'s close enough to you</string>
+    <string name="textN2">Woot woot!\nConnected again!</string>
+    <string name="textN3">Turn on bluetooth\nto track your FIND-E</string>
+    <string name="textN4">Time to change your battery!</string>
 </resources>

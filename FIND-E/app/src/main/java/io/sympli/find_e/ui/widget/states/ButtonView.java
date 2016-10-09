@@ -60,6 +60,7 @@ public class ButtonView extends ViewStateBase {
         invalidateInProgress = true;
 
         switch (lastState) {
+            case HAPPY:
             case CONNECTED:
                 drawConnected(canvas);
                 break;

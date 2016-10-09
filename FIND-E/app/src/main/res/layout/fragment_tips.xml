@@ -44,99 +44,49 @@
             </android.support.v7.widget.Toolbar>
         </android.support.design.widget.AppBarLayout>
 
-        <android.support.v4.widget.NestedScrollView
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-            <LinearLayout
+            <android.support.v4.widget.NestedScrollView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:paddingLeft="@dimen/activity_horizontal_margin"
-                android:paddingRight="@dimen/activity_horizontal_margin">
-
-                <io.sympli.find_e.ui.widget.TypefaceTextView
-                    android:id="@+id/title"
-                    style="@style/TextMediumWhite"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="@{title}"
-                    android:textColor="@android:color/white"
-                    android:textSize="17sp"
-                    tools:text="@string/dont_disturb_title" />
-
-                <io.sympli.find_e.ui.widget.TypefaceTextView
-                    android:id="@+id/subtitle"
-                    style="@style/TextRegular"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:alpha="0.7"
-                    android:gravity="center"
-                    android:paddingTop="10dp"
-                    android:text="@{subtitle}"
-                    android:textColor="@android:color/white"
-                    android:textSize="15sp"
-                    tools:text="@string/dont_disturb_subtitle" />
-
-                <include
-                    android:id="@+id/view_tips_silent_area"
-                    layout="@layout/view_tips_silent_area"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="25dp"
-                    android:layout_marginTop="20dp"
-                    android:visibility="gone" />
-
-                <include
-                    android:id="@+id/view_tips_dont_disturb"
-                    layout="@layout/view_tips_dont_disturb"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="25dp"
-                    android:layout_marginTop="20dp"
-                    android:visibility="gone" />
+                android:layout_above="@+id/action_btn"
+                android:fadeScrollbars="false"
+                android:scrollbarAlwaysDrawVerticalTrack="true"
+                android:scrollbarSize="5dp"
+                android:scrollbars="vertical">
 
                 <FrameLayout
                     android:id="@+id/content_container"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="25dp"
-                    android:layout_marginTop="20dp" />
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginTop="10dp" />
 
-                <io.sympli.find_e.ui.widget.TypefaceTextView
-                    android:id="@+id/info"
-                    style="@style/TextRegular"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="25dp"
-                    android:alpha="0.7"
-                    android:gravity="center"
-                    android:text="@{textInfo}"
-                    android:textColor="@android:color/white"
-                    android:textSize="15sp"
-                    tools:text="@string/dont_disturb_text" />
+            </android.support.v4.widget.NestedScrollView>
 
-                <io.sympli.find_e.ui.widget.TypefaceTextView
-                    android:id="@+id/action_btn"
-                    style="@style/TextRegularWhite"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginBottom="25dp"
-                    android:background="@drawable/btn_blue_selector"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:gravity="center"
-                    android:paddingBottom="16dp"
-                    android:paddingLeft="50dp"
-                    android:paddingRight="50dp"
-                    android:paddingTop="16dp"
-                    android:textAllCaps="true"
-                    android:textColor="@color/light_blue" />
-
-            </LinearLayout>
-        </android.support.v4.widget.NestedScrollView>
+            <io.sympli.find_e.ui.widget.TypefaceTextView
+                android:id="@+id/action_btn"
+                style="@style/TextRegularWhite"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="25dp"
+                android:background="@drawable/btn_blue_selector"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:paddingBottom="16dp"
+                android:paddingLeft="50dp"
+                android:paddingRight="50dp"
+                android:paddingTop="16dp"
+                android:text="@string/try_now_btn"
+                android:textAllCaps="true"
+                android:textColor="@color/light_blue" />
+        </RelativeLayout>
     </android.support.design.widget.CoordinatorLayout>
 </layout>

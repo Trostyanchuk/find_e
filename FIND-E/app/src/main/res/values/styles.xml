@@ -31,6 +31,14 @@
         <item name="fontPath">@string/font_light</item>
     </style>
 
+    <style name="TextMedium">
+        <item name="fontPath">@string/font_medium</item>
+    </style>
+
+    <style name="TextBold">
+        <item name="fontPath">@string/font_bold</item>
+    </style>
+
     <style name="TextRegularWhite" parent="TextRegular">
         <item name="android:textColor">@android:color/white</item>
     </style>
@@ -40,12 +48,12 @@
         <item name="android:textColor">@android:color/white</item>
     </style>
 
-    <style name="TextBoldWhite">
+    <style name="TextBoldWhite" parent="TextBold">
         <item name="fontPath">@string/font_bold</item>
         <item name="android:textColor">@android:color/white</item>
     </style>
 
-    <style name="TextMediumWhite">
+    <style name="TextMediumWhite" parent="TextMedium">
         <item name="fontPath">@string/font_medium</item>
         <item name="android:textColor">@android:color/white</item>
     </style>

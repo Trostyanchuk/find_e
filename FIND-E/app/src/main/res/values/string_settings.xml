@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="silent_area_label">Silent WI-FI area</string>
+    <string name="silent_area_label">Silent area</string>
     <string name="do_not_disturb_label">Do not disturb</string>
 
-    <string name="remote_camera_shutter_label">Remote camera shutter button</string>
+    <string name="remote_camera_shutter_label">Remote camera button</string>
     <string name="do_not_disturb_mode_label">Do not disturb mode</string>
     <string name="setting_up_silent_area_label">Setting up a silent area</string>
+
+    <string name="using_to_take_photos">Using FIND-E to take photos</string>
+    <string name="using_dont_disturb">Turning on \'Do not disturb\' mode</string>
+    <string name="locating_phone">Locating your phone</string>
+    <string name="changing_battery">Changing the battery</string>
+
 </resources>

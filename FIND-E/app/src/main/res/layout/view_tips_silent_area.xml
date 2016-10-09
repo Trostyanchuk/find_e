@@ -2,42 +2,78 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingTop="@dimen/activity_vertical_margin">
+    android:padding="@dimen/activity_horizontal_margin">
+
+    <io.sympli.find_e.ui.widget.TypefaceTextView
+        android:id="@+id/title"
+        style="@style/TextRegular"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="How to set-up a silent area?"
+        android:textColor="@android:color/white"
+        android:textSize="17sp" />
+
+    <io.sympli.find_e.ui.widget.TypefaceTextView
+        android:id="@+id/subtitle"
+        style="@style/TextLightWhite"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:alpha="0.7"
+        android:gravity="center"
+        android:paddingTop="10dp"
+        android:text="You can automatically mute areas, \n like home or office."
+        android:textColor="@android:color/white"
+        android:textSize="13sp" />
 
     <io.sympli.find_e.ui.widget.CircleTextView
         android:layout_width="@dimen/circle_number_size"
         android:layout_height="@dimen/circle_number_size"
         android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/activity_horizontal_margin"
         app:text="1" />
 
     <io.sympli.find_e.ui.widget.TypefaceTextView
-        style="@style/TextRegular"
+        style="@style/TextLight"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:alpha="0.7"
         android:gravity="center"
         android:padding="@dimen/activity_vertical_margin"
-        android:text="@string/silent_first"
+        android:text="Select \'Silent area\' in app settings"
         android:textColor="@android:color/white"
-        android:textSize="15sp" />
+        android:textSize="13sp" />
 
     <io.sympli.find_e.ui.widget.CircleTextView
         android:layout_width="@dimen/circle_number_size"
         android:layout_height="@dimen/circle_number_size"
         android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/activity_horizontal_margin"
         app:text="2" />
 
     <io.sympli.find_e.ui.widget.TypefaceTextView
-        style="@style/TextRegular"
+        style="@style/TextLight"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:alpha="0.7"
         android:gravity="center"
-        android:padding="@dimen/activity_vertical_margin"
-        android:text="@string/silent_second"
+        android:padding="@dimen/activity_vertical_margin_small"
+        android:text="Pinch to mark the area"
         android:textColor="@android:color/white"
-        android:textSize="15sp" />
+        android:textSize="13sp" />
+
+    <io.sympli.find_e.ui.widget.TypefaceTextView
+        style="@style/TextLight"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/activity_horizontal_margin"
+        android:alpha="0.7"
+        android:gravity="center"
+        android:padding="@dimen/activity_vertical_margin_small"
+        android:text="@string/dont_disturb_text"
+        android:textColor="@android:color/white"
+        android:textSize="13sp" />
 
 </LinearLayout>

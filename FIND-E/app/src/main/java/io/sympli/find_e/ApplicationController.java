@@ -7,6 +7,8 @@ import android.content.Intent;
 
 import com.mapbox.mapboxsdk.MapboxAccountManager;
 
+import io.sympli.find_e.utils.LocalStorageUtil;
+
 public class ApplicationController extends Application {
 
     private static ApplicationController instance;
@@ -22,6 +24,8 @@ public class ApplicationController extends Application {
         component = DaggerApplicationComponent.builder()
                 .applicationModule(new ApplicationModule(this)).build();
         component.inject(this);
+
+        LocalStorageUtil.increaseEntranceCount();
 
         setupMaps();
     }

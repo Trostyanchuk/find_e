@@ -82,31 +82,31 @@ public class MainUsageFragment extends Fragment implements ButtonClickListener {
         binding.btnView.setOnButtonClickListener(this);
         binding.robotIvState.switchImageByState(connectionState);
         binding.btnView.animateSelf();
-        hideMessage();
-        if (connectionState == ConnectionState.DISCONNECTED) {
-            showMessage(getString(R.string.message_connection_lost),
-                    getString(R.string.warning_text_connection_lost),
-                    DialogMessageWidget.Warning.ERROR);
-        }
-        if (connectionState == ConnectionState.CONNECTED) {
-            showMessage(null,
-                    getString(R.string.warning_text_profit),
-                    DialogMessageWidget.Warning.INFO);
-        }
+//        hideMessage();
+//        if (connectionState == ConnectionState.DISCONNECTED) {
+//            showMessage(getString(R.string.message_connection_lost),
+//                    getString(R.string.warning_text_connection_lost),
+//                    DialogMessageWidget.Warning.ERROR);
+//        }
+//        if (connectionState == ConnectionState.CONNECTED) {
+//            showMessage(null,
+//                    getString(R.string.warning_text_profit),
+//                    DialogMessageWidget.Warning.INFO);
+//        }
     }
 
-    private void showMessage(String message, String warning, DialogMessageWidget.Warning type) {
-        binding.messageView.setMessage(message).setWarning(warning, type);
-        binding.messageView.setVisibility(View.VISIBLE);
-        Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.dialog_fade_in);
-        binding.messageView.startAnimation(animation);
-    }
-
-    private void hideMessage() {
-        Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.dialog_fade_out);
-        binding.messageView.startAnimation(animation);
-        binding.messageView.setVisibility(View.INVISIBLE);
-    }
+//    private void showMessage(String message, String warning, DialogMessageWidget.Warning type) {
+//        binding.messageView.setMessage(message).setWarning(warning, type);
+//        binding.messageView.setVisibility(View.VISIBLE);
+//        Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.dialog_fade_in);
+//        binding.messageView.startAnimation(animation);
+//    }
+//
+//    private void hideMessage() {
+//        Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.dialog_fade_out);
+//        binding.messageView.startAnimation(animation);
+//        binding.messageView.setVisibility(View.INVISIBLE);
+//    }
 
     @Override
     public Animation onCreateAnimation(int transit, final boolean enter, int nextAnim) {
@@ -134,7 +134,7 @@ public class MainUsageFragment extends Fragment implements ButtonClickListener {
 
     @Override
     public void onButtonClick() {
-        hideMessage();
+//        hideMessage();
         switch (connectionState) {
             case SEARCHING:
                 setConnectionState(ConnectionState.CONNECTED);
