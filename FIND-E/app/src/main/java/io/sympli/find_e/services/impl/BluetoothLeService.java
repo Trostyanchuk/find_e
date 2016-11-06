@@ -23,21 +23,8 @@ import java.util.List;
 
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class BluetoothLeService extends Service {
-    public final static String ACTION_GATT_CONNECTED = "com.example.bluetooth.le.ACTION_GATT_CONNECTED";
-    public final static String ACTION_GATT_DISCONNECTED = "com.example.bluetooth.le.ACTION_GATT_DISCONNECTED";
-    public final static String ACTION_GATT_SERVICES_DISCOVERED = "com.example.bluetooth.le.ACTION_GATT_SERVICES_DISCOVERED";
-    public final static String ACTION_DATA_AVAILABLE = "com.example.bluetooth.le.ACTION_DATA_AVAILABLE";
-    public final static String ACTION_RSSI = "com.example.bluetooth.le.ACTION_RSSI";
-    public final static String EXTRA_DATA_RAW = "com.example.bluetooth.le.EXTRA_DATA_RAW";
-    public final static String EXTRA_UUID_CHAR = "com.example.bluetooth.le.EXTRA_UUID_CHAR";
-    public final static String EXTRA_RSSI = "com.example.bluetooth.le.EXTRA_RSSI";
-    private final static String TAG = BluetoothLeService.class.getSimpleName();
-    private static final int STATE_DISCONNECTED = 0;
-    private static final int STATE_CONNECTING = 1;
-    private static final int STATE_CONNECTED = 2;
 
-    public static final String LIST_NAME = "NAME";
-    public static final String LIST_UUID = "UUID";
+    String TAG = BluetoothLeService.class.getSimpleName();
 
     private Handler readRSSIHandler;
     private Runnable readRSSIRunnable;
@@ -47,17 +34,17 @@ public class BluetoothLeService extends Service {
     private BluetoothAdapter mBluetoothAdapter;
     private String mBluetoothDeviceAddress;
     private BluetoothGatt mBluetoothGatt;
-    private int mConnectionState = STATE_DISCONNECTED;
+    private int mConnectionState = BleServiceConstant.STATE_DISCONNECTED;
     private final BluetoothGattCallback mGattCallback = new BluetoothGattCallback() {
         @Override
         public void onCharacteristicChanged(final BluetoothGatt gatt, final BluetoothGattCharacteristic characteristic) {
-            broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
+            broadcastUpdate(BleServiceConstant.ACTION_DATA_AVAILABLE, characteristic);
         }
 
         @Override
         public void onCharacteristicRead(final BluetoothGatt gatt, final BluetoothGattCharacteristic characteristic, final int status) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
+                broadcastUpdate(BleServiceConstant.ACTION_DATA_AVAILABLE, characteristic);
             }
         }
 
@@ -65,18 +52,17 @@ public class BluetoothLeService extends Service {
         public void onConnectionStateChange(final BluetoothGatt gatt, final int status, final int newState) {
             final String intentAction;
             if (newState == BluetoothProfile.STATE_CONNECTED) {
-                intentAction = ACTION_GATT_CONNECTED;
-                mConnectionState = STATE_CONNECTED;
+                intentAction = BleServiceConstant.ACTION_GATT_CONNECTED;
+                mConnectionState = BleServiceConstant.STATE_CONNECTED;
                 broadcastUpdate(intentAction);
 
                 mBluetoothGatt.readRemoteRssi();
                 Log.i(TAG, "Connected to GATT server.");
-                // Attempts to discover services after successful connection.
                 Log.i(TAG, "Attempting to start service discovery:" + mBluetoothGatt.discoverServices());
 
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-                intentAction = ACTION_GATT_DISCONNECTED;
-                mConnectionState = STATE_DISCONNECTED;
+                intentAction = BleServiceConstant.ACTION_GATT_DISCONNECTED;
+                mConnectionState = BleServiceConstant.STATE_DISCONNECTED;
                 Log.i(TAG, "Disconnected from GATT server.");
                 broadcastUpdate(intentAction);
             }
@@ -86,15 +72,15 @@ public class BluetoothLeService extends Service {
         public void onServicesDiscovered(final BluetoothGatt gatt, final int status) {
             Log.w(TAG, "onServicesDiscovered received: " + status);
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                broadcastUpdate(ACTION_GATT_SERVICES_DISCOVERED);
+                broadcastUpdate(BleServiceConstant.ACTION_GATT_SERVICES_DISCOVERED);
             }
         }
 
         @Override
         public void onReadRemoteRssi(BluetoothGatt gatt, int rssi, int status) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                final Intent intent = new Intent(ACTION_RSSI);
-                intent.putExtra(EXTRA_RSSI, rssi);
+                final Intent intent = new Intent(BleServiceConstant.ACTION_RSSI);
+                intent.putExtra(BleServiceConstant.EXTRA_RSSI, rssi);
                 sendBroadcast(intent);
                 readRemoteRSSIHandler();
             }
@@ -130,12 +116,12 @@ public class BluetoothLeService extends Service {
 
     private void broadcastUpdate(final String action, final BluetoothGattCharacteristic characteristic) {
         final Intent intent = new Intent(action);
-        intent.putExtra(EXTRA_UUID_CHAR, characteristic.getUuid().toString());
+        intent.putExtra(BleServiceConstant.EXTRA_UUID_CHAR, characteristic.getUuid().toString());
 
         // Always try to add the RAW value
         final byte[] data = characteristic.getValue();
         if (data != null && data.length > 0) {
-            intent.putExtra(EXTRA_DATA_RAW, data);
+            intent.putExtra(BleServiceConstant.EXTRA_DATA_RAW, data);
         }
         sendBroadcast(intent);
     }
@@ -173,7 +159,7 @@ public class BluetoothLeService extends Service {
 
             Log.d(TAG, "Trying to use an existing mBluetoothGatt for connection.");
             if (mBluetoothGatt.connect()) {
-                mConnectionState = STATE_CONNECTING;
+                mConnectionState = BleServiceConstant.STATE_CONNECTING;
                 return true;
             } else {
                 return false;
@@ -190,7 +176,7 @@ public class BluetoothLeService extends Service {
         mBluetoothGatt = device.connectGatt(this, false, mGattCallback);
         Log.d(TAG, "Trying to create a new connection.");
         mBluetoothDeviceAddress = address;
-        mConnectionState = STATE_CONNECTING;
+        mConnectionState = BleServiceConstant.STATE_CONNECTING;
         return true;
     }
 
@@ -226,8 +212,6 @@ public class BluetoothLeService extends Service {
      * @return Return true if the initialization is successful.
      */
     public boolean initialize() {
-        // For API level 18 and above, get a reference to BluetoothAdapter through
-        // BluetoothManager.
         if (mBluetoothManager == null) {
             mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
             if (mBluetoothManager == null) {
@@ -299,7 +283,7 @@ public class BluetoothLeService extends Service {
     }
 
     public boolean isDisconnected() {
-        return mConnectionState == STATE_DISCONNECTED;
+        return mConnectionState == BleServiceConstant.STATE_DISCONNECTED;
     }
 
     public class LocalBinder extends Binder {

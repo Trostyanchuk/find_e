@@ -12,8 +12,4 @@ public interface IBluetoothManager {
     void enableBluetooth(Activity activity);
 
     void searchKey();
-
-    void connect();
-
-    void disconnect();
 }

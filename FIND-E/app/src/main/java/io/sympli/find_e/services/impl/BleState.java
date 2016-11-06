@@ -15,4 +15,5 @@ public interface BleState {
     String POWER_LEVEL = "00002A07-0000-1000-8000-00805F9B34FB";
     //RN ()
     String BATTERY_SERVICE = "00002A19-0000-1000-8000-00805F9B34FB";
+    //TODO camera
 }

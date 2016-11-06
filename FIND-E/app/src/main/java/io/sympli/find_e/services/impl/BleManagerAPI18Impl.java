@@ -73,15 +73,4 @@ public class BleManagerAPI18Impl implements IBluetoothManager {
         scanning = true;
         bluetoothAdapter.startLeScan(leScanCallback);
     }
-
-    @Override
-    public void connect() {
-
-    }
-
-    @Override
-    public void disconnect() {
-        scanning = false;
-        bluetoothAdapter.stopLeScan(leScanCallback);
-    }
 }
