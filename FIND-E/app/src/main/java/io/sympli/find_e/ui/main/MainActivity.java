@@ -26,6 +26,7 @@ import io.sympli.find_e.event.ChangeScreenEvent;
 import io.sympli.find_e.event.SensorEvent;
 import io.sympli.find_e.event.TagAction;
 import io.sympli.find_e.services.IBroadcast;
+import io.sympli.find_e.services.impl.BleServiceConstant;
 import io.sympli.find_e.ui.dialog.DialogClickListener;
 import io.sympli.find_e.ui.dialog.DialogInfo;
 import io.sympli.find_e.ui.dialog.InfoPopup;
@@ -72,7 +73,7 @@ public class MainActivity extends BaseActivity implements ButtonClickListener, O
         }
     };
 
-    private ConnectionState connectionState = ConnectionState.HAPPY;
+//    private ConnectionState connectionState = ConnectionState.HAPPY;
     private String excellentLabel;
     private String highLabel;
     private String mediumLabel;
@@ -121,23 +122,25 @@ public class MainActivity extends BaseActivity implements ButtonClickListener, O
             }
         });
         binding.messageView.setVisibility(View.INVISIBLE);
-        binding.robotIvState.switchImageByState(ConnectionState.HAPPY);
+        binding.robotIvState.setHappy();
         binding.batteryLife.setText(getPowerLevel() + "%");
         showMessageForEntranceCount();
-        UIUtil.runTaskWithDelay(2664, new UIUtil.DelayTaskListener() {
-            @Override
-            public void onFinished() {
-                connectionState = ConnectionState.CONNECTED;
-                setConnectionState(connectionState);
-            }
-        });
     }
 
     @Override
     public void onResume() {
         super.onResume();
         binding.btnView.animateSelf();
-        setConnectionState(connectionState);
+        if (getConnectionState() == BleServiceConstant.STATE_CONNECTED) {
+            UIUtil.runTaskWithDelay(2664, new UIUtil.DelayTaskListener() {
+                @Override
+                public void onFinished() {
+                    setConnectionState(getConnectionState());
+                }
+            });
+        } else {
+            setConnectionState(getConnectionState());
+        }
     }
 
     @Override
@@ -173,13 +176,12 @@ public class MainActivity extends BaseActivity implements ButtonClickListener, O
             Log.d(TAG, "Location " + location.getLatitude() + " " + location.getLongitude());
             LocalStorageUtil.saveLastPosition(location.getLatitude(), location.getLongitude());
         }
-
     }
 
     @Override
     public void onBleUnavailable() {
         showMessageForBleDisconnected();
-        setConnectionState(ConnectionState.DISCONNECTED);
+        setConnectionState(BleServiceConstant.STATE_DISCONNECTED);
         Log.d(TAG, "onBleUnavailable");
     }
 
@@ -197,18 +199,18 @@ public class MainActivity extends BaseActivity implements ButtonClickListener, O
     @Override
     public void onDeviceDiscovered() {
         Log.d(TAG, "onDeviceDiscovered");
-        setConnectionState(ConnectionState.SEARCHING);
+        setConnectionState(BleServiceConstant.STATE_CONNECTING);
     }
 
     @Override
     public void onTagReady() {
         Log.d(TAG, "onTagReady");
-        setConnectionState(ConnectionState.CONNECTED);
+        setConnectionState(BleServiceConstant.STATE_CONNECTED);
     }
 
     @Override
-    public void onRssiRead(int rssi) {
-        rssi = -rssi;
+    public void onRssiRead() {
+        int rssi = - getLastRSSI();
         String signal = "";
         if (rssi < 25) {
             signal = excellentLabel;
@@ -226,8 +228,7 @@ public class MainActivity extends BaseActivity implements ButtonClickListener, O
     public void onDisconnected() {
         Log.d(TAG, "onDisconnected");
         //TODO get last location
-        service.searchKey();
-        setConnectionState(ConnectionState.DISCONNECTED);
+        setConnectionState(BleServiceConstant.STATE_DISCONNECTED);
     }
 
     @Override
@@ -410,9 +411,8 @@ public class MainActivity extends BaseActivity implements ButtonClickListener, O
     @Override
     public void onButtonClick() {
         hideMessage();
-        switch (connectionState) {
-            case CONNECTED:
-                setConnectionState(ConnectionState.CONNECTED);
+        switch (getConnectionState()) {
+            case BleServiceConstant.STATE_CONNECTED:
                 if (beeping) {
                     beeping = false;
                     binding.btnMsg.setText(tapToBeepLabel);
@@ -425,19 +425,18 @@ public class MainActivity extends BaseActivity implements ButtonClickListener, O
                         showStartMessageForStopBeeping();
                     }
                 }
+                setConnectionState(getConnectionState());
                 break;
-            case SEARCHING:
+            case BleServiceConstant.STATE_CONNECTING:
                 binding.btnMsg.setText(tapToShowLastLocLabel);
-                setConnectionState(ConnectionState.SEARCHING);
                 broadcast.postEvent(new ChangeScreenEvent(Screen.MAP, ChangeScreenEvent.ScreenGroup.SHADOWING));
                 break;
-            case DISCONNECTED:
+            case BleServiceConstant.STATE_DISCONNECTED:
                 binding.btnMsg.setText(tapToShowLastLocLabel);
                 broadcast.postEvent(new ChangeScreenEvent(Screen.MAP, ChangeScreenEvent.ScreenGroup.SHADOWING));
                 break;
         }
     }
-
 
     private void showMessageForEntranceCount() {
         hideMessage();
@@ -481,34 +480,38 @@ public class MainActivity extends BaseActivity implements ButtonClickListener, O
         }
     }
 
-    private void setConnectionState(ConnectionState connectionState) {
-        Log.d(TAG, "setConnectionState " + connectionState.name());
-        this.connectionState = connectionState;
+    private void setConnectionState(int connectionState) {
+        Log.d(TAG, "setConnectionState " + connectionState);
+//        this.connectionState = connectionState;
         hideMessage();
         SoundUtil.resetPlayer();
         binding.btnView.setConnectionState(connectionState);
         binding.btnView.setOnButtonClickListener(this);
         binding.robotIvState.switchImageByState(connectionState);
         binding.btnView.animateSelf();
-        if (connectionState == ConnectionState.DISCONNECTED) {
-            binding.batteryLife.setText("_");
-            binding.signalQuality.setText("_");
-            SoundUtil.playDisconnected(this);
-            showMessageForDisconnected();
-            binding.btnMsg.setText(tapToShowLastLocLabel);
-            binding.viewContainersRoot.setBackgroundColor(Color.BLACK);
-        }
-        if (connectionState == ConnectionState.CONNECTED) {
-            binding.batteryLife.setText(getPowerLevel() + "%");
-            onRssiRead(getLastRSSI());
-            binding.btnMsg.setText(tapToBeepLabel);
-            binding.viewContainersRoot.setBackgroundResource(R.drawable.btn_screen_gradient_normal);
-        }
-        if (connectionState == ConnectionState.SEARCHING) {
-            binding.batteryLife.setText("_");
-            binding.signalQuality.setText("_");
-            binding.btnMsg.setText(tapToShowLastLocLabel);
-            binding.viewContainersRoot.setBackgroundResource(R.drawable.btn_screen_gradient_normal);
+        switch (connectionState) {
+            case BleServiceConstant.STATE_CONNECTED:
+                binding.batteryLife.setText(getPowerLevel() + "%");
+                onRssiRead();
+                binding.btnMsg.setText(tapToBeepLabel);
+                binding.viewContainersRoot.setBackgroundResource(R.drawable.btn_screen_gradient_normal);
+                break;
+            case BleServiceConstant.STATE_CONNECTING:
+                binding.batteryLife.setText("_ _");
+                binding.signalQuality.setText("_ _");
+//                SoundUtil.playPhoneLocator(this);
+                showMessageForDisconnected();
+                binding.btnMsg.setText(tapToShowLastLocLabel);
+                binding.viewContainersRoot.setBackgroundColor(Color.BLACK);
+                break;
+            case BleServiceConstant.STATE_DISCONNECTED:
+                binding.batteryLife.setText("_ _");
+                binding.signalQuality.setText("_ _");
+                SoundUtil.playDisconnected(this);
+                showMessageForDisconnected();
+                binding.btnMsg.setText(tapToShowLastLocLabel);
+                binding.viewContainersRoot.setBackgroundColor(Color.BLACK);
+                break;
         }
     }
 

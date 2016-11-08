@@ -10,7 +10,7 @@ import android.util.AttributeSet;
 import android.widget.ImageView;
 
 import io.sympli.find_e.R;
-import io.sympli.find_e.ui.widget.states.ConnectionState;
+import io.sympli.find_e.services.impl.BleServiceConstant;
 
 public class EmotionsImageView extends ImageView {
 
@@ -40,23 +40,28 @@ public class EmotionsImageView extends ImageView {
 
     }
 
-    public void switchImageByState(ConnectionState state) {
+    public void switchImageByState(int connectionState) {
         Drawable drawable = null;
-        switch (state) {
-            case HAPPY:
-                drawable = ContextCompat.getDrawable(getContext(), R.drawable.animation_list_happy);
-                break;
-            case DISCONNECTED:
+        switch (connectionState) {
+            case BleServiceConstant.STATE_DISCONNECTED:
                 drawable = ContextCompat.getDrawable(getContext(), R.drawable.animation_list_dead);
                 break;
-            case CONNECTED:
+            case BleServiceConstant.STATE_CONNECTED:
                 drawable = ContextCompat.getDrawable(getContext(), R.drawable.animation_list_standby);
                 break;
-            case SEARCHING:
+            case BleServiceConstant.STATE_CONNECTING:
                 drawable = ContextCompat.getDrawable(getContext(), R.drawable.animation_list_searching);
                 break;
         }
 
+        if (drawable != null) {
+            setBackgroundDrawable(drawable);
+            ((AnimationDrawable) getBackground()).start();
+        }
+    }
+
+    public void setHappy() {
+        Drawable drawable = ContextCompat.getDrawable(getContext(), R.drawable.animation_list_happy);
         if (drawable != null) {
             setBackgroundDrawable(drawable);
             ((AnimationDrawable) getBackground()).start();

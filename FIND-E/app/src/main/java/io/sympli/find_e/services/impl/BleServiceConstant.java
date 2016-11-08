@@ -17,4 +17,8 @@ public interface BleServiceConstant {
 
     String LIST_NAME = "NAME";
     String LIST_UUID = "UUID";
+
+    int REQUEST_ENABLE_BT = 1;
+
+    long SCAN_PERIOD = 10000;
 }

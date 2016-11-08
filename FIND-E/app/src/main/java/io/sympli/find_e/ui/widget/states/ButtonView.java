@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
 
+import io.sympli.find_e.services.impl.BleServiceConstant;
 import io.sympli.find_e.utils.SoundUtil;
 
 public class ButtonView extends ViewStateBase {
@@ -23,7 +24,7 @@ public class ButtonView extends ViewStateBase {
     private float circleEndAlpha = 0.1f;
     private float circleAlphaStep;
 
-    private ConnectionState lastState;
+    private int lastState;
     private Handler handler;
     private Runnable runnable;
 
@@ -45,8 +46,8 @@ public class ButtonView extends ViewStateBase {
     private void init() {
     }
 
-    public void setConnectionState(ConnectionState state) {
-        this.lastState = state;
+    public void setConnectionState(int connectionState) {
+        this.lastState = connectionState;
         invalidate();
     }
 
@@ -63,15 +64,15 @@ public class ButtonView extends ViewStateBase {
         invalidateInProgress = true;
 
         switch (lastState) {
-            case HAPPY:
-            case CONNECTED:
+            case BleServiceConstant.STATE_CONNECTED:
                 drawConnected(canvas);
                 break;
-            case DISCONNECTED:
+            case BleServiceConstant.STATE_DISCONNECTED:
                 drawDisconnected(canvas);
                 break;
-            case SEARCHING:
-                drawSearching(canvas);
+            case BleServiceConstant.STATE_CONNECTING:
+//                drawSearching(canvas);
+                drawDisconnected(canvas);
                 break;
         }
 
@@ -182,21 +183,22 @@ public class ButtonView extends ViewStateBase {
         runnable = new Runnable() {
             @Override
             public void run() {
-                if (lastState == ConnectionState.CONNECTED) {
+                if (lastState == BleServiceConstant.STATE_CONNECTED) {
                     return;
                 }
-                if (lastState == ConnectionState.DISCONNECTED) {
+                if (lastState == BleServiceConstant.STATE_DISCONNECTED ||
+                        lastState == BleServiceConstant.STATE_CONNECTING) {
                     increaseRotationAngle();
                 }
-                if (lastState == ConnectionState.SEARCHING) {
-                    circleRadius += 5;
-                    circleAlpha -= circleAlphaStep * 4;
-                    if (circleRadius >= viewHeight / 2) {
-                        circleRadius = circleStartRadius;
-                        circleAlpha = circleStartAlpha;
-                    }
-                    invalidate();
-                }
+//                if (lastState == BleServiceConstant.) {
+//                    circleRadius += 5;
+//                    circleAlpha -= circleAlphaStep * 4;
+//                    if (circleRadius >= viewHeight / 2) {
+//                        circleRadius = circleStartRadius;
+//                        circleAlpha = circleStartAlpha;
+//                    }
+//                    invalidate();
+//                }
                 if (handler != null) {
                     handler.postDelayed(this, ANIM_DELAY);
                 }

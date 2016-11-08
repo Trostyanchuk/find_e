@@ -1,8 +1,6 @@
 package io.sympli.find_e.ui.main;
 
-import android.bluetooth.BluetoothGattCharacteristic;
-import android.bluetooth.BluetoothGattService;
-import android.content.BroadcastReceiver;
+import android.bluetooth.BluetoothAdapter;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -27,42 +25,37 @@ import com.mapbox.mapboxsdk.location.LocationListener;
 import com.mapbox.mapboxsdk.location.LocationServices;
 
 import org.greenrobot.eventbus.Subscribe;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import org.greenrobot.eventbus.ThreadMode;
 
 import javax.inject.Inject;
 
-import io.sympli.find_e.R;
 import io.sympli.find_e.event.BleDeviceFoundEvent;
 import io.sympli.find_e.event.BluetoothAvailableEvent;
+import io.sympli.find_e.event.GattUpdateEvent;
 import io.sympli.find_e.event.LocationChangedEvent;
 import io.sympli.find_e.event.PermissionsGrantResultEvent;
 import io.sympli.find_e.event.TagAction;
-import io.sympli.find_e.services.IBluetoothManager;
 import io.sympli.find_e.services.IBroadcast;
 import io.sympli.find_e.services.impl.BleServiceConstant;
 import io.sympli.find_e.services.impl.BleState;
 import io.sympli.find_e.services.impl.BluetoothLeService;
 import io.sympli.find_e.ui.widget.parallax.FloatArrayEvaluator;
 import io.sympli.find_e.ui.widget.parallax.SensorAnalyzer;
-import io.sympli.find_e.utils.BLEUtil;
 import io.sympli.find_e.utils.LocalStorageUtil;
 import io.sympli.find_e.utils.LocationPermissionUtil;
 import io.sympli.find_e.utils.MyLocationListener;
 import io.sympli.find_e.utils.NotificationUtils;
 import io.sympli.find_e.utils.UIUtil;
-import uk.co.alt236.bluetoothlelib.resolvers.GattAttributeResolver;
 import uk.co.alt236.bluetoothlelib.util.ByteUtils;
 
-import static io.sympli.find_e.services.impl.BleState.LINK_LOSS;
+import static io.sympli.find_e.services.impl.BleServiceConstant.REQUEST_ENABLE_BT;
 import static io.sympli.find_e.services.impl.BleState.SINGLE_TAP;
 import static io.sympli.find_e.utils.LocationPermissionUtil.LOCATION_INTENT_CODE;
 
 public abstract class BaseActivity extends AbstractCounterActivity implements SensorEventListener,
         MyLocationListener {
+
+    private static final String TAG = BaseActivity.class.getSimpleName();
 
     private FloatArrayEvaluator evaluator = new FloatArrayEvaluator(2);
     private SensorManager sensorManager;
@@ -71,8 +64,6 @@ public abstract class BaseActivity extends AbstractCounterActivity implements Se
 
     @Inject
     IBroadcast broadcast;
-    @Inject
-    IBluetoothManager service;
 
     private LocationServices locationServices;
     private LocationManager locationManager;
@@ -81,16 +72,14 @@ public abstract class BaseActivity extends AbstractCounterActivity implements Se
     private String mDeviceAddress;
     private boolean mConnected;
     private BluetoothLeService mBluetoothLeService;
-    private List<List<BluetoothGattCharacteristic>> mGattCharacteristics = new ArrayList<>();
     private int lastRSSI;
-    private int powerLevel = 100;
-    private boolean isDontDisturbMode;
+    private int powerLevel = 100;  //default power level
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(final ComponentName componentName, final IBinder service) {
             mBluetoothLeService = ((BluetoothLeService.LocalBinder) service).getService();
             if (!mBluetoothLeService.initialize()) {
-                Log.e("TAG", "Unable to initialize Bluetooth");
+                Log.e(TAG, "Unable to initialize Bluetooth");
                 return;
             }
             // Automatically connects to the device upon successful start-up initialization.
@@ -100,66 +89,6 @@ public abstract class BaseActivity extends AbstractCounterActivity implements Se
         @Override
         public void onServiceDisconnected(final ComponentName componentName) {
             mBluetoothLeService = null;
-        }
-    };
-
-    private final BroadcastReceiver mGattUpdateReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(final Context context, final Intent intent) {
-            final String action = intent.getAction();
-            if (BleServiceConstant.ACTION_GATT_CONNECTED.equals(action)) {
-                mConnected = true;
-            } else if (BleServiceConstant.ACTION_GATT_DISCONNECTED.equals(action)) {
-                mConnected = false;
-                Log.d("TAG", "Service disconnected");
-                onDisconnected();
-            } else if (BleServiceConstant.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
-                Log.d("TAG", "Service discovered");
-                List<BluetoothGattService> deviceList = mBluetoothLeService.getSupportedGattServices();
-                String uuid;
-                final String unknownServiceString = getResources().getString(R.string.unknown_service);
-                final String unknownCharaString = getResources().getString(R.string.unknown_characteristic);
-                final List<Map<String, String>> gattServiceData = new ArrayList<>();
-                mGattCharacteristics = new ArrayList<>();
-
-                for (final BluetoothGattService gattService : deviceList) {
-                    final Map<String, String> currentServiceData = new HashMap<>();
-                    uuid = gattService.getUuid().toString();
-                    currentServiceData.put(BleServiceConstant.LIST_NAME, GattAttributeResolver.getAttributeName(uuid, unknownServiceString));
-                    currentServiceData.put(BleServiceConstant.LIST_UUID, uuid);
-                    gattServiceData.add(currentServiceData);
-
-                    final List<Map<String, String>> gattCharacteristicGroupData = new ArrayList<>();
-                    final List<BluetoothGattCharacteristic> gattCharacteristics = gattService.getCharacteristics();
-                    final List<BluetoothGattCharacteristic> charas = new ArrayList<>();
-
-                    // Loops through available Characteristics.
-                    for (final BluetoothGattCharacteristic gattCharacteristic : gattCharacteristics) {
-                        charas.add(gattCharacteristic);
-                        mBluetoothLeService.setCharacteristicNotification(gattCharacteristic, true);
-                        final Map<String, String> currentCharaData = new HashMap<>();
-                        uuid = gattCharacteristic.getUuid().toString();
-                        if (uuid.equalsIgnoreCase(BleState.LINK_LOSS) ||
-                                uuid.equalsIgnoreCase(BleState.BATTERY_SERVICE)) {
-                            mBluetoothLeService.readCharacteristic(gattCharacteristic);
-                        }
-                        currentCharaData.put(BleServiceConstant.LIST_NAME, GattAttributeResolver.getAttributeName(uuid, unknownCharaString));
-                        currentCharaData.put(BleServiceConstant.LIST_UUID, uuid);
-                        gattCharacteristicGroupData.add(currentCharaData);
-                    }
-
-                    mGattCharacteristics.add(charas);
-                }
-                onTagReady();
-            } else if (BleServiceConstant.ACTION_DATA_AVAILABLE.equals(action)) {
-                final String uuid = intent.getStringExtra(BleServiceConstant.EXTRA_UUID_CHAR);
-                final byte[] dataArr = intent.getByteArrayExtra(BleServiceConstant.EXTRA_DATA_RAW);
-                readDataAndNotify(uuid, dataArr);
-            } else if (BleServiceConstant.ACTION_RSSI.equals(action)) {
-                final int rssi = intent.getIntExtra(BleServiceConstant.EXTRA_RSSI, 0);
-                lastRSSI = rssi;
-                onRssiRead(rssi);
-            }
         }
     };
 
@@ -197,11 +126,10 @@ public abstract class BaseActivity extends AbstractCounterActivity implements Se
         super.onResume();
         broadcast.register(this);
         sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_FASTEST);
-        registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
         if (mBluetoothLeService != null && !TextUtils.isEmpty(LocalStorageUtil.getLastDeviceId())
                 && mBluetoothLeService.isDisconnected()) {
             final boolean result = mBluetoothLeService.connect(LocalStorageUtil.getLastDeviceId());
-            Log.d("TAG", "Connect request result=" + result);
+            Log.d(TAG, "Connect request result=" + result);
         }
     }
 
@@ -210,7 +138,6 @@ public abstract class BaseActivity extends AbstractCounterActivity implements Se
         super.onPause();
         sensorManager.unregisterListener(this);
         broadcast.unregister(this);
-        unregisterReceiver(mGattUpdateReceiver);
     }
 
     @Override
@@ -237,7 +164,7 @@ public abstract class BaseActivity extends AbstractCounterActivity implements Se
     @Subscribe
     public void onBleDeviceFoundEvent(BleDeviceFoundEvent event) {
         broadcast.removeStickyEvent(BleDeviceFoundEvent.class);
-        Log.d("TAG", "finding status " + event.isFound());
+        Log.d(TAG, "onBleDeviceFoundEvent: found " + event.isFound());
         if (event.isFound()) {
             onDeviceDiscovered();
             mDeviceAddress = event.getDevice().getAddress();
@@ -248,40 +175,43 @@ public abstract class BaseActivity extends AbstractCounterActivity implements Se
         }
     }
 
-    public void sendDataToTag(TagAction tagAction) {
-        BluetoothGattCharacteristic characteristic = null;
-        switch (tagAction) {
-            case IMMEDIATE_ALERT_TURN_ON: {
-                characteristic = BLEUtil.getBluetoothGattCharacteristicByUUID(mGattCharacteristics, BleState.IMMEDIATE_ALERT);
-                if (characteristic != null) {
-                    characteristic.setValue(new byte[]{2});
-                }
-                break;
-            }
-            case IMMEDIATE_ALERT_TURN_OFF: {
-                characteristic = BLEUtil.getBluetoothGattCharacteristicByUUID(mGattCharacteristics, BleState.IMMEDIATE_ALERT);
-                if (characteristic != null) {
-                    characteristic.setValue(new byte[]{0});
-                }
-                break;
-            }
-            case TURN_ON_DONT_DISTURB:
-                characteristic = BLEUtil.getBluetoothGattCharacteristicByUUID(mGattCharacteristics, BleState.LINK_LOSS);
-                if (characteristic != null) {
-                    isDontDisturbMode = true;
-                    characteristic.setValue(new byte[]{1});
-                }
-                break;
-            case TURN_OFF_DONT_DISTURB:
-                characteristic = BLEUtil.getBluetoothGattCharacteristicByUUID(mGattCharacteristics, BleState.LINK_LOSS);
-                if (characteristic != null) {
-                    isDontDisturbMode = false;
-                    characteristic.setValue(new byte[]{0});
-                }
-                break;
-
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onGattUpdateEvent(GattUpdateEvent event) {
+        Log.d(TAG, "GattUpdateEvent " + event.getUpdateId());
+        broadcast.removeStickyEvent(GattUpdateEvent.class);
+        if (event.getUpdateId().equals(BleServiceConstant.EXTRA_RSSI)) {
+            lastRSSI = event.getRssi();
+            onRssiRead();
         }
-        writeDataByEvent(characteristic);
+        switch (event.getUpdateId()) {
+            case BleServiceConstant.ACTION_GATT_CONNECTED:
+                mConnected = true;
+                break;
+            case BleServiceConstant.ACTION_GATT_DISCONNECTED:
+                mConnected = false;
+                onDisconnected();
+                break;
+            case BleServiceConstant.ACTION_GATT_SERVICES_DISCOVERED:
+                //TODO read characteristics in service
+                onTagReady();
+                break;
+            case BleServiceConstant.ACTION_DATA_AVAILABLE:
+//                final String uuid = intent.getStringExtra(BleServiceConstant.EXTRA_UUID_CHAR);
+//                final byte[] dataArr = intent.getByteArrayExtra(BleServiceConstant.EXTRA_DATA_RAW);
+//                readDataAndNotify(uuid, dataArr);
+                //TODO
+//                onTagReady();
+                break;
+            case BleServiceConstant.ACTION_RSSI:
+                lastRSSI = event.getRssi();
+                onRssiRead();
+                break;
+        }
+    }
+
+    public void sendDataToTag(TagAction tagAction) {
+        //TODO send data directly
+        mBluetoothLeService.sendCharacteristicUpdateToDevice(tagAction);
     }
 
     @Subscribe
@@ -304,26 +234,17 @@ public abstract class BaseActivity extends AbstractCounterActivity implements Se
         }
     }
 
-    private void writeDataByEvent(BluetoothGattCharacteristic characteristic) {
-        if (characteristic != null) {
-            mBluetoothLeService.writeCharacteristic(characteristic);
-        }
-    }
-
     boolean deviceIsBeeping = false;
 
     private void readDataAndNotify(String uuid, byte[] dataArr) {
         String data = ByteUtils.byteArrayToHexString(dataArr);
-        Log.d("TAG", "DATA " + data + " uuid " + uuid);
+        Log.d(TAG, "DATA " + data + " uuid " + uuid);
         switch (uuid) {
             case BleState.POWER_LEVEL:
                 int level = dataArr[0];
                 if (level > 0) {
                     powerLevel = level;
                 }
-                break;
-            case LINK_LOSS:
-                isDontDisturbMode = dataArr[0] == 1;
                 break;
             case SINGLE_TAP: {
                 deviceIsBeeping = !deviceIsBeeping;
@@ -352,10 +273,11 @@ public abstract class BaseActivity extends AbstractCounterActivity implements Se
     }
 
     public void startConnecting() {
-        if (service.isBluetoothEnabled()) {
-            service.searchKey();
+        if (mBluetoothLeService.isBluetoothEnabled()) {
+            mBluetoothLeService.discoverDevices();
         } else {
-            service.enableBluetooth(this);
+            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
         }
     }
 
@@ -377,10 +299,10 @@ public abstract class BaseActivity extends AbstractCounterActivity implements Se
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
-            case IBluetoothManager.REQUEST_ENABLE_BT: {
+            case REQUEST_ENABLE_BT: {
                 broadcast.postEvent(new BluetoothAvailableEvent(resultCode == RESULT_OK));
                 if (resultCode == RESULT_OK) {
-                    service.searchKey();
+                    mBluetoothLeService.discoverDevices();
                 } else {
                     onBleUnavailable();
                 }
@@ -421,7 +343,7 @@ public abstract class BaseActivity extends AbstractCounterActivity implements Se
 
     public abstract void onTagReady();
 
-    public abstract void onRssiRead(int rssi);
+    public abstract void onRssiRead();
 
     public abstract void onDisconnected();
 
@@ -432,14 +354,17 @@ public abstract class BaseActivity extends AbstractCounterActivity implements Se
     }
 
     public boolean isDontDisturbMode() {
-        return isDontDisturbMode;
+        return mBluetoothLeService.isDontDisturbMode();
     }
 
     public int getPowerLevel() {
         return powerLevel;
     }
 
-    public boolean isConnected() {
-        return !mBluetoothLeService.isDisconnected();
+    public int getConnectionState() {
+        if (mBluetoothLeService != null) {
+            return mBluetoothLeService.getConnectionState();
+        }
+        return BleServiceConstant.STATE_CONNECTED;
     }
 }

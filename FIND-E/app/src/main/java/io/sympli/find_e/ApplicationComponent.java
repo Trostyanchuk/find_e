@@ -2,7 +2,7 @@ package io.sympli.find_e;
 
 import dagger.Component;
 import io.sympli.find_e.receiver.BluetoothStateReceiver;
-import io.sympli.find_e.ui.fragment.MainUsageFragment;
+import io.sympli.find_e.services.impl.BluetoothLeService;
 import io.sympli.find_e.ui.fragment.MapFragment;
 import io.sympli.find_e.ui.fragment.PermissionsFragment;
 import io.sympli.find_e.ui.fragment.SettingsFragment;
@@ -26,11 +26,11 @@ public interface ApplicationComponent {
 
     void inject(MapFragment fragment);
 
-    void inject(MainUsageFragment fragment);
-
     void inject(SettingsFragment fragment);
 
     void inject(TipsFragment fragment);
 
     void inject(BluetoothStateReceiver receiver);
+
+    void inject(BluetoothLeService service);
 }

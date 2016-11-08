@@ -17,6 +17,10 @@
         <item name="android:windowBackground">@android:color/black</item>
     </style>
 
+    <style name="AppThemeDarkDialog" parent="@android:style/Theme.DeviceDefault.Dialog">
+        <item name="colorAccent">@android:color/black</item>
+    </style>
+
     <style name="SwitchTheme">
         <item name="android:colorForeground">@color/switch_dark</item>
         <item name="colorSwitchThumbNormal">@android:color/darker_gray</item>

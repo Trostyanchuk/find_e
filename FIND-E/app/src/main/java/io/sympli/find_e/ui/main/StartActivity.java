@@ -1,13 +1,16 @@
 package io.sympli.find_e.ui.main;
 
+import android.bluetooth.BluetoothAdapter;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.IBinder;
 import android.support.design.widget.Snackbar;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
@@ -18,15 +21,11 @@ import android.widget.RelativeLayout;
 
 import com.afollestad.easyvideoplayer.EasyVideoPlayer;
 
-import java.util.logging.Handler;
-
-import javax.inject.Inject;
-
 import io.sympli.find_e.ApplicationController;
 import io.sympli.find_e.R;
 import io.sympli.find_e.databinding.ActivityStartBinding;
 import io.sympli.find_e.event.TagAction;
-import io.sympli.find_e.services.IBluetoothManager;
+import io.sympli.find_e.services.impl.BluetoothLeService;
 import io.sympli.find_e.ui.dialog.DialogClickListener;
 import io.sympli.find_e.ui.dialog.DialogInfo;
 import io.sympli.find_e.ui.dialog.InfoPopup;
@@ -36,11 +35,10 @@ import io.sympli.find_e.ui.widget.AbstractAnimationListener;
 import io.sympli.find_e.ui.widget.AbstractEasyVideoCallback;
 import io.sympli.find_e.ui.widget.ViewPermissions;
 import io.sympli.find_e.utils.LocalStorageUtil;
-import io.sympli.find_e.utils.NotificationUtils;
 import io.sympli.find_e.utils.PermissionsUtil;
-import io.sympli.find_e.utils.SoundUtil;
 import io.sympli.find_e.utils.UIUtil;
 
+import static io.sympli.find_e.services.impl.BleServiceConstant.REQUEST_ENABLE_BT;
 import static io.sympli.find_e.ui.fragment.Screen.CONNECTING;
 
 public class StartActivity extends BaseActivity {
@@ -49,8 +47,8 @@ public class StartActivity extends BaseActivity {
     public static final long PAIRED_TIMER = 5000;
     public static final int ANIM_DURATION = 700;
 
-    @Inject
-    IBluetoothManager service;
+//    @Inject
+//    IBluetoothManager service;
 
     private ActivityStartBinding bindingObject;
     private int lastPosition = 0;
@@ -126,8 +124,13 @@ public class StartActivity extends BaseActivity {
                     continueAnimationForSplash();
                 }
                 if (lastScreen == Screen.PAIR) {
-                    player.setInitialPosition(0);
-                    player.start();
+                    bindingObject.player.reset();
+                    bindingObject.player.setInitialPosition(0);
+
+                    String videoResource = "android.resource://" + getPackageName() + "/" + R.raw.iphone_connecting;
+                    bindingObject.player.setSource(Uri.parse(videoResource));
+                    videoFinished = false;
+                    lastPosition = 0;
                 }
             }
         }
@@ -135,6 +138,25 @@ public class StartActivity extends BaseActivity {
         @Override
         public void onDestroyed() {
             Log.d("TAG", "onDestroyed");
+        }
+    };
+
+    private BluetoothLeService mBluetoothLeService;
+    private final ServiceConnection mServiceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(final ComponentName componentName, final IBinder service) {
+            mBluetoothLeService = ((BluetoothLeService.LocalBinder) service).getService();
+            if (!mBluetoothLeService.initialize()) {
+                Log.e("TAG", "Unable to initialize Bluetooth");
+                return;
+            }
+            // Automatically connects to the device upon successful start-up initialization.
+            mBluetoothLeService.connect(LocalStorageUtil.getLastDeviceId());
+        }
+
+        @Override
+        public void onServiceDisconnected(final ComponentName componentName) {
+            mBluetoothLeService = null;
         }
     };
 
@@ -185,6 +207,9 @@ public class StartActivity extends BaseActivity {
         bindingObject.player.disableControls();
 
         updateUIState(startScreen);
+
+        final Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
+        bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
     }
 
     private void updateUIState(Screen screen) {
@@ -276,6 +301,15 @@ public class StartActivity extends BaseActivity {
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mBluetoothLeService != null) {
+            unbindService(mServiceConnection);
+        }
+        mBluetoothLeService = null;
+    }
+
+    @Override
     public void onGPSLocationUnavailable() {
         UIUtil.showSnackBar(bindingObject.getRoot(), getString(R.string.msg_location_unavailable_alert),
                 Snackbar.LENGTH_INDEFINITE, R.string.label_turn_on, new View.OnClickListener() {
@@ -301,7 +335,8 @@ public class StartActivity extends BaseActivity {
                 Snackbar.LENGTH_INDEFINITE, R.string.label_turn_on, new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        service.enableBluetooth(StartActivity.this);
+                        Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                        startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
                     }
                 });
     }
@@ -322,7 +357,7 @@ public class StartActivity extends BaseActivity {
     }
 
     @Override
-    public void onRssiRead(int rssi) {
+    public void onRssiRead() {
     }
 
     @Override
