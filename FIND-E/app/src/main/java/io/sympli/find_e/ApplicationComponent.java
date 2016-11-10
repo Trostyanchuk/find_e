@@ -7,6 +7,7 @@ import io.sympli.find_e.ui.fragment.MapFragment;
 import io.sympli.find_e.ui.fragment.PermissionsFragment;
 import io.sympli.find_e.ui.fragment.SettingsFragment;
 import io.sympli.find_e.ui.fragment.TipsFragment;
+import io.sympli.find_e.ui.main.CameraActivity;
 import io.sympli.find_e.ui.main.MainActivity;
 import io.sympli.find_e.ui.main.StartActivity;
 import io.sympli.find_e.ui.widget.ViewPermissions;
@@ -33,4 +34,6 @@ public interface ApplicationComponent {
     void inject(BluetoothStateReceiver receiver);
 
     void inject(BluetoothLeService service);
+
+    void inject(CameraActivity activity);
 }

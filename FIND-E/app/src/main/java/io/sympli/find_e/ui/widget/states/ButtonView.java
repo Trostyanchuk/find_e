@@ -24,7 +24,7 @@ public class ButtonView extends ViewStateBase {
     private float circleEndAlpha = 0.1f;
     private float circleAlphaStep;
 
-    private int lastState;
+    private int lastState = BleServiceConstant.STATE_CONNECTED;
     private Handler handler;
     private Runnable runnable;
 
@@ -73,6 +73,9 @@ public class ButtonView extends ViewStateBase {
             case BleServiceConstant.STATE_CONNECTING:
 //                drawSearching(canvas);
                 drawDisconnected(canvas);
+                break;
+            case BleServiceConstant.STATE_BEEPING:
+                drawBeeping(canvas);
                 break;
         }
 
@@ -129,7 +132,7 @@ public class ButtonView extends ViewStateBase {
         }
     }
 
-    private void drawSearching(Canvas canvas) {
+    private void drawBeeping(Canvas canvas) {
         int circleRectHeight = btnHeight + circleOffset;
         float x = getWidth() / 2;
         float y = getHeight() / 2;
@@ -190,15 +193,15 @@ public class ButtonView extends ViewStateBase {
                         lastState == BleServiceConstant.STATE_CONNECTING) {
                     increaseRotationAngle();
                 }
-//                if (lastState == BleServiceConstant.) {
-//                    circleRadius += 5;
-//                    circleAlpha -= circleAlphaStep * 4;
-//                    if (circleRadius >= viewHeight / 2) {
-//                        circleRadius = circleStartRadius;
-//                        circleAlpha = circleStartAlpha;
-//                    }
-//                    invalidate();
-//                }
+                if (lastState == BleServiceConstant.STATE_BEEPING) {
+                    circleRadius += 5;
+                    circleAlpha -= circleAlphaStep * 4;
+                    if (circleRadius >= viewHeight / 2) {
+                        circleRadius = circleStartRadius;
+                        circleAlpha = circleStartAlpha;
+                    }
+                    invalidate();
+                }
                 if (handler != null) {
                     handler.postDelayed(this, ANIM_DELAY);
                 }

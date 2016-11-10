@@ -6,6 +6,7 @@ import android.preference.PreferenceManager;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import io.sympli.find_e.ApplicationController;
@@ -15,6 +16,7 @@ public final class LocalStorageUtil {
     private static final String FIRST_LAUNCH = "first_launch";
     private static final String LAST_POSITION_LAT = "last_position_lat";
     private static final String LAST_POSITION_LON = "last_position_lon";
+    private static final String LAST_POSITION_TIME = "last_position_time";
     private static final String ENTRANCE_COUNT = "entrance_count";
     private static final String SILENT_AREA = "silent_area";
     private static final String LAST_DEVICE_ID = "last_device_id";
@@ -27,19 +29,21 @@ public final class LocalStorageUtil {
         getEditor().putBoolean(FIRST_LAUNCH, true).apply();
     }
 
-    public static void saveLastPosition(LatLng lastPosition) {
-        getEditor().putString(LAST_POSITION_LAT, String.valueOf(lastPosition.latitude)).apply();
-        getEditor().putString(LAST_POSITION_LON, String.valueOf(lastPosition.longitude)).apply();
-    }
-
     public static void saveLastPosition(double lat, double lon) {
         getEditor().putString(LAST_POSITION_LAT, String.valueOf(lat)).apply();
         getEditor().putString(LAST_POSITION_LON, String.valueOf(lon)).apply();
+        getEditor().putLong(LAST_POSITION_TIME, new Date().getTime()).apply();
     }
 
     public static LatLng getLastPosition() {
         return new LatLng(Double.parseDouble(getPreferences().getString(LAST_POSITION_LAT, "50.440055")),
                 Double.parseDouble(getPreferences().getString(LAST_POSITION_LON, "30.548027")));
+    }
+
+    public static Date getLastPositionTime() {
+        Date lastDate = new Date();
+        lastDate.setTime(getPreferences().getLong(LAST_POSITION_TIME, new Date().getTime()));
+        return lastDate;
     }
 
     public static List<String> getSilentWifiSSIDs() {

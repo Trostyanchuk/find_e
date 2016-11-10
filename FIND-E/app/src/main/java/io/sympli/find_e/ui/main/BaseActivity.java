@@ -31,13 +31,12 @@ import javax.inject.Inject;
 
 import io.sympli.find_e.event.BleDeviceFoundEvent;
 import io.sympli.find_e.event.BluetoothAvailableEvent;
+import io.sympli.find_e.event.FixLocationLostEvent;
 import io.sympli.find_e.event.GattUpdateEvent;
-import io.sympli.find_e.event.LocationChangedEvent;
 import io.sympli.find_e.event.PermissionsGrantResultEvent;
 import io.sympli.find_e.event.TagAction;
 import io.sympli.find_e.services.IBroadcast;
 import io.sympli.find_e.services.impl.BleServiceConstant;
-import io.sympli.find_e.services.impl.BleState;
 import io.sympli.find_e.services.impl.BluetoothLeService;
 import io.sympli.find_e.ui.widget.parallax.FloatArrayEvaluator;
 import io.sympli.find_e.ui.widget.parallax.SensorAnalyzer;
@@ -46,10 +45,8 @@ import io.sympli.find_e.utils.LocationPermissionUtil;
 import io.sympli.find_e.utils.MyLocationListener;
 import io.sympli.find_e.utils.NotificationUtils;
 import io.sympli.find_e.utils.UIUtil;
-import uk.co.alt236.bluetoothlelib.util.ByteUtils;
 
 import static io.sympli.find_e.services.impl.BleServiceConstant.REQUEST_ENABLE_BT;
-import static io.sympli.find_e.services.impl.BleState.SINGLE_TAP;
 import static io.sympli.find_e.utils.LocationPermissionUtil.LOCATION_INTENT_CODE;
 
 public abstract class BaseActivity extends AbstractCounterActivity implements SensorEventListener,
@@ -112,7 +109,6 @@ public abstract class BaseActivity extends AbstractCounterActivity implements Se
             public void onLocationChanged(Location location) {
                 if (location != null) {
                     myLastLocation = new LatLng(location.getLatitude(), location.getLongitude());
-                    LocalStorageUtil.saveLastPosition(location.getLatitude(), location.getLongitude());
                 }
             }
         });
@@ -209,6 +205,10 @@ public abstract class BaseActivity extends AbstractCounterActivity implements Se
         }
     }
 
+    public void changeBeepingState() {
+        mBluetoothLeService.changeBeepingState(true);
+    }
+
     public void sendDataToTag(TagAction tagAction) {
         //TODO send data directly
         mBluetoothLeService.sendCharacteristicUpdateToDevice(tagAction);
@@ -226,34 +226,21 @@ public abstract class BaseActivity extends AbstractCounterActivity implements Se
     }
 
     @Subscribe
-    public void onEventMainThread(LocationChangedEvent event) {
-        if (!isGPSEnabled()) {
-            onGPSLocationUnavailable();
-        } else {
-            onLocationAvailable();
+    public void onFixLocationLostEvent(FixLocationLostEvent event) {
+        if (myLastLocation != null) {
+            LocalStorageUtil.saveLastPosition(myLastLocation.getLatitude(), myLastLocation.getLongitude());
         }
     }
+//    @Subscribe
+//    public void onEventMainThread(LocationChangedEvent event) {
+//        if (!isGPSEnabled()) {
+//            onGPSLocationUnavailable();
+//        } else {
+//            onLocationAvailable();
+//        }
+//    }
 
     boolean deviceIsBeeping = false;
-
-    private void readDataAndNotify(String uuid, byte[] dataArr) {
-        String data = ByteUtils.byteArrayToHexString(dataArr);
-        Log.d(TAG, "DATA " + data + " uuid " + uuid);
-        switch (uuid) {
-            case BleState.POWER_LEVEL:
-                int level = dataArr[0];
-                if (level > 0) {
-                    powerLevel = level;
-                }
-                break;
-            case SINGLE_TAP: {
-                deviceIsBeeping = !deviceIsBeeping;
-                playMobileSound(deviceIsBeeping);
-                break;
-            }
-        }
-
-    }
 
     @Override
     public void onLocationChanged(Location location) {

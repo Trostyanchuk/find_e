@@ -9,5 +9,31 @@
     <string name="last_location_label">Last Location</string>
     <string name="last_location_text">- %d meters</string>
 
+    <string name="label_minutes_zero">Less than minute ago</string>
+    <plurals name="label_minutes">
+        <item quantity="one">%s minute ago</item>
+        <item quantity="other">%s minutes ago</item>
+    </plurals>
+
+    <plurals name="label_hours">
+        <item quantity="one">%s hour ago</item>
+        <item quantity="other">%s hours ago</item>
+    </plurals>
+
+    <plurals name="label_days">
+        <item quantity="one">%s day ago</item>
+        <item quantity="other">%s days ago</item>
+    </plurals>
+
+    <plurals name="label_months">
+        <item quantity="one">%s month ago</item>
+        <item quantity="other">%s months ago</item>
+    </plurals>
+
+    <plurals name="label_years">
+        <item quantity="one">%s year ago</item>
+        <item quantity="other">%s years ago</item>
+    </plurals>
+
     <string name="notify_ok">FIND-E will not notify you until you leave the marked silent area.</string>
 </resources>

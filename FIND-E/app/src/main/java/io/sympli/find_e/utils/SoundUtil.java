@@ -25,7 +25,7 @@ public final class SoundUtil {
 
     public static void playDisconnected(Context context) {
         resetPlayer();
-        mediaPlayer = MediaPlayer.create(context, R.raw.disconnected);
+        mediaPlayer = MediaPlayer.create(context, R.raw.disconnect);
         mediaPlayer.start();
     }
 

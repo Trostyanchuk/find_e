@@ -52,6 +52,9 @@ public class EmotionsImageView extends ImageView {
             case BleServiceConstant.STATE_CONNECTING:
                 drawable = ContextCompat.getDrawable(getContext(), R.drawable.animation_list_searching);
                 break;
+            case BleServiceConstant.STATE_BEEPING:
+                drawable = ContextCompat.getDrawable(getContext(), R.drawable.animation_list_searching);
+                break;
         }
 
         if (drawable != null) {

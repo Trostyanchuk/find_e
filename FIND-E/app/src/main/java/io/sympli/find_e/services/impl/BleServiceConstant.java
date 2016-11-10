@@ -14,6 +14,7 @@ public interface BleServiceConstant {
     int STATE_DISCONNECTED = 0;
     int STATE_CONNECTING = 1;
     int STATE_CONNECTED = 2;
+    int STATE_BEEPING = 3;
 
     String LIST_NAME = "NAME";
     String LIST_UUID = "UUID";

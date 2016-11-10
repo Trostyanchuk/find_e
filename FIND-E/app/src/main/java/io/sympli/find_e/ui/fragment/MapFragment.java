@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.annotation.UiThread;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -32,6 +33,9 @@ import com.mapbox.mapboxsdk.location.LocationServices;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
+
 import javax.inject.Inject;
 
 import io.sympli.find_e.ApplicationController;
@@ -39,12 +43,15 @@ import io.sympli.find_e.R;
 import io.sympli.find_e.databinding.FragmentMapBinding;
 import io.sympli.find_e.event.ChangeScreenEvent;
 import io.sympli.find_e.services.IBroadcast;
+import io.sympli.find_e.utils.DateUtil;
 import io.sympli.find_e.utils.LocalStorageUtil;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
 
 public class MapFragment extends Fragment implements com.mapbox.mapboxsdk.maps.OnMapReadyCallback {
+
+    private static final long START_SEARCH_TIMEOUT = TimeUnit.SECONDS.toMillis(2);
 
     private static final int ANIMATE_DURATION = 5000;
     private static final int ZOOM = 16;
@@ -56,6 +63,8 @@ public class MapFragment extends Fragment implements com.mapbox.mapboxsdk.maps.O
     private LocationManager locationManager;
     private LatLng myLocation;
     private LatLng lastPointLocation;
+    private Date lastDate;
+    private CountDownTimer countDownTimer;
 
     @Inject
     IBroadcast broadcast;
@@ -68,6 +77,7 @@ public class MapFragment extends Fragment implements com.mapbox.mapboxsdk.maps.O
 
         lastPointLocation = new LatLng(LocalStorageUtil.getLastPosition().latitude,
                 LocalStorageUtil.getLastPosition().longitude);
+        lastDate = LocalStorageUtil.getLastPositionTime();
 
         locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
 
@@ -75,6 +85,7 @@ public class MapFragment extends Fragment implements com.mapbox.mapboxsdk.maps.O
         binding.myLocationLabel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                binding.setMyLocation(true);
                 toggleGps(locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER));
             }
         });
@@ -97,6 +108,7 @@ public class MapFragment extends Fragment implements com.mapbox.mapboxsdk.maps.O
         mapFragment.getMapAsync(this);
 
         locationServices = LocationServices.getLocationServices(getContext());
+        setConnectionLostInfo(DateUtil.getLastConnectionTime(getActivity(), lastDate));
         return binding.getRoot();
     }
 
@@ -115,6 +127,28 @@ public class MapFragment extends Fragment implements com.mapbox.mapboxsdk.maps.O
             enableLocation(false);
         }
     }
+
+    protected void stopTimer() {
+        if (countDownTimer != null) {
+            countDownTimer.cancel();
+            countDownTimer = null;
+        }
+    }
+
+    protected void startTimer() {
+        stopTimer();
+        countDownTimer = new CountDownTimer(START_SEARCH_TIMEOUT, START_SEARCH_TIMEOUT) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+            }
+
+            @Override
+            public void onFinish() {
+                setConnectionLostInfo(DateUtil.getLastConnectionTime(getActivity(), lastDate));
+            }
+        }.start();
+    }
+
 
     private void enableLocation(boolean enabled) {
         if (enabled) {
@@ -153,12 +187,14 @@ public class MapFragment extends Fragment implements com.mapbox.mapboxsdk.maps.O
     public void onResume() {
         super.onResume();
         mapFragment.onResume();
+        startTimer();
     }
 
     @Override
     public void onPause() {
         super.onPause();
         mapFragment.onPause();
+        stopTimer();
     }
 
     @Override
@@ -247,7 +283,9 @@ public class MapFragment extends Fragment implements com.mapbox.mapboxsdk.maps.O
         }
     }
 
-    private void setConnectionLostInfo() {
-
+    private void setConnectionLostInfo(String time) {
+        if (isAdded()) {
+            binding.connectionLost.setText(time);
+        }
     }
 }

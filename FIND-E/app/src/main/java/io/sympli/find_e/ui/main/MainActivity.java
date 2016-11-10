@@ -11,10 +11,10 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
-import com.google.android.gms.maps.model.LatLng;
 import com.mapbox.mapboxsdk.location.LocationServices;
 
 import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import javax.inject.Inject;
 
@@ -23,6 +23,7 @@ import io.sympli.find_e.R;
 import io.sympli.find_e.databinding.ActivityMainBinding;
 import io.sympli.find_e.event.AnimationFinishedEvent;
 import io.sympli.find_e.event.ChangeScreenEvent;
+import io.sympli.find_e.event.OnButtonTouchEvent;
 import io.sympli.find_e.event.SensorEvent;
 import io.sympli.find_e.event.TagAction;
 import io.sympli.find_e.services.IBroadcast;
@@ -38,7 +39,6 @@ import io.sympli.find_e.ui.fragment.TipsFragment;
 import io.sympli.find_e.ui.widget.AbstractAnimationListener;
 import io.sympli.find_e.ui.widget.DialogMessageWidget;
 import io.sympli.find_e.ui.widget.states.ButtonClickListener;
-import io.sympli.find_e.ui.widget.states.ConnectionState;
 import io.sympli.find_e.utils.LocalStorageUtil;
 import io.sympli.find_e.utils.SoundUtil;
 import io.sympli.find_e.utils.UIUtil;
@@ -73,7 +73,7 @@ public class MainActivity extends BaseActivity implements ButtonClickListener, O
         }
     };
 
-//    private ConnectionState connectionState = ConnectionState.HAPPY;
+    //    private ConnectionState connectionState = ConnectionState.HAPPY;
     private String excellentLabel;
     private String highLabel;
     private String mediumLabel;
@@ -169,13 +169,13 @@ public class MainActivity extends BaseActivity implements ButtonClickListener, O
 
     @Override
     public void onLocationAvailable() {
-        Log.d(TAG, "onLocationAvailable");
-        LocationServices locationServices = LocationServices.getLocationServices(this);
-        Location location = locationServices.getLastLocation();
-        if (location != null) {
-            Log.d(TAG, "Location " + location.getLatitude() + " " + location.getLongitude());
-            LocalStorageUtil.saveLastPosition(location.getLatitude(), location.getLongitude());
-        }
+//        Log.d(TAG, "onLocationAvailable");
+//        LocationServices locationServices = LocationServices.getLocationServices(this);
+//        Location location = locationServices.getLastLocation();
+//        if (location != null) {
+//            Log.d(TAG, "Location " + location.getLatitude() + " " + location.getLongitude());
+//            LocalStorageUtil.saveLastPosition(location.getLatitude(), location.getLongitude());
+//        }
     }
 
     @Override
@@ -210,7 +210,7 @@ public class MainActivity extends BaseActivity implements ButtonClickListener, O
 
     @Override
     public void onRssiRead() {
-        int rssi = - getLastRSSI();
+        int rssi = -getLastRSSI();
         String signal = "";
         if (rssi < 25) {
             signal = excellentLabel;
@@ -233,13 +233,6 @@ public class MainActivity extends BaseActivity implements ButtonClickListener, O
 
     @Override
     public void playMobileSound(boolean turnOn) {
-        if (deviceIsBeeping) {
-            SoundUtil.resetPlayer();
-            deviceIsBeeping = false;
-        } else {
-            SoundUtil.playPhoneLocator(this);
-            deviceIsBeeping = true;
-        }
     }
 
     @Override
@@ -271,6 +264,16 @@ public class MainActivity extends BaseActivity implements ButtonClickListener, O
     @Subscribe
     public void onChangeScreenEvent(ChangeScreenEvent event) {
         replaceShadowingFragment(event.getNewState());
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onButtonTouchEvent(OnButtonTouchEvent event) {
+        if (event.isBeeping()) {
+            SoundUtil.resetPlayer();
+        } else {
+            SoundUtil.playPhoneLocator(this);
+        }
+        setConnectionState(getConnectionState());
     }
 
     @Subscribe
@@ -406,25 +409,12 @@ public class MainActivity extends BaseActivity implements ButtonClickListener, O
         binding.partlyTransparentBackground.startAnimation(partlyTransparent);
     }
 
-    boolean beeping = false;
-
     @Override
     public void onButtonClick() {
         hideMessage();
         switch (getConnectionState()) {
             case BleServiceConstant.STATE_CONNECTED:
-                if (beeping) {
-                    beeping = false;
-                    binding.btnMsg.setText(tapToBeepLabel);
-                    sendDataToTag(TagAction.IMMEDIATE_ALERT_TURN_OFF);
-                } else {
-                    beeping = true;
-                    binding.btnMsg.setText(tapToStopLabel);
-                    sendDataToTag(TagAction.IMMEDIATE_ALERT_TURN_ON);
-                    if (LocalStorageUtil.getEntranceCount() == 0) {
-                        showStartMessageForStopBeeping();
-                    }
-                }
+                changeBeepingState();
                 setConnectionState(getConnectionState());
                 break;
             case BleServiceConstant.STATE_CONNECTING:
@@ -511,6 +501,14 @@ public class MainActivity extends BaseActivity implements ButtonClickListener, O
                 showMessageForDisconnected();
                 binding.btnMsg.setText(tapToShowLastLocLabel);
                 binding.viewContainersRoot.setBackgroundColor(Color.BLACK);
+                break;
+            case BleServiceConstant.STATE_BEEPING:
+                SoundUtil.playPhoneLocator(this);
+                binding.btnMsg.setText(tapToStopLabel);
+                binding.viewContainersRoot.setBackgroundResource(R.drawable.btn_screen_gradient_normal);
+                if (LocalStorageUtil.getEntranceCount() == 0) {
+                    showStartMessageForStopBeeping();
+                }
                 break;
         }
     }

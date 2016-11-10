@@ -27,7 +27,9 @@ import javax.inject.Inject;
 
 import io.sympli.find_e.ApplicationController;
 import io.sympli.find_e.event.BleDeviceFoundEvent;
+import io.sympli.find_e.event.FixLocationLostEvent;
 import io.sympli.find_e.event.GattUpdateEvent;
+import io.sympli.find_e.event.OnButtonTouchEvent;
 import io.sympli.find_e.event.TagAction;
 import io.sympli.find_e.services.IBroadcast;
 import io.sympli.find_e.utils.BLEUtil;
@@ -56,6 +58,8 @@ public class BluetoothLeService extends Service {
     private String mBluetoothDeviceAddress;
     private BluetoothGatt mBluetoothGatt;
     private int mConnectionState = BleServiceConstant.STATE_DISCONNECTED;
+    private boolean beeping = false;
+    private boolean remoteClick = false;
     private BluetoothAdapter.LeScanCallback leScanCallback = new BluetoothAdapter.LeScanCallback() {
         @Override
         public void onLeScan(final BluetoothDevice device, int rssi, byte[] scanRecord) {
@@ -71,33 +75,23 @@ public class BluetoothLeService extends Service {
     private final BluetoothGattCallback mGattCallback = new BluetoothGattCallback() {
         @Override
         public void onCharacteristicChanged(final BluetoothGatt gatt, final BluetoothGattCharacteristic characteristic) {
-            broadcast.postEvent(new GattUpdateEvent(BleServiceConstant.ACTION_DATA_AVAILABLE));
+            Log.d(TAG, "onCharacteristicChanged " + characteristic.getUuid().toString());
+            if (characteristic.getUuid().toString().equals(BleState.SINGLE_TAP)) {
+                remoteClick = true;
+                changeBeepingState(false);
+                broadcast.postEvent(new OnButtonTouchEvent(beeping));
+            }
+
+            final byte[] data = characteristic.getValue();
+            if (data != null && data.length > 0) {
+
+            }
         }
 
         @Override
         public void onCharacteristicRead(final BluetoothGatt gatt, final BluetoothGattCharacteristic characteristic, final int status) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                Log.d(TAG, "Service discovered");
-                List<BluetoothGattService> deviceList = getSupportedGattServices();
-                String uuid;
-                mGattCharacteristics = new ArrayList<>();
-
-                for (final BluetoothGattService gattService : deviceList) {
-                    final List<BluetoothGattCharacteristic> gattCharacteristics = gattService.getCharacteristics();
-                    final List<BluetoothGattCharacteristic> charas = new ArrayList<>();
-
-                    for (final BluetoothGattCharacteristic gattCharacteristic : gattCharacteristics) {
-                        charas.add(gattCharacteristic);
-                        setCharacteristicNotification(gattCharacteristic, true);
-                        uuid = gattCharacteristic.getUuid().toString();
-                        if (uuid.equalsIgnoreCase(BleState.LINK_LOSS) ||
-                                uuid.equalsIgnoreCase(BleState.BATTERY_SERVICE)) {
-                            readCharacteristic(gattCharacteristic);
-                        }
-                    }
-
-                    mGattCharacteristics.add(charas);
-                }
+                Log.d(TAG, "onCharacteristicRead " + characteristic.getUuid().toString());
                 broadcast.postEvent(new GattUpdateEvent(BleServiceConstant.ACTION_DATA_AVAILABLE));
             }
         }
@@ -114,6 +108,7 @@ public class BluetoothLeService extends Service {
 
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 broadcast.postEvent(new GattUpdateEvent(BleServiceConstant.ACTION_GATT_DISCONNECTED));
+                broadcast.postEvent(new FixLocationLostEvent());
                 mConnectionState = BleServiceConstant.STATE_DISCONNECTED;
                 discoverDevices();
                 Log.i(TAG, "Disconnected from GATT server.");
@@ -179,18 +174,6 @@ public class BluetoothLeService extends Service {
     public void onDestroy() {
         stopReadRemoteRSSIHandler();
         close();
-    }
-
-    private void broadcastUpdate(final String action, final BluetoothGattCharacteristic characteristic) {
-        final Intent intent = new Intent(action);
-        intent.putExtra(BleServiceConstant.EXTRA_UUID_CHAR, characteristic.getUuid().toString());
-
-        // Always try to add the RAW value
-        final byte[] data = characteristic.getValue();
-        if (data != null && data.length > 0) {
-            intent.putExtra(BleServiceConstant.EXTRA_DATA_RAW, data);
-        }
-        sendBroadcast(intent);
     }
 
     //__________________________________________________________________________
@@ -298,6 +281,23 @@ public class BluetoothLeService extends Service {
         return isDontDisturbMode;
     }
 
+    public void changeBeepingState(boolean sendToTag) {
+        if (beeping) {
+            mConnectionState = BleServiceConstant.STATE_CONNECTED;
+            beeping = false;
+            if (sendToTag &&  !remoteClick) {
+                sendCharacteristicUpdateToDevice(TagAction.IMMEDIATE_ALERT_TURN_OFF);
+            }
+            remoteClick = false;
+        } else {
+            mConnectionState = BleServiceConstant.STATE_BEEPING;
+            beeping = true;
+            if (sendToTag && !remoteClick) {
+                sendCharacteristicUpdateToDevice(TagAction.IMMEDIATE_ALERT_TURN_ON);
+            }
+        }
+    }
+
     public void sendCharacteristicUpdateToDevice(TagAction tagAction) {
         BluetoothGattCharacteristic characteristic = null;
         switch (tagAction) {
@@ -319,14 +319,14 @@ public class BluetoothLeService extends Service {
                 characteristic = BLEUtil.getBluetoothGattCharacteristicByUUID(mGattCharacteristics, BleState.LINK_LOSS);
                 if (characteristic != null) {
                     isDontDisturbMode = true;
-                    characteristic.setValue(new byte[]{1});
+                    characteristic.setValue(new byte[]{(byte)0xa0});
                 }
                 break;
             case TURN_OFF_DONT_DISTURB:
                 characteristic = BLEUtil.getBluetoothGattCharacteristicByUUID(mGattCharacteristics, BleState.LINK_LOSS);
                 if (characteristic != null) {
                     isDontDisturbMode = false;
-                    characteristic.setValue(new byte[]{0});
+                    characteristic.setValue(new byte[]{(byte)0xa1});
                 }
                 break;
 

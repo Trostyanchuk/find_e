@@ -504,6 +504,7 @@ public class StartActivity extends BaseActivity {
     }
 
     private void startTagTimer() {
+        sendDataToTag(TagAction.TURN_ON_DONT_DISTURB);
         sendDataToTag(TagAction.IMMEDIATE_ALERT_TURN_ON);
         stopPairedTimer();
         pairedTimer = new CountDownTimer(PAIRED_TIMER, PAIRED_TIMER) {
