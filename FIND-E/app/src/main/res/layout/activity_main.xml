@@ -90,7 +90,7 @@
                         style="@style/TextRegularWhite"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="20%"
+                        android:text="--"
                         android:textSize="20sp" />
 
                     <io.sympli.find_e.ui.widget.TypefaceTextView
@@ -126,7 +126,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="end"
-                        android:text="0%"
+                        android:text="--"
                         android:textSize="20sp" />
 
                     <io.sympli.find_e.ui.widget.TypefaceTextView
