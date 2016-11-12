@@ -1,5 +1,6 @@
 package io.sympli.find_e.receiver;
 
+import android.app.ActivityManager;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
@@ -34,7 +35,9 @@ public class BluetoothStateReceiver extends BroadcastReceiver {
             case BluetoothAdapter.ACTION_STATE_CHANGED:
                 if (intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, -1) == BluetoothAdapter.STATE_OFF) {
                     broadcast.postEvent(new BluetoothAvailableEvent(false));
-                    if (!ApplicationController.isAppInForeground()) {
+
+                    if (!ApplicationController.isAppInForeground() &&
+                            ApplicationController.isServiceRunning()) {
                         if (!LocalStorageUtil.isSilentArea() ||
                                 (LocalStorageUtil.isSilentArea() && !ApplicationController.getWifiEnabled())) {
                             NotificationUtils.sendDisconnectedNotification(context);
@@ -43,15 +46,6 @@ public class BluetoothStateReceiver extends BroadcastReceiver {
                 } else if (intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, -1) == BluetoothAdapter.STATE_ON) {
                     broadcast.postEvent(new BluetoothAvailableEvent(true));
                 }
-                break;
-            case BluetoothDevice.ACTION_FOUND: {
-                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                break;
-            }
-            case BluetoothDevice.ACTION_ACL_CONNECTED:
-                int RSSI = intent.getShortExtra(BluetoothDevice.EXTRA_RSSI, Short.MIN_VALUE);
-                String mDeviceName = intent.getStringExtra(BluetoothDevice.EXTRA_NAME);
-                Log.d(TAG, "DEVICE - " + mDeviceName + " " + RSSI);
                 break;
         }
     }

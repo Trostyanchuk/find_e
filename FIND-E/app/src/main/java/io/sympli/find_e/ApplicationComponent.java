@@ -4,7 +4,6 @@ import dagger.Component;
 import io.sympli.find_e.receiver.BluetoothStateReceiver;
 import io.sympli.find_e.services.impl.BluetoothLeService;
 import io.sympli.find_e.ui.fragment.MapFragment;
-import io.sympli.find_e.ui.fragment.PermissionsFragment;
 import io.sympli.find_e.ui.fragment.SettingsFragment;
 import io.sympli.find_e.ui.fragment.TipsFragment;
 import io.sympli.find_e.ui.main.CameraActivity;
@@ -22,8 +21,6 @@ public interface ApplicationComponent {
     void inject(ViewPermissions viewPermissions);
 
     void inject(ApplicationController controller);
-
-    void inject(PermissionsFragment fragment);
 
     void inject(MapFragment fragment);
 

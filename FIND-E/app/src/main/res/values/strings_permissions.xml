@@ -3,12 +3,13 @@
     <string name="title">Grant access to enable all features</string>
     <string name="subtitle">Allow FIND-E to use your smartphone’s basic functions to proceed.</string>
     
-    <string name="ble_dialog_explain">FIND-E needs bluetooth to connect to your phonehead send
-    its location in real time. It uses low energy bluetooth technology which consumes very little
-    of the battery life.</string>
+    <string name="ble_dialog_explain">FIND-E needs to read bluetooth state changing in real time
+        and use it for connection to tag.</string>
     <string name="location_dialog_explain">FIND-E needs location to connect to your phonehead send
     its location in real time. It uses low energy bluetooth technology which consumes very little
     of the battery life.</string>
+    <string name="storage_dialog_info">FIND-E needs to write your pictures made with tag
+    to external media storage.</string>
 
     <string name="permission_not_granted">You cannot continue using app without all rermissions</string>
 

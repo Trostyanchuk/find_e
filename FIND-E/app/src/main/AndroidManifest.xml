@@ -54,27 +54,24 @@
         </activity>
 
         <!--<activity-->
-        <!--android:name=".ui.main.MainActivity"-->
-        <!--android:screenOrientation="portrait" />-->
-
-        <activity
-            android:name=".ui.main.CameraActivity"
-            android:screenOrientation="portrait" />
+            <!--android:name=".ui.main.CameraActivity"-->
+            <!--android:screenOrientation="portrait"-->
+            <!--android:theme="@style/AppThemeDark"/>-->
 
         <activity
             android:name=".ui.main.MainActivity"
             android:screenOrientation="portrait" />
 
-        <!--<activity-->
-            <!--android:name=".ui.main.MainActivity"-->
-            <!--android:screenOrientation="portrait"-->
-            <!--android:theme="@style/AppThemeDark">-->
+        <activity
+            android:name=".ui.main.CameraActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppThemeDark">
             <!--<intent-filter>-->
                 <!--<action android:name="android.intent.action.MAIN" />-->
-
+<!---->
                 <!--<category android:name="android.intent.category.LAUNCHER" />-->
             <!--</intent-filter>-->
-        <!--</activity>-->
+        </activity>
 
         <!--<activity-->
             <!--android:name=".ui.main.StartActivity"-->

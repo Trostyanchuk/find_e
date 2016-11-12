@@ -6,6 +6,7 @@
     <string name="label_ble">Bluetooth</string>
     <string name="label_location">Location Services</string>
     <string name="label_camera">Camera</string>
+    <string name="label_storage">Storage</string>
 
     <string name="title_info">Never lose your stuff again</string>
     <string name="subtitle_info">FIND-E is a smart device that helps you \nkeep track of your most important belongings</string>

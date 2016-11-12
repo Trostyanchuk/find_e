@@ -1,8 +1,12 @@
 package io.sympli.find_e.ui.widget;
 
+import android.content.Context;
 import android.hardware.Camera;
+import android.view.Display;
+import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.RelativeLayout;
 
 import java.util.List;
@@ -24,6 +28,7 @@ public class Camera1Handler {
     private OpenCameraTask mOpenCameraTask;
     private CAMERA_STATE mCurrCameraState = CAMERA_STATE.IDLE;
     private CAMERA_STATE mRequestedCameraState;
+    private Context context;
 
     private CameraStateListener cameraStateListener;
 
@@ -38,6 +43,7 @@ public class Camera1Handler {
 
     public void setup(View rootView, CameraStateListener listener) {
         cameraStateListener = listener;
+        this.context = rootView.getContext();
         mPreview = new CameraPreview(rootView.getContext(), mResolutionWidth, mResolutionHeight);
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         params.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
@@ -69,7 +75,13 @@ public class Camera1Handler {
     }
 
     public void release() {
+        closeCamera();
+    }
 
+    public void refreshPreview() {
+        if (mPreview != null) {
+            mPreview.refreshCamera(mCamera);
+        }
     }
 
     public boolean isCameraPrepared() {
@@ -141,6 +153,26 @@ public class Camera1Handler {
             mCamera = Camera.open(mCameraId);
             Camera.Parameters params = mCamera.getParameters();
             mCamera.setPreviewCallback(mPreview);
+
+            int mPreviewWidth = 720;
+            int mPreviewHeight = 1280;
+            Display display = ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+
+            if (display.getRotation() == Surface.ROTATION_0) {
+                params.setPreviewSize(mPreviewHeight, mPreviewWidth);
+                mCamera.setDisplayOrientation(90);
+            }
+            if (display.getRotation() == Surface.ROTATION_90) {
+                params.setPreviewSize(mPreviewWidth, mPreviewHeight);
+            }
+            if (display.getRotation() == Surface.ROTATION_180) {
+                params.setPreviewSize(mPreviewHeight, mPreviewWidth);
+            }
+            if (display.getRotation() == Surface.ROTATION_270) {
+                params.setPreviewSize(mPreviewWidth, mPreviewHeight);
+                mCamera.setDisplayOrientation(180);
+            }
+
             if (mResolutionWidth == 0 || mResolutionHeight == 0) {
                 setCameraState(CAMERA_STATE.ERROR);
             } else {

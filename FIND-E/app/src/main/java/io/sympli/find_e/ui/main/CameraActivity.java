@@ -1,11 +1,14 @@
 package io.sympli.find_e.ui.main;
 
 import android.content.ComponentName;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -18,6 +21,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -51,6 +55,7 @@ public class CameraActivity extends AppCompatActivity implements Camera1Handler.
             File pictureFile = FilesUtil.getOutputMediaFile();
             if (pictureFile == null) {
                 Log.d(TAG, "Error creating media file, check storage permissions: ");
+                camera1Handler.refreshPreview();
                 return;
             }
 
@@ -63,6 +68,18 @@ public class CameraActivity extends AppCompatActivity implements Camera1Handler.
             } catch (IOException e) {
                 Log.d(TAG, "Error accessing file: " + e.getMessage());
             }
+
+            ContentValues values = new ContentValues();
+            values.put(MediaStore.Images.Media.TITLE, pictureFile.getName().toLowerCase());
+            values.put(MediaStore.Images.Media.DESCRIPTION, "");
+            values.put(MediaStore.Images.Media.DATE_TAKEN, System.currentTimeMillis ());
+            values.put(MediaStore.Images.ImageColumns.BUCKET_ID, pictureFile.toString().toLowerCase(Locale.getDefault()).hashCode());
+            values.put(MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME, pictureFile.getName().toLowerCase(Locale.getDefault()));
+            values.put("_data", pictureFile.getAbsolutePath());
+
+            ContentResolver cr = getContentResolver();
+            cr.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+            camera1Handler.refreshPreview();
         }
     };
 
@@ -76,6 +93,7 @@ public class CameraActivity extends AppCompatActivity implements Camera1Handler.
                 return;
             }
             // Automatically connects to the device upon successful start-up initialization.
+            mBluetoothLeService.setCameraOpened(true);
             mBluetoothLeService.connect(LocalStorageUtil.getLastDeviceId());
         }
 
@@ -118,6 +136,7 @@ public class CameraActivity extends AppCompatActivity implements Camera1Handler.
     protected void onDestroy() {
         super.onDestroy();
         if (mBluetoothLeService != null) {
+            mBluetoothLeService.setCameraOpened(false);
             unbindService(mServiceConnection);
         }
         mBluetoothLeService = null;
@@ -174,6 +193,6 @@ public class CameraActivity extends AppCompatActivity implements Camera1Handler.
     public void onMakePictureEvent(MakePictureEvent event) {
         broadcast.removeStickyEvent(MakePictureEvent.class);
         if (camera1Handler != null && camera1Handler.isCameraPrepared())
-        camera1Handler.makePicture(mPictureCallback);
+            camera1Handler.makePicture(mPictureCallback);
     }
 }

@@ -29,7 +29,6 @@ import io.sympli.find_e.services.impl.BluetoothLeService;
 import io.sympli.find_e.ui.dialog.DialogClickListener;
 import io.sympli.find_e.ui.dialog.DialogInfo;
 import io.sympli.find_e.ui.dialog.InfoPopup;
-import io.sympli.find_e.ui.fragment.PermissionsFragment;
 import io.sympli.find_e.ui.fragment.Screen;
 import io.sympli.find_e.ui.widget.AbstractAnimationListener;
 import io.sympli.find_e.ui.widget.AbstractEasyVideoCallback;
@@ -82,7 +81,7 @@ public class StartActivity extends BaseActivity {
             if (lastScreen == Screen.SPLASH) {
                 LocalStorageUtil.saveFirstLaunch();
                 updateUIState(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-                        !PermissionsUtil.permissionsGranted(StartActivity.this, PermissionsFragment.REQUIRED_PERMISSIONS) ?
+                        !PermissionsUtil.permissionsGranted(StartActivity.this, ViewPermissions.REQUIRED_PERMISSIONS) ?
                         Screen.PERMISSIONS : CONNECTING);
             }
             if (lastScreen == Screen.HOW_TO_USE) {
@@ -118,7 +117,9 @@ public class StartActivity extends BaseActivity {
         public void onCompletion(EasyVideoPlayer player) {
             Log.d("TAG", "onCompleted " + player.getCurrentPosition() + " " + player.getDuration());
 
-            if (player.getCurrentPosition() >= 1800 && player.getCurrentPosition() <= player.getDuration()) {
+            if (player.getCurrentPosition() >= 1800 &&
+                    player.getCurrentPosition() < 10000
+                    && player.getCurrentPosition() <= player.getDuration()) {
                 if (lastScreen == Screen.SPLASH) {
                     videoFinished = true;
                     continueAnimationForSplash();
@@ -171,7 +172,7 @@ public class StartActivity extends BaseActivity {
 
         Screen startScreen = LocalStorageUtil.isFirstLaunch() ? Screen.SPLASH :
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-                        !PermissionsUtil.permissionsGranted(this, PermissionsFragment.REQUIRED_PERMISSIONS) ?
+                        !PermissionsUtil.permissionsGranted(this, ViewPermissions.REQUIRED_PERMISSIONS) ?
                         Screen.PERMISSIONS : CONNECTING;
 
         bindingObject.viewPermissions.setPermissionsListener(viewPermissionsListener);
@@ -218,6 +219,8 @@ public class StartActivity extends BaseActivity {
             case SPLASH:
                 bindingObject.mainLabel.setVisibility(View.VISIBLE);
                 bindingObject.playerImgStubParent.setVisibility(View.VISIBLE);
+                bindingObject.explanationParent.setVisibility(View.INVISIBLE);
+                bindingObject.continueBtn.setVisibility(View.INVISIBLE);
                 startSplashWithTimer();
                 break;
             case PERMISSIONS:

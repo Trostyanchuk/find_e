@@ -15,6 +15,7 @@ public class ApplicationController extends Application {
     private static ApplicationController instance;
     private static int activityCounter = 0;
     private static boolean wifiEnabled = false;
+    private static boolean serviceRunning = false;
     private static Instance lastInstance = Instance.START;
 
     private ApplicationComponent component;
@@ -56,6 +57,14 @@ public class ApplicationController extends Application {
 
     public static boolean isAppInForeground() {
         return activityCounter > 0;
+    }
+
+    public static void setServiceRunning(boolean running) {
+        serviceRunning = running;
+    }
+
+    public static boolean isServiceRunning() {
+        return serviceRunning;
     }
 
     public static void setWifiEnabled(boolean enabled) {

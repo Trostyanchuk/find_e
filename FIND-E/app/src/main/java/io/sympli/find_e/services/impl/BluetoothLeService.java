@@ -61,6 +61,7 @@ public class BluetoothLeService extends Service {
     private BluetoothGatt mBluetoothGatt;
     private int mConnectionState = BleServiceConstant.STATE_DISCONNECTED;
     private int powerLevel = 100;  //default power level
+    private boolean cameraOpened;
     private BluetoothAdapter.LeScanCallback leScanCallback = new BluetoothAdapter.LeScanCallback() {
         @Override
         public void onLeScan(final BluetoothDevice device, int rssi, byte[] scanRecord) {
@@ -81,6 +82,10 @@ public class BluetoothLeService extends Service {
                     data[0]);
 
             if (characteristic.getUuid().toString().equals(BleState.SINGLE_TAP)) {
+                if (cameraOpened) {
+                    broadcast.postEvent(new MakePictureEvent());
+                    return;
+                }
                 if (mConnectionState == BleServiceConstant.STATE_BEEPING) {
                     mConnectionState = BleServiceConstant.STATE_CONNECTED;
                     broadcast.postEvent(new OnButtonTouchEvent(false));
@@ -88,7 +93,6 @@ public class BluetoothLeService extends Service {
                     mConnectionState = BleServiceConstant.STATE_BEEPING;
                     broadcast.postEvent(new OnButtonTouchEvent(true));
                 }
-                broadcast.postEvent(new MakePictureEvent());
             }
         }
 
@@ -172,6 +176,7 @@ public class BluetoothLeService extends Service {
     public void onCreate() {
         super.onCreate();
         ApplicationController.getComponent().inject(this);
+        ApplicationController.setServiceRunning(true);
     }
 
     @Override
@@ -186,6 +191,7 @@ public class BluetoothLeService extends Service {
 
     @Override
     public void onDestroy() {
+        ApplicationController.setServiceRunning(false);
         stopReadRemoteRSSIHandler();
         close();
     }
@@ -345,6 +351,10 @@ public class BluetoothLeService extends Service {
         if (characteristic != null) {
             writeCharacteristic(characteristic);
         }
+    }
+
+    public void setCameraOpened(boolean cameraOpened) {
+        this.cameraOpened = cameraOpened;
     }
 
     private void readRemoteRSSIHandler() {
