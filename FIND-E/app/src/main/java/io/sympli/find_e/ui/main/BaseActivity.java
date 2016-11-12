@@ -70,7 +70,6 @@ public abstract class BaseActivity extends AbstractCounterActivity implements Se
     private boolean mConnected;
     private BluetoothLeService mBluetoothLeService;
     private int lastRSSI;
-    private int powerLevel = 100;  //default power level
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(final ComponentName componentName, final IBinder service) {
@@ -206,7 +205,7 @@ public abstract class BaseActivity extends AbstractCounterActivity implements Se
     }
 
     public void changeBeepingState() {
-        mBluetoothLeService.changeBeepingState(true);
+        mBluetoothLeService.beep();
     }
 
     public void sendDataToTag(TagAction tagAction) {
@@ -231,16 +230,6 @@ public abstract class BaseActivity extends AbstractCounterActivity implements Se
             LocalStorageUtil.saveLastPosition(myLastLocation.getLatitude(), myLastLocation.getLongitude());
         }
     }
-//    @Subscribe
-//    public void onEventMainThread(LocationChangedEvent event) {
-//        if (!isGPSEnabled()) {
-//            onGPSLocationUnavailable();
-//        } else {
-//            onLocationAvailable();
-//        }
-//    }
-
-    boolean deviceIsBeeping = false;
 
     @Override
     public void onLocationChanged(Location location) {
@@ -345,7 +334,10 @@ public abstract class BaseActivity extends AbstractCounterActivity implements Se
     }
 
     public int getPowerLevel() {
-        return powerLevel;
+        if (mBluetoothLeService != null) {
+            return mBluetoothLeService.getPowerLevel();
+        }
+        return 100;
     }
 
     public int getConnectionState() {

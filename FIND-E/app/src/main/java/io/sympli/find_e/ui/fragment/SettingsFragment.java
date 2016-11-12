@@ -1,5 +1,6 @@
 package io.sympli.find_e.ui.fragment;
 
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -17,7 +18,7 @@ import io.sympli.find_e.databinding.FragmentSettingsBinding;
 import io.sympli.find_e.event.AnimationFinishedEvent;
 import io.sympli.find_e.event.ChangeScreenEvent;
 import io.sympli.find_e.services.IBroadcast;
-import io.sympli.find_e.utils.CameraUtil;
+import io.sympli.find_e.ui.main.CameraActivity;
 import io.sympli.find_e.utils.LocalStorageUtil;
 
 public class SettingsFragment extends Fragment {
@@ -47,9 +48,9 @@ public class SettingsFragment extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if (b) {
-                    ((OnDontDisturbOptionsListener)getActivity()).turnOnDontDisturb();
+                    ((OnDontDisturbOptionsListener) getActivity()).turnOnDontDisturb();
                 } else {
-                    ((OnDontDisturbOptionsListener)getActivity()).turnOffDontDisturb();
+                    ((OnDontDisturbOptionsListener) getActivity()).turnOffDontDisturb();
                 }
             }
         });
@@ -63,7 +64,8 @@ public class SettingsFragment extends Fragment {
         binding.goToCameraParent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                CameraUtil.openCameraApp(getContext());
+                Intent intent = new Intent(getActivity(), CameraActivity.class);
+                startActivity(intent);
             }
         });
 

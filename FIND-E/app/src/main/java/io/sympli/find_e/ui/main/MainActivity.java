@@ -169,13 +169,6 @@ public class MainActivity extends BaseActivity implements ButtonClickListener, O
 
     @Override
     public void onLocationAvailable() {
-//        Log.d(TAG, "onLocationAvailable");
-//        LocationServices locationServices = LocationServices.getLocationServices(this);
-//        Location location = locationServices.getLastLocation();
-//        if (location != null) {
-//            Log.d(TAG, "Location " + location.getLatitude() + " " + location.getLongitude());
-//            LocalStorageUtil.saveLastPosition(location.getLatitude(), location.getLongitude());
-//        }
     }
 
     @Override
@@ -268,12 +261,12 @@ public class MainActivity extends BaseActivity implements ButtonClickListener, O
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onButtonTouchEvent(OnButtonTouchEvent event) {
-        if (event.isBeeping()) {
+        setConnectionState(getConnectionState());
+        if (getConnectionState() == BleServiceConstant.STATE_CONNECTED) {
             SoundUtil.resetPlayer();
         } else {
             SoundUtil.playPhoneLocator(this);
         }
-        setConnectionState(getConnectionState());
     }
 
     @Subscribe
@@ -414,6 +407,7 @@ public class MainActivity extends BaseActivity implements ButtonClickListener, O
         hideMessage();
         switch (getConnectionState()) {
             case BleServiceConstant.STATE_CONNECTED:
+            case BleServiceConstant.STATE_BEEPING:
                 changeBeepingState();
                 setConnectionState(getConnectionState());
                 break;
@@ -503,7 +497,6 @@ public class MainActivity extends BaseActivity implements ButtonClickListener, O
                 binding.viewContainersRoot.setBackgroundColor(Color.BLACK);
                 break;
             case BleServiceConstant.STATE_BEEPING:
-                SoundUtil.playPhoneLocator(this);
                 binding.btnMsg.setText(tapToStopLabel);
                 binding.viewContainersRoot.setBackgroundResource(R.drawable.btn_screen_gradient_normal);
                 if (LocalStorageUtil.getEntranceCount() == 0) {

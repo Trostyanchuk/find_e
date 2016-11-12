@@ -23,8 +23,7 @@ import javax.inject.Inject;
 
 import io.sympli.find_e.ApplicationController;
 import io.sympli.find_e.R;
-import io.sympli.find_e.event.OnButtonTouchEvent;
-import io.sympli.find_e.event.SensorEvent;
+import io.sympli.find_e.event.MakePictureEvent;
 import io.sympli.find_e.services.IBroadcast;
 import io.sympli.find_e.services.impl.BluetoothLeService;
 import io.sympli.find_e.ui.fragment.ProgressDialogFragment;
@@ -39,14 +38,12 @@ public class CameraActivity extends AppCompatActivity implements Camera1Handler.
     private static final String TAG = CameraActivity.class.getSimpleName();
 
     private ProgressDialogFragment progressDialogFragment;
-    private Camera mCamera;
-    //    private CameraPreview mPreview;
     private Camera1Handler camera1Handler;
 
     @Inject
     IBroadcast broadcast;
 
-    private Camera.PictureCallback mPicture = new Camera.PictureCallback() {
+    private Camera.PictureCallback mPictureCallback = new Camera.PictureCallback() {
 
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
@@ -94,30 +91,11 @@ public class CameraActivity extends AppCompatActivity implements Camera1Handler.
         setContentView(R.layout.activity_camera);
         ApplicationController.getComponent().inject(this);
 
-        // Create an instance of Camera
-        mCamera = getCameraInstance();
-
         camera1Handler = new Camera1Handler(CameraUtil.getBackFacingCameraId());
         camera1Handler.setup(this.findViewById(android.R.id.content), this);
 
         final Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
         bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
-    }
-
-    /**
-     * A safe way to get an instance of the Camera object.
-     */
-    public static Camera getCameraInstance() {
-        Camera c = null;
-        try {
-            c = Camera.open();
-        } catch (Exception e) {
-        }
-        return c; // returns null if camera is unavailable
-    }
-
-    private void makePicture() {
-        mCamera.takePicture(null, null, mPicture);
     }
 
     @Override
@@ -193,8 +171,9 @@ public class CameraActivity extends AppCompatActivity implements Camera1Handler.
     }
 
     @Subscribe
-    public void onOnButtonTouchEvent(OnButtonTouchEvent event) {
-        broadcast.removeStickyEvent(OnButtonTouchEvent.class);
-        //TODO make picture
+    public void onMakePictureEvent(MakePictureEvent event) {
+        broadcast.removeStickyEvent(MakePictureEvent.class);
+        if (camera1Handler != null && camera1Handler.isCameraPrepared())
+        camera1Handler.makePicture(mPictureCallback);
     }
 }

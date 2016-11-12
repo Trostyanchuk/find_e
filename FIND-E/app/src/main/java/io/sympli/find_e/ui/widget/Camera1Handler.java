@@ -3,7 +3,6 @@ package io.sympli.find_e.ui.widget;
 import android.hardware.Camera;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
 import java.util.List;
@@ -71,6 +70,14 @@ public class Camera1Handler {
 
     public void release() {
 
+    }
+
+    public boolean isCameraPrepared() {
+        return mCamera != null && mCurrCameraState == CAMERA_STATE.OPEN;
+    }
+
+    public void makePicture(Camera.PictureCallback callback) {
+        mCamera.takePicture(null, null, callback);
     }
 
     private void setCameraState(CAMERA_STATE newState) {
